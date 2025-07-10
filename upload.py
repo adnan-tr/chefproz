@@ -18,8 +18,20 @@ def run_cmd(cmd, cwd=None):
 def git_init_and_commit():
     if not os.path.isdir(".git"):
         run_cmd("git init")
+
+    # Add a .gitignore if missing
+    if not os.path.exists(".gitignore"):
+        with open(".gitignore", "w") as f:
+            f.write("node_modules/\nbuild/\n.env\n")
+
     run_cmd("git add .")
-    run_cmd(f'git commit -m "{COMMIT_MESSAGE}"')
+
+    # Check for uncommitted changes
+    status = subprocess.check_output("git status --porcelain", shell=True).decode().strip()
+    if status:
+        run_cmd(f'git commit -m "{COMMIT_MESSAGE}"')
+    else:
+        print("🟢 Nothing new to commit. Working directory clean.")
 
 def set_git_remote_and_push():
     # Check if remote exists
@@ -28,21 +40,13 @@ def set_git_remote_and_push():
         run_cmd(f"git remote set-url origin {GITHUB_SSH_URL}")
     else:
         run_cmd(f"git remote add origin {GITHUB_SSH_URL}")
-    
-    # Set branch and push
+
     run_cmd(f"git branch -M {BRANCH_NAME}")
     run_cmd(f"git push -u origin {BRANCH_NAME}")
 
-# ---- EXECUTION ----
+# ---- MAIN ----
 if __name__ == "__main__":
-    print("🚀 Uploading your React project to GitHub via SSH...")
-    
-    # Git ignore best practices
-    if not os.path.exists(".gitignore"):
-        with open(".gitignore", "w") as f:
-            f.write("node_modules/\nbuild/\n.env\n")
-
+    print("🚀 Uploading your React project to GitHub via SSH...\n")
     git_init_and_commit()
     set_git_remote_and_push()
-
-    print("✅ Project uploaded successfully!")
+    print("\n✅ Project uploaded to GitHub successfully!")
