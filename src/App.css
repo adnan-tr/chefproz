@@ -1,0 +1,45 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Custom Swiper Styles for Featured Products */
+.featured-products-swiper {
+  position: relative;
+  padding-bottom: 50px;
+}
+
+.featured-products-swiper .swiper-pagination {
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.swiper-pagination-bullet-custom {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-custom:hover {
+  background-color: #ef4444;
+}
+
+.swiper-pagination-bullet-active-custom {
+  background-color: #ef4444;
+  width: 32px;
+  border-radius: 6px;
+}
+
+.featured-products-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

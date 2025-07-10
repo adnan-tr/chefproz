@@ -1,0 +1,164 @@
+| table_name            | column_name         | data_type                   |
+| --------------------- | ------------------- | --------------------------- |
+| admin_users           | id                  | uuid                        |
+| admin_users           | email               | text                        |
+| admin_users           | name                | text                        |
+| admin_users           | role                | text                        |
+| admin_users           | last_login          | timestamp without time zone |
+| admin_users           | status              | text                        |
+| admin_users           | created_at          | timestamp without time zone |
+| admin_users           | updated_at          | timestamp without time zone |
+| client_communications | id                  | uuid                        |
+| client_communications | client_id           | uuid                        |
+| client_communications | quotation_id        | uuid                        |
+| client_communications | order_id            | uuid                        |
+| client_communications | communication_type  | text                        |
+| client_communications | subject             | text                        |
+| client_communications | content             | text                        |
+| client_communications | created_by          | uuid                        |
+| client_communications | created_at          | timestamp without time zone |
+| clients               | id                  | uuid                        |
+| clients               | company_name        | text                        |
+| clients               | contact_person      | text                        |
+| clients               | email               | text                        |
+| clients               | phone               | text                        |
+| clients               | country             | text                        |
+| clients               | city                | text                        |
+| clients               | address             | text                        |
+| clients               | created_at          | timestamp without time zone |
+| clients               | usual_discount      | numeric                     |
+| clients               | notes               | text                        |
+| contact_requests      | id                  | uuid                        |
+| contact_requests      | name                | text                        |
+| contact_requests      | company             | text                        |
+| contact_requests      | country             | text                        |
+| contact_requests      | phone               | text                        |
+| contact_requests      | email               | text                        |
+| contact_requests      | sla_level           | text                        |
+| contact_requests      | request_type        | text                        |
+| contact_requests      | message             | text                        |
+| contact_requests      | file_attachment     | text                        |
+| contact_requests      | status              | text                        |
+| contact_requests      | created_at          | timestamp without time zone |
+| contact_requests      | updated_at          | timestamp without time zone |
+| order_analytics       | month               | timestamp without time zone |
+| order_analytics       | total_orders        | bigint                      |
+| order_analytics       | total_revenue       | numeric                     |
+| order_analytics       | avg_order_value     | numeric                     |
+| order_analytics       | completed_orders    | bigint                      |
+| order_analytics       | cancelled_orders    | bigint                      |
+| order_items           | id                  | uuid                        |
+| order_items           | order_id            | uuid                        |
+| order_items           | product_id          | uuid                        |
+| order_items           | quantity            | integer                     |
+| order_items           | unit_price          | numeric                     |
+| order_items           | total_price         | numeric                     |
+| order_items           | discount_percentage | numeric                     |
+| order_items           | created_at          | timestamp without time zone |
+| orders                | id                  | uuid                        |
+| orders                | quotation_id        | uuid                        |
+| orders                | order_number        | text                        |
+| orders                | client_id           | uuid                        |
+| orders                | title               | text                        |
+| orders                | total_amount        | numeric                     |
+| orders                | final_amount        | numeric                     |
+| orders                | order_status        | text                        |
+| orders                | payment_status      | text                        |
+| orders                | supplier_status     | text                        |
+| orders                | shipment_status     | text                        |
+| orders                | order_date          | timestamp without time zone |
+| orders                | expected_delivery   | date                        |
+| orders                | actual_delivery     | date                        |
+| orders                | notes               | text                        |
+| orders                | created_at          | timestamp without time zone |
+| orders                | updated_at          | timestamp without time zone |
+| product_translations  | id                  | uuid                        |
+| product_translations  | product_id          | uuid                        |
+| product_translations  | language_code       | text                        |
+| product_translations  | name                | text                        |
+| product_translations  | description         | text                        |
+| product_translations  | page_reference      | text                        |
+| products              | id                  | uuid                        |
+| products              | name                | text                        |
+| products              | code                | text                        |
+| products              | supplier_code       | text                        |
+| products              | price               | numeric                     |
+| products              | category            | text                        |
+| products              | subcategory         | text                        |
+| products              | description         | text                        |
+| products              | image_url           | text                        |
+| products              | page_reference      | text                        |
+| products              | discount            | numeric                     |
+| products              | created_at          | timestamp without time zone |
+| products              | updated_at          | timestamp without time zone |
+| products              | supplier_cost       | numeric                     |
+| products              | supplier            | text                        |
+| quotation_items       | id                  | uuid                        |
+| quotation_items       | quotation_id        | uuid                        |
+| quotation_items       | product_id          | uuid                        |
+| quotation_items       | quantity            | integer                     |
+| quotation_items       | unit_price          | numeric                     |
+| quotation_items       | total_price         | numeric                     |
+| quotation_items       | discount_percentage | numeric                     |
+| quotation_items       | created_at          | timestamp without time zone |
+| quotation_templates   | id                  | uuid                        |
+| quotation_templates   | name                | text                        |
+| quotation_templates   | description         | text                        |
+| quotation_templates   | template_data       | jsonb                       |
+| quotation_templates   | created_by          | uuid                        |
+| quotation_templates   | is_active           | boolean                     |
+| quotation_templates   | created_at          | timestamp without time zone |
+| quotation_templates   | updated_at          | timestamp without time zone |
+| quotations            | id                  | uuid                        |
+| quotations            | quotation_number    | text                        |
+| quotations            | client_name         | text                        |
+| quotations            | client_email        | text                        |
+| quotations            | client_company      | text                        |
+| quotations            | title               | text                        |
+| quotations            | total_amount        | numeric                     |
+| quotations            | discount_percentage | numeric                     |
+| quotations            | final_amount        | numeric                     |
+| quotations            | status              | text                        |
+| quotations            | valid_until         | date                        |
+| quotations            | notes               | text                        |
+| quotations            | created_at          | timestamp without time zone |
+| quotations            | updated_at          | timestamp without time zone |
+| quotations            | customer_reference  | text                        |
+| quotations            | client_id           | uuid                        |
+| quotations            | order_id            | uuid                        |
+| request_types         | id                  | uuid                        |
+| request_types         | name                | text                        |
+| request_types         | description         | text                        |
+| services              | id                  | uuid                        |
+| services              | service_id          | text                        |
+| services              | title               | text                        |
+| services              | description         | text                        |
+| services              | timeline            | text                        |
+| services              | starting_price      | numeric                     |
+| services              | icon                | text                        |
+| services              | image               | text                        |
+| services              | included_services   | ARRAY                       |
+| services              | is_active           | boolean                     |
+| services              | created_at          | timestamp with time zone    |
+| services              | updated_at          | timestamp with time zone    |
+| sla_levels            | id                  | uuid                        |
+| sla_levels            | name                | text                        |
+| sla_levels            | response_time       | text                        |
+| sla_levels            | description         | text                        |
+| translations          | id                  | uuid                        |
+| translations          | key                 | text                        |
+| translations          | en                  | text                        |
+| translations          | ru                  | text                        |
+| translations          | es                  | text                        |
+| translations          | tr                  | text                        |
+| translations          | ar                  | text                        |
+| ui_images             | id                  | uuid                        |
+| ui_images             | name                | text                        |
+| ui_images             | category            | text                        |
+| ui_images             | usage               | text                        |
+| ui_images             | url                 | text                        |
+| ui_images             | size                | text                        |
+| ui_images             | dimensions          | text                        |
+| ui_images             | alt_text            | text                        |
+| ui_images             | created_at          | timestamp without time zone |
+| ui_images             | updated_at          | timestamp without time zone |

@@ -1,0 +1,422 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #dc2626;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #b91c1c;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #dc2626;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #dc2626;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 84% 60%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 84% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Before/After Gallery Styles */
+.before_after {
+  position: relative;
+  overflow: hidden;
+}
+
+.before_after .img,
+.before_after .img--before,
+.before_after .img--after {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.before_after .img--before {
+  width: 50%;
+  z-index: 1;
+  left: 0;
+}
+
+.before_after .img--after {
+  width: 50%;
+  z-index: 2;
+  right: 0;
+  left: auto;
+}
+
+.before_after .img__bg {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.5s ease;
+}
+
+/* Hover Effects */
+.before_after .img--before.focus {
+  width: 75%;
+  z-index: 3;
+}
+
+.before_after .img--before.unfocus {
+  width: 25%;
+}
+
+.before_after .img--after.focus {
+  width: 75%;
+  z-index: 3;
+}
+
+.before_after .img--after.unfocus {
+  width: 25%;
+}
+
+/* Specific hover effects for after image */
+.before_after .img--after.focus {
+  width: 100%;
+  z-index: 3;
+}
+
+.before_after .img--before.unfocus {
+  width: 0%;
+}
+
+/* Content Styles */
+.before_after .content {
+  position: absolute;
+  z-index: 4;
+  transition: all 0.3s ease;
+}
+
+/* Elegant Hero Texture */
+.hero-texture {
+  background: linear-gradient(135deg, #475569 0%, #64748b 25%, #94a3b8 50%, #cbd5e1 75%, #e2e8f0 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-texture::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+  opacity: 0.6;
+}
+
+.hero-texture::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  opacity: 0.8;
+}
+
+/* Product Page Abstract Hero */
+.product-hero-abstract {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 25%, #991b1b 50%, #7f1d1d 75%, #450a0a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-hero-abstract::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  opacity: 0.7;
+}
+
+.product-hero-abstract::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%),
+    linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%);
+  animation: abstractFlow 20s ease-in-out infinite;
+}
+
+@keyframes abstractFlow {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  25% { transform: translateX(10px) translateY(-10px) rotate(1deg); }
+  50% { transform: translateX(-5px) translateY(5px) rotate(-0.5deg); }
+  75% { transform: translateX(5px) translateY(-5px) rotate(0.5deg); }
+}
+
+/* Language Bar Styles */
+.language-bar {
+  background: linear-gradient(90deg, #475569 0%, #64748b 100%);
+  color: white;
+  padding: 8px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.language-bar a {
+  color: white;
+  text-decoration: none;
+  margin: 0 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.language-bar a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-bar a.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Elegant Card Styles */
+.elegant-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.elegant-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+/* Category Card Styles */
+.category-card {
+  background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #fecaca;
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  background: linear-gradient(145deg, #fee2e2 0%, #fecaca 100%);
+  border-color: #f87171;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.1);
+}
+
+.category-card.selected {
+  background: linear-gradient(145deg, #dc2626 0%, #b91c1c 100%);
+  border-color: #991b1b;
+  color: white;
+}
+
+/* Subcategory Card Styles */
+.subcategory-card {
+  background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid #bfdbfe;
+  transition: all 0.3s ease;
+}
+
+.subcategory-card:hover {
+  background: linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+}
+
+.subcategory-card.selected {
+  background: linear-gradient(145deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #1e40af;
+  color: white;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(145deg, #dc2626 0%, #b91c1c 100%);
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(145deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.3);
+}
+
+.btn-secondary {
+  background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #cbd5e1;
+  color: #475569;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+/* Secure Portal Styles */
+.admin-sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+}
+
+.admin-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer Gradient */
+.footer-gradient {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #64748b 75%, #94a3b8 100%);
+}
+
+/* Smaller Hero Sections */
+.hero-texture {
+  padding: 60px 0 !important;
+}
+
+.product-hero-abstract {
+  padding: 60px 0 !important;
+}
+
+/* Remove language bar button */
+.language-bar button[class*="inspect"] {
+  display: none !important;
+}

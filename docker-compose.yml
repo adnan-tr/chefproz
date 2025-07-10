@@ -1,0 +1,4 @@
+services:
+  myapp:
+    image: node:18
+    command: ["node"]
