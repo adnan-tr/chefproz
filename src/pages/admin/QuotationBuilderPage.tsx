@@ -31,22 +31,22 @@ import {
   User,
   Save,
   X,
-  Filter,
+
   Clock,
   CheckCircle,
   Package,
   Minus,
   ShoppingCart,
-  ArrowRight,
+
   Copy,
   MessageSquare,
-  TrendingUp,
-  CheckSquare,
+
+
   Loader2,
   BarChart3,
-  AlertCircle,
-  XCircle,
-  Circle
+
+
+
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 import { jsPDF } from 'jspdf';
@@ -74,7 +74,7 @@ const QuotationBuilderPage: React.FC = () => {
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientSearchTerm, setClientSearchTerm] = useState('');
-  const [selectedClientHistory, setSelectedClientHistory] = useState([]);
+  const [selectedClientHistory, setSelectedClientHistory] = useState<any[]>([]);
   const [loadingClientHistory, setLoadingClientHistory] = useState(false);
 
   const [productSearchTerm, setProductSearchTerm] = useState('');
@@ -93,11 +93,12 @@ const QuotationBuilderPage: React.FC = () => {
     customer_reference: '',
     title: '',
     total_amount: '',
-    discount_percentage: '',
+    discount_percentage: 0,
     final_amount: '',
     status: 'draft',
     valid_until: '',
-    notes: ''
+    notes: '',
+    client_id: ''
   });
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
@@ -208,8 +209,8 @@ const QuotationBuilderPage: React.FC = () => {
         title: formData.title,
         quotation_number: generateQuotationNumber(),
         total_amount: total,
-        discount_percentage: parseFloat(formData.discount_percentage) || 0,
-        final_amount: total - (total * (parseFloat(formData.discount_percentage) || 0) / 100),
+        discount_percentage: formData.discount_percentage || 0,
+        final_amount: total - (total * (formData.discount_percentage || 0) / 100),
         status: formData.status,
         valid_until: formData.valid_until,
         notes: formData.notes
@@ -272,8 +273,8 @@ const QuotationBuilderPage: React.FC = () => {
         customer_reference: formData.customer_reference || '',
         title: formData.title,
         total_amount: total,
-        discount_percentage: parseFloat(formData.discount_percentage) || 0,
-        final_amount: total - (total * (parseFloat(formData.discount_percentage) || 0) / 100),
+        discount_percentage: formData.discount_percentage || 0,
+        final_amount: total - (total * (formData.discount_percentage || 0) / 100),
         status: formData.status,
         valid_until: formData.valid_until,
         notes: formData.notes
@@ -312,17 +313,7 @@ const QuotationBuilderPage: React.FC = () => {
     }
   };
 
-  const handleSendQuotation = async (id: string) => {
-    try {
-      await dbService.updateQuotation(id, { 
-        status: 'sent',
-        updated_at: new Date().toISOString()
-      });
-      fetchQuotations();
-    } catch (error) {
-      console.error('Error sending quotation:', error);
-    }
-  };
+
 
   const handleDownloadPDF = async (quotation: any) => {
     try {
@@ -519,11 +510,12 @@ const QuotationBuilderPage: React.FC = () => {
       customer_reference: '',
       title: '',
       total_amount: '',
-      discount_percentage: '',
+      discount_percentage: 0,
       final_amount: '',
       status: 'draft',
       valid_until: '',
-      notes: ''
+      notes: '',
+      client_id: ''
     });
     setSelectedProducts([]);
     setSelectedClient(null);
@@ -535,7 +527,8 @@ const QuotationBuilderPage: React.FC = () => {
       phone: '',
       country: '',
       city: '',
-      address: ''
+      address: '',
+      usual_discount: 0
     });
     setEditingQuotation(null);
   };
@@ -633,7 +626,7 @@ const QuotationBuilderPage: React.FC = () => {
     const subtotal = selectedProducts.reduce((sum, product) => 
       sum + (product.unit_price * product.quantity), 0
     );
-    const discount = parseFloat(formData.discount_percentage) || 0;
+    const discount = parseFloat(formData.discount_percentage.toString()) || 0;
     const discountAmount = (subtotal * discount) / 100;
     return subtotal - discountAmount;
   };
@@ -669,7 +662,8 @@ const QuotationBuilderPage: React.FC = () => {
       final_amount: quotation.final_amount?.toString() || '',
       status: quotation.status || 'draft',
       valid_until: quotation.valid_until || '',
-      notes: quotation.notes || ''
+      notes: quotation.notes || '',
+      client_id: quotation.client_id || ''
     });
     
     // Set selected client from quotation's client relationship
@@ -701,7 +695,7 @@ const QuotationBuilderPage: React.FC = () => {
 
   const calculateFinalAmount = () => {
     const total = parseFloat(formData.total_amount) || 0;
-    const discount = parseFloat(formData.discount_percentage) || 0;
+    const discount = formData.discount_percentage || 0;
     const final = total * (1 - discount / 100);
     setFormData({...formData, final_amount: final.toString()});
   };
@@ -1047,7 +1041,7 @@ const QuotationBuilderPage: React.FC = () => {
                       </div>
                     ) : (
                       <div className="divide-y divide-slate-100">
-                        {selectedProducts.map((product, index) => (
+                        {selectedProducts.map((product, _) => (
                           <div key={product.id} className="flex flex-col sm:flex-row sm:items-center p-4 gap-3 hover:bg-slate-50 transition-colors">
                             <div className="w-14 h-14 flex-shrink-0">
                               <img 
@@ -1121,7 +1115,7 @@ const QuotationBuilderPage: React.FC = () => {
                         min="0"
                         max="100"
                         value={formData.discount_percentage}
-                        onChange={(e) => setFormData({...formData, discount_percentage: e.target.value})}
+                        onChange={(e) => setFormData({...formData, discount_percentage: parseFloat(e.target.value) || 0})}
                         className="mt-1 focus:ring-red-500 focus:border-red-500"
                         placeholder="0"
                       />
@@ -1420,7 +1414,7 @@ const QuotationBuilderPage: React.FC = () => {
                         {client.email}
                         {client.country && ` • ${client.country}`}
                       </div>
-                      {client.usual_discount > 0 && (
+                      {client.usual_discount && client.usual_discount > 0 && (
                         <div className="text-xs text-green-600 mt-1">
                           Usual Discount: {client.usual_discount}%
                         </div>
@@ -1743,55 +1737,10 @@ const QuotationBuilderPage: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <div className="flex flex-wrap gap-2">
-                {selectedQuotationObj && selectedQuotationObj.status === 'draft' && (
-                  <Button 
-                    size="sm" 
-                    className="bg-blue-600 hover:bg-blue-700 text-white min-w-0"
-                    onClick={() => handleSendQuotation(selectedQuotationObj.id)}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Send</span>
-                  </Button>
-                )}
-                {selectedQuotationObj && canConvertToOrder(selectedQuotationObj) && (
-                  <Button 
-                    size="sm" 
-                    className={selectedQuotationObj.status === 'accepted' 
-                      ? "bg-orange-500 hover:bg-orange-600 text-white min-w-0" 
-                      : "bg-green-600 hover:bg-green-700 text-white min-w-0"}
-                    onClick={() => handleConvertToOrder(selectedQuotationObj.id)}
-                    disabled={isConvertingToOrder}
-                  >
-                    {selectedQuotationObj.status === 'accepted' 
-                      ? <><CheckSquare className="h-4 w-4 mr-2" /><span className="hidden sm:inline">Confirm Order</span></> 
-                      : <><ShoppingCart className="h-4 w-4 mr-2" /><span className="hidden sm:inline">Convert to Order</span></>}
-                  </Button>
-                )}
-                {selectedQuotationObj && selectedQuotationObj.status === 'converted_to_order' && selectedQuotationObj.order_id && (
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 min-w-0"
-                    onClick={() => {
-                      // Navigate to order view - you can implement this based on your routing
-                      alert(`View Order: ${selectedQuotationObj.order_id}`);
-                    }}
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">View Order</span>
-                  </Button>
-                )}
-
-            </div>
-            {selectedQuotationObj && (
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <CheckSquare className="h-4 w-4 mr-1" />
-                  <span>Selected: <strong>{selectedQuotationObj.quotation_number}</strong></span>
-                </div>
+              <div className="text-sm text-slate-600">
+                Click on any quotation to view details
               </div>
-            )}
+            </div>
             
             <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
               <Table>
@@ -1953,7 +1902,6 @@ const QuotationBuilderPage: React.FC = () => {
               </Table>
             </div>
           </div>
-        </div>
         </CardContent>
       </Card>
 
@@ -2024,7 +1972,7 @@ const QuotationBuilderPage: React.FC = () => {
                 id="edit-discount_percentage"
                 type="number"
                 value={formData.discount_percentage}
-                onChange={(e) => setFormData({...formData, discount_percentage: e.target.value})}
+                onChange={(e) => setFormData({...formData, discount_percentage: parseFloat(e.target.value) || 0})}
                 onBlur={calculateFinalAmount}
               />
             </div>
@@ -2782,7 +2730,7 @@ const QuotationBuilderPage: React.FC = () => {
                 setFormData({
                   ...formData,
                   total_amount: subtotal.toString(),
-                  discount_percentage: calculatorData.discount.toString(),
+                  discount_percentage: calculatorData.discount,
                   final_amount: total.toString()
                 });
                 

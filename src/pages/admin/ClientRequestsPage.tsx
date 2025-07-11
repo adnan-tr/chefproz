@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +8,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { 
   Search, 
-  Filter, 
+ 
   Eye, 
   MessageSquare, 
   Clock,
   CheckCircle,
   AlertCircle,
   Download,
-  Trash2,
-  Edit,
+
+
   Send,
   X,
   UserPlus
@@ -190,21 +190,7 @@ const ClientRequestsPage: React.FC = () => {
     return matchesSearch && matchesStatus && matchesSLA;
   });
 
-  const getStatusIcon = (status: string | null | undefined) => {
-    // Handle null, undefined, or empty values
-    const statusValue = status || 'unknown';
-    
-    switch (statusValue) {
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'in_progress':
-        return <AlertCircle className="h-4 w-4 text-blue-500" />;
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
-  };
+
 
   const getStatusBadge = (status: string | null | undefined) => {
     // Handle null, undefined, or empty values

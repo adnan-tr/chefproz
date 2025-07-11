@@ -18,7 +18,7 @@ import {
   Settings,
   Eye,
   Save,
-  X
+
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 
@@ -93,10 +93,8 @@ const AdminUsersPage: React.FC = () => {
   const handleDeleteUser = async (id: string) => {
     if (confirm('Are you sure you want to delete this user?')) {
       try {
-        const { error } = await dbService.db.from('admin_users').delete().eq('id', id);
-        if (!error) {
-          fetchUsers();
-        }
+        await dbService.deletePortalUser(id);
+        fetchUsers();
       } catch (error) {
         console.error('Error deleting user:', error);
       }

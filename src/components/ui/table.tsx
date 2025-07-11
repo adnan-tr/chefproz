@@ -56,10 +56,9 @@ const TableFooter = React.forwardRef<
 ));
 TableFooter.displayName = 'TableFooter';
 
-interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  id?: string;
-  isSelectable?: boolean;
+interface TableRowProps extends Omit<React.HTMLAttributes<HTMLTableRowElement>, 'onSelect'> {
   isSelected?: boolean;
+  isSelectable?: boolean;
   onSelect?: (id: string) => void;
 }
 

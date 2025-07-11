@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import { 
   Users, 
   MessageSquare, 
@@ -13,8 +13,7 @@ import {
   BarChart3,
   Activity,
   DollarSign,
-  Eye,
-  Plus,
+
   FileText
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';

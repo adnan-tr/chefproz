@@ -9,18 +9,13 @@ import {
   ChefHat, 
   Hotel, 
   ArrowRight,
-  CheckCircle,
-  Users,
-  Award,
-  Globe,
   Star,
   Building2,
-  Utensils,
   Trophy,
   Target,
   Zap
 } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { dbService } from '@/lib/supabase';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -193,12 +188,7 @@ const HomePage: React.FC = () => {
     },
   ];
 
-  const stats = [
-    { icon: Users, value: '500+', label: t('stats.clients', 'Satisfied Clients'), color: 'from-blue-500 to-blue-600' },
-    { icon: Award, value: '15+', label: t('stats.experience', 'Years Experience'), color: 'from-emerald-500 to-emerald-600' },
-    { icon: Globe, value: '25+', label: t('stats.countries', 'Countries Served'), color: 'from-purple-500 to-purple-600' },
-    { icon: CheckCircle, value: '1000+', label: t('stats.projects', 'Projects Completed'), color: 'from-orange-500 to-orange-600' },
-  ];
+
 
   const achievements = [
     {

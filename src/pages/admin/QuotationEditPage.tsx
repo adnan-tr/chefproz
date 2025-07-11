@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+
 import { Trash2, Plus, Save, X } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -55,17 +55,16 @@ interface Quotation {
 
 const QuotationEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+
   
   const [quotation, setQuotation] = useState<Quotation | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [quotationItems, setQuotationItems] = useState<QuotationItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
-  const [showClientModal, setShowClientModal] = useState(false);
   
   // Form states
   const [formData, setFormData] = useState({
@@ -121,13 +120,11 @@ const QuotationEditPage: React.FC = () => {
       }
       
       // Load products and clients for modals
-      const [productsData, clientsData] = await Promise.all([
-        dbService.getProducts(),
-        dbService.getClients()
+      const [productsData] = await Promise.all([
+        dbService.getProducts()
       ]);
       
       setProducts(productsData || []);
-      setClients(clientsData || []);
       
     } catch (error) {
       console.error('Error loading quotation data:', error);

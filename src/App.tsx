@@ -4,7 +4,7 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
 import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
+
 import InoksanPage from './pages/InoksanPage';
 import RefrigerationPage from './pages/RefrigerationPage';
 import KitchenToolsPage from './pages/KitchenToolsPage';

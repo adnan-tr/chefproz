@@ -17,7 +17,7 @@ import {
   Globe,
   Check
 } from 'lucide-react';
-import { dbService, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 const TranslationsPage: React.FC = () => {
   const [translations, setTranslations] = useState<any[]>([]);
@@ -73,7 +73,7 @@ const TranslationsPage: React.FC = () => {
 
     for (const translation of commonTranslations) {
       try {
-        const { data: existing, error } = await supabase
+        const { data: existing } = await supabase
           .from('translations')
           .select('*')
           .eq('key', translation.key)

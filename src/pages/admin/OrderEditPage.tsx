@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -21,12 +21,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Package,
-  Calendar,
-  User,
-  Building,
-  FileText,
-  DollarSign,
-  Truck,
+
+
+
+
   Save,
   ArrowLeft,
 } from 'lucide-react';
@@ -80,7 +78,7 @@ const ORDER_STATUSES = [
 
 const OrderEditPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const navigate = useNavigate();
+
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -5,7 +5,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   CheckCircle, 
   Clock, 
-  DollarSign, 
   ArrowRight,
   Settings,
   Wrench,

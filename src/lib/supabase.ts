@@ -220,6 +220,12 @@ export const dbService = {
     return data;
   },
 
+  async deletePortalUser(id: string) {
+    const { error } = await supabase.from('admin_users').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  },
+
   // Translations
   async getTranslations() {
     const { data, error } = await supabase

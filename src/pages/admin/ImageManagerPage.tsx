@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -19,13 +19,12 @@ import {
   Grid,
   List,
   Save,
-  X,
+
   FileImage,
   AlertCircle,
   CheckCircle,
   RefreshCw,
-  Copy,
-  ExternalLink
+  Copy
 } from 'lucide-react';
 import { dbService, supabase } from '@/lib/supabase';
 
@@ -127,7 +126,7 @@ const ImageManagerPage: React.FC = () => {
   };
 
   const uploadFileToSupabase = async (file: File, fileName: string): Promise<string> => {
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('ui-images')
       .upload(fileName, file, {
         cacheControl: '3600',

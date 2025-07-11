@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -38,21 +38,16 @@ import {
   FileText,
   ShoppingCart,
   TrendingUp,
-  Eye,
+
   Mail,
   Phone,
   Building,
   MapPin,
   Percent,
   User,
-  Calendar,
-  ChevronDown,
-  DollarSign,
-  Filter,
-  Package,
+
   Target,
-  Activity,
-  BarChart3,
+
   Edit,
   Save,
   X,
@@ -94,8 +89,8 @@ const ClientDashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('company_name');
   const [selectedClient, setSelectedClient] = useState<ClientStats | null>(null);
-  const [clientDetail, setClientDetail] = useState<ClientDetail | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [clientDetail] = useState<ClientDetail | null>(null);
+  const [detailLoading] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientStats | null>(null);
   const [editForm, setEditForm] = useState({
     company_name: '',
@@ -142,7 +137,7 @@ const ClientDashboardPage: React.FC = () => {
           city: client.city,
           address: client.address,
           usual_discount: client.usual_discount || 0,
-          notes: client.notes || '',
+
           priority: client.priority || 'medium',
           created_at: client.created_at,
           total_messages: 0,
@@ -236,48 +231,9 @@ const ClientDashboardPage: React.FC = () => {
     }
   };
 
-  const fetchClientDetail = async (client: ClientStats) => {
-    try {
-      setDetailLoading(true);
-      
-      const [quotations, contactRequests, orders] = await Promise.all([
-        dbService.getQuotations(),
-        dbService.getContactRequests(),
-        dbService.getOrders()
-      ]);
 
-      // Filter data for this specific client using normalized structure
-      const clientQuotations = quotations.filter((q: any) => 
-        q.client_id === client.id
-      );
-      
-      // Filter contact requests by matching email or company name
-      const clientMessages = contactRequests.filter((r: any) => 
-        (r.email && r.email === client.email) || 
-        (r.company && r.company === client.company_name)
-      );
-      
-      // Filter orders for this specific client
-      const clientOrders = orders.filter((o: any) => 
-        o.client_id === client.id
-      );
 
-      setClientDetail({
-        messages: clientMessages,
-        quotations: clientQuotations,
-        orders: clientOrders
-      });
-    } catch (error) {
-      console.error('Error fetching client detail:', error);
-    } finally {
-      setDetailLoading(false);
-    }
-  };
 
-  const handleViewClient = async (client: ClientStats) => {
-    setSelectedClient(client);
-    await fetchClientDetail(client);
-  };
 
   const handleEditClient = (client: ClientStats) => {
     setEditingClient(client);
@@ -381,7 +337,7 @@ const ClientDashboardPage: React.FC = () => {
         return a.company_name.localeCompare(b.company_name);
       case 'priority':
         // Sort by priority: high > medium > low
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        const priorityOrder: Record<string, number> = { high: 3, medium: 2, low: 1 };
         const aPriority = priorityOrder[a.priority || 'medium'] || 2;
         const bPriority = priorityOrder[b.priority || 'medium'] || 2;
         return bPriority - aPriority;
@@ -638,7 +594,7 @@ const ClientDashboardPage: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => handleEditClient(selectedClient)}
+              onClick={() => selectedClient && handleEditClient(selectedClient)}
               className="mt-2 sm:mt-0"
             >
               <Edit className="h-4 w-4 mr-2" />

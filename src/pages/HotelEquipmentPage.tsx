@@ -40,13 +40,13 @@ const HotelEquipmentPage: React.FC = () => {
 
   const subcategories = useMemo(() => {
     if (selectedCategory === 'all') {
-      return Array.from(new Set(products.map(p => p.subcategory).filter(Boolean)));
+      return Array.from(new Set(products.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
     }
     return Array.from(new Set(
       products
         .filter(p => p.category === selectedCategory)
         .map(p => p.subcategory)
-        .filter(Boolean)
+        .filter((subcat): subcat is string => subcat !== undefined)
     ));
   }, [products, selectedCategory]);
 

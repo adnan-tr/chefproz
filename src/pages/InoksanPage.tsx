@@ -18,7 +18,7 @@ const InoksanPage: React.FC = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [globalDiscount, setGlobalDiscount] = useState(0);
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,13 +41,13 @@ const InoksanPage: React.FC = () => {
 
   const subcategories = useMemo(() => {
     if (selectedCategory === 'all') {
-      return Array.from(new Set(products.map(p => p.subcategory).filter(Boolean)));
+      return Array.from(new Set(products.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
     }
     return Array.from(new Set(
       products
         .filter(p => p.category === selectedCategory)
         .map(p => p.subcategory)
-        .filter(Boolean)
+        .filter((subcat): subcat is string => subcat !== undefined)
     ));
   }, [products, selectedCategory]);
 
@@ -85,7 +85,6 @@ const InoksanPage: React.FC = () => {
     setSearchTerm('');
     setSelectedCategory('all');
     setSelectedSubcategory('all');
-    setGlobalDiscount(0);
   };
 
   if (loading) {

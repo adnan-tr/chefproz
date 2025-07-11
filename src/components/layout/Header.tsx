@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  Info, 
+ 
   Phone, 
   Factory, 
   Snowflake, 
@@ -11,7 +11,7 @@ import {
   FileText,
   Menu,
   X,
-  Shield
+
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';

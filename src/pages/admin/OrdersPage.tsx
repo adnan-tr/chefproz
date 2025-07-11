@@ -39,16 +39,16 @@ import {
   CheckCircle,
   Truck,
   DollarSign,
-  Eye,
-  Edit,
+
+
   Calendar,
   User,
   Building,
   FileText,
   AlertCircle,
-  CheckSquare,
+
   Filter as FilterIcon,
-  ChevronDown as ChevronDownIcon
+
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 
@@ -107,7 +107,7 @@ const OrdersPage: React.FC = () => {
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [formData, setFormData] = useState<Partial<Order>>({});
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -197,17 +197,7 @@ const OrdersPage: React.FC = () => {
     }
   };
 
-  const openEditModal = (order: Order) => {
-    setEditingOrder(order);
-    setFormData({
-      order_status: order.order_status,
-      payment_status: order.payment_status,
-      supplier_status: order.supplier_status,
-      shipment_status: order.shipment_status,
-      expected_delivery: order.expected_delivery,
-      notes: order.notes,
-    });
-  };
+
   
   // Handle selecting an order row
   const handleSelectOrder = (id: string) => {
@@ -215,7 +205,7 @@ const OrdersPage: React.FC = () => {
   };
 
   // Get the selected order object
-  const selectedOrderObj = selectedOrderId ? orders.find(order => order.id === selectedOrderId) : null;
+
 
   const getStatusBadge = (status: string) => {
     const statusConfig = ORDER_STATUSES.find(s => s.value === status);
