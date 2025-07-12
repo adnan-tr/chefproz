@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Helmet } from 'react-helmet-async';
-import { Settings, Eye, EyeOff, ExternalLink, Edit, Save, X } from 'lucide-react';
+import { ExternalLink, Edit, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePageConfig, PageConfig } from '@/contexts/PageConfigContext';
 
@@ -18,7 +17,6 @@ export default function PageManagementPage() {
   const { pageConfigs: pages, updatePageConfigs } = usePageConfig();
   const [editingPage, setEditingPage] = useState<PageConfig | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const savePageConfigurations = (updatedPages: PageConfig[]) => {
     updatePageConfigs(updatedPages);
@@ -62,12 +60,7 @@ export default function PageManagementPage() {
     setEditingPage(null);
   };
 
-  const handleUpdateRedirectUrl = (pageId: string, redirectUrl: string) => {
-    const updatedPages = pages.map(page => 
-      page.id === pageId ? { ...page, redirectUrl } : page
-    );
-    savePageConfigurations(updatedPages);
-  };
+
 
   const getStatusBadge = (page: PageConfig) => {
     if (!page.isActive) {

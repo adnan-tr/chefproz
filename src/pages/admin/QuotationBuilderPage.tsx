@@ -794,18 +794,7 @@ const QuotationBuilderPage: React.FC = () => {
     }
   };
   
-  const updateQuotationStatus = async (quotationId: string, newStatus: string) => {
-    try {
-      const result = await dbService.updateQuotation(quotationId, { status: newStatus });
-      if (result) {
-        fetchQuotations(); // Refresh the quotations list
-        console.log(`Quotation status updated to ${newStatus} successfully`);
-      }
-    } catch (error) {
-      console.error(`Error updating quotation status to ${newStatus}:`, error);
-      alert(`Error updating quotation status. Please try again.`);
-    }
-  };
+
 
   const confirmConvertToOrder = async () => {
     if (!quotationToConvert) return;

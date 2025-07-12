@@ -41,8 +41,7 @@ const SpecialRequestPage: React.FC = () => {
   const { isPageActive, shouldShowPrices } = usePageConfig();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Get current page status
   const pageActive = isPageActive('special-requests');
