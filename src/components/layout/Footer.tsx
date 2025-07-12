@@ -40,10 +40,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Spacer to maintain grid layout */}
-          <div></div>
-
-          {/* Contact Info */}
+          {/* Contact Info - Email */}
           <div>
             <h3 className="text-lg font-semibold mb-6 text-white">{t('footer.contact_info')}</h3>
             <div className="space-y-4">
@@ -56,7 +53,13 @@ const Footer: React.FC = () => {
                   <p className="text-slate-300 text-sm">info@chefgear.com</p>
                 </div>
               </div>
-              
+            </div>
+          </div>
+
+          {/* Contact Info - Phone & Address */}
+          <div>
+            <h3 className="text-lg font-semibold mb-6 text-white">&nbsp;</h3>
+            <div className="space-y-4">
               <div className="flex items-start space-x-3 group">
                 <div className="p-2 bg-slate-700/50 rounded-lg group-hover:bg-red-600 transition-colors duration-300">
                   <Phone className="h-5 w-5 text-red-400 group-hover:text-white" />

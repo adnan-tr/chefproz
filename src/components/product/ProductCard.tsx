@@ -9,12 +9,14 @@ interface ProductCardProps {
   product: Product;
   onViewDetails: (product: Product) => void;
   className?: string;
+  showPrices?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ 
   product, 
   onViewDetails, 
-  className 
+  className,
+  showPrices = true
 }) => {
   const { t } = useLanguage();
 
@@ -50,9 +52,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.category}
               {product.subcategory && ` / ${product.subcategory}`}
             </span>
-            <span className="text-sm font-medium text-gray-900">
-              ${product.price.toLocaleString()}
-            </span>
+            {showPrices && (
+              <span className="text-sm font-medium text-gray-900">
+                €{product.price.toLocaleString()}
+              </span>
+            )}
           </div>
           
           <Button 

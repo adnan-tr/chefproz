@@ -221,10 +221,10 @@ const OrdersPage: React.FC = () => {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
-      order.quotation_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client_company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.title.toLowerCase().includes(searchTerm.toLowerCase());
+      (order.quotation_number?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (order.client_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (order.client_company?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (order.title?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || order.order_status === statusFilter;
     
@@ -341,7 +341,7 @@ const OrdersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-1 min-w-0 flex-1">
                 <p className="text-xs font-medium text-slate-600 truncate">Total Value</p>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900">${orderStats.totalValue.toLocaleString()}</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">€{orderStats.totalValue.toLocaleString()}</p>
               </div>
               <div className="p-2 rounded-xl bg-indigo-50 shadow-sm flex-shrink-0">
                 <DollarSign className="h-5 w-5 text-indigo-600" />
@@ -453,7 +453,7 @@ const OrdersPage: React.FC = () => {
                       <TableCell className="truncate hidden sm:table-cell">{order.client_name}</TableCell>
                       <TableCell className="truncate">{order.client_company}</TableCell>
                       <TableCell className="truncate hidden lg:table-cell">{order.title}</TableCell>
-                      <TableCell className="truncate">${order.final_amount.toLocaleString()}</TableCell>
+                      <TableCell className="truncate">€{order.final_amount.toLocaleString()}</TableCell>
                       <TableCell>{getStatusBadge(order.order_status)}</TableCell>
                       <TableCell className="truncate hidden md:table-cell">{new Date(order.order_date).toLocaleDateString()}</TableCell>
                       <TableCell className="truncate hidden xl:table-cell">
@@ -527,7 +527,7 @@ const OrdersPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">Amount:</span>
-                      <span>${selectedOrder.final_amount.toLocaleString()}</span>
+                      <span>€{selectedOrder.final_amount.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Truck className="h-4 w-4 text-muted-foreground" />
@@ -616,7 +616,7 @@ const OrdersPage: React.FC = () => {
                           <div className="flex-1">
                             <h4 className="font-medium">{item.product_name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Quantity: {item.quantity} × ${item.unit_price.toLocaleString()}
+                              Quantity: {item.quantity} × €{item.unit_price.toLocaleString()}
                             </p>
                             {item.discount_percentage > 0 && (
                               <p className="text-sm text-green-600">
@@ -625,14 +625,14 @@ const OrdersPage: React.FC = () => {
                             )}
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${item.total_price.toLocaleString()}</p>
+                            <p className="font-medium">€{item.total_price.toLocaleString()}</p>
                           </div>
                         </div>
                       ))}
                       <div className="border-t pt-3 mt-3">
                         <div className="flex justify-between items-center font-medium">
                           <span>Total Amount:</span>
-                          <span>${selectedOrder.final_amount.toLocaleString()}</span>
+                          <span>€{selectedOrder.final_amount.toLocaleString()}</span>
                         </div>
                       </div>
                     </div>

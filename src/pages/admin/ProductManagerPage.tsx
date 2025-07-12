@@ -553,7 +553,7 @@ const ProductManagerPage: React.FC = () => {
                       <div className="flex items-center space-x-2 flex-shrink-0">
                         {getPageBadge(product.page_reference)}
                         <span className="text-base lg:text-lg font-bold text-green-600">
-                          ${product.price?.toLocaleString() || 0}
+                          €{product.price?.toLocaleString() || 0}
                         </span>
                       </div>
                     </div>
@@ -662,7 +662,7 @@ const ProductManagerPage: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900">{viewingProduct.name}</h3>
-                    <p className="text-lg text-green-600 font-semibold">${viewingProduct.price?.toLocaleString() || 0}</p>
+                    <p className="text-lg text-green-600 font-semibold">€{viewingProduct.price?.toLocaleString() || 0}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

@@ -194,7 +194,7 @@ const TranslationsPage: React.FC = () => {
   };
 
   const filteredTranslations = translations.filter(translation =>
-    translation.key.toLowerCase().includes(searchTerm.toLowerCase())
+    (translation.key?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   if (loading) {

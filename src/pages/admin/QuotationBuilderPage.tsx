@@ -341,92 +341,122 @@ const QuotationBuilderPage: React.FC = () => {
       const pageWidth = doc.internal.pageSize.width;
       const pageHeight = doc.internal.pageSize.height;
       
-      // Company Header
-      doc.setFillColor(220, 38, 38); // Red color
-      doc.rect(0, 0, pageWidth, 40, 'F');
+      // Company Header with gradient effect
+      doc.setFillColor(220, 38, 38); // Primary red
+      doc.rect(0, 0, pageWidth, 50, 'F');
       
-      // Company Logo/Name
+      // Add a subtle shadow effect
+      doc.setFillColor(200, 30, 30);
+      doc.rect(0, 48, pageWidth, 2, 'F');
+      
+      // Company Logo/Name with better typography
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(24);
+      doc.setFontSize(28);
       doc.setFont('helvetica', 'bold');
-      doc.text('ChefPro Equipment', 20, 25);
+      doc.text('ChefPro Equipment', 20, 28);
       
-      doc.setFontSize(12);
+      doc.setFontSize(14);
       doc.setFont('helvetica', 'normal');
-      doc.text('Professional Kitchen Solutions', 20, 32);
+      doc.text('Professional Kitchen Solutions', 20, 38);
       
-      // Contact Info in header
-      doc.setFontSize(10);
-      doc.text('www.chefpro.com | info@chefpro.com | +1 (555) 123-4567', pageWidth - 20, 25, { align: 'right' });
+      // Contact Info in header with better layout
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text('www.chefpro.com', pageWidth - 20, 18, { align: 'right' });
+      doc.text('info@chefpro.com', pageWidth - 20, 26, { align: 'right' });
+      doc.text('+1 (555) 123-4567', pageWidth - 20, 34, { align: 'right' });
+      doc.text('123 Kitchen Street, Culinary City, CC 12345', pageWidth - 20, 42, { align: 'right' });
       
       // Reset text color
       doc.setTextColor(0, 0, 0);
       
-      // Quotation Title
-      doc.setFontSize(20);
+      // Quotation Title with better styling
+      doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('QUOTATION', 20, 60);
+      doc.setTextColor(220, 38, 38);
+      doc.text('QUOTATION', 20, 70);
       
-      // Quotation Number and Date
+      // Add a decorative line under the title
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(2);
+      doc.line(20, 75, 100, 75);
+      
+      // Reset text color for content
+      doc.setTextColor(0, 0, 0);
+      
+      // Quotation Number and Date with better spacing
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Quotation #: ${quotation.quotation_number}`, 20, 75);
-      doc.text(`Date: ${new Date(quotation.created_at).toLocaleDateString()}`, 20, 85);
-      doc.text(`Valid Until: ${quotation.valid_until || 'N/A'}`, 20, 95);
+      doc.text(`Quotation #: ${quotation.quotation_number}`, 20, 90);
+      doc.text(`Date: ${new Date(quotation.created_at).toLocaleDateString()}`, 20, 100);
+      doc.text(`Valid Until: ${quotation.valid_until || 'N/A'}`, 20, 110);
       
-      // Client Information Box
-      doc.setDrawColor(200, 200, 200);
-      doc.rect(20, 105, pageWidth - 40, 40);
+      // Client Information Box with enhanced styling
+      doc.setFillColor(248, 249, 250); // Light gray background
+      doc.setDrawColor(220, 38, 38); // Red border
+      doc.setLineWidth(1);
+      doc.rect(20, 120, pageWidth - 40, 45, 'FD');
       
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('Bill To:', 25, 120);
+      doc.setTextColor(220, 38, 38);
+      doc.text('Bill To:', 25, 135);
       
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      doc.text(quotation.client?.company_name || 'N/A', 25, 130);
-      doc.text(quotation.client?.contact_person || 'N/A', 25, 137);
-      doc.text(quotation.client?.email || 'N/A', 25, 144);
+      doc.setTextColor(0, 0, 0);
+      doc.text(quotation.client?.company_name || 'N/A', 25, 145);
+      doc.text(quotation.client?.contact_person || 'N/A', 25, 152);
+      doc.text(quotation.client?.email || 'N/A', 25, 159);
       
-      // Quotation Title
+      // Quotation Title with enhanced styling
       if (quotation.title) {
-        doc.setFontSize(12);
+        doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
-        doc.text(`Project: ${quotation.title}`, 20, 160);
+        doc.setTextColor(220, 38, 38);
+        doc.text(`Project: ${quotation.title}`, 20, 180);
+        doc.setTextColor(0, 0, 0);
       }
       
       // Items Table
-      const tableStartY = quotation.title ? 170 : 160;
+      const tableStartY = quotation.title ? 190 : 175;
       
       if (items.length > 0) {
         const tableData = items.map(item => [
           item.code,
           item.name,
           item.quantity.toString(),
-          `$${item.unitPrice.toFixed(2)}`,
-          `$${item.total.toFixed(2)}`
+          `€${item.unitPrice.toFixed(2)}`,
+          `€${item.total.toFixed(2)}`
         ]);
         
         autoTable(doc, {
           startY: tableStartY,
           head: [['Code', 'Description', 'Qty', 'Unit Price', 'Total']],
           body: tableData,
-          theme: 'grid',
+          theme: 'striped',
           headStyles: {
             fillColor: [220, 38, 38],
             textColor: [255, 255, 255],
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            fontSize: 11,
+            cellPadding: 6
           },
           styles: {
             fontSize: 10,
-            cellPadding: 5
+            cellPadding: 6,
+            lineColor: [200, 200, 200],
+            lineWidth: 0.5
+          },
+          alternateRowStyles: {
+            fillColor: [248, 249, 250]
           },
           columnStyles: {
-            0: { cellWidth: 25 },
+            0: { cellWidth: 25, fontStyle: 'bold' },
             1: { cellWidth: 80 },
-            2: { cellWidth: 20, halign: 'center' },
+            2: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
             3: { cellWidth: 30, halign: 'right' },
-            4: { cellWidth: 30, halign: 'right' }
+            4: { cellWidth: 30, halign: 'right', fontStyle: 'bold' }
           },
           didDrawCell: (data) => {
             // Add product image to the description cell
@@ -454,47 +484,85 @@ const QuotationBuilderPage: React.FC = () => {
         });
       }
       
-      // Financial Summary
+      // Financial Summary with enhanced styling
       const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 20;
-      const summaryStartY = finalY + 20;
+      const summaryStartY = finalY + 25;
       
-      // Summary box
-      doc.setDrawColor(200, 200, 200);
-      doc.rect(pageWidth - 80, summaryStartY, 60, 40);
+      // Summary box with gradient effect
+      doc.setFillColor(248, 249, 250); // Light background
+      doc.setDrawColor(220, 38, 38); // Red border
+      doc.setLineWidth(1.5);
+      doc.rect(pageWidth - 85, summaryStartY, 65, 50, 'FD');
       
+      // Add header for summary
+      doc.setFillColor(220, 38, 38);
+      doc.rect(pageWidth - 85, summaryStartY, 65, 12, 'F');
+      doc.setTextColor(255, 255, 255);
       doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SUMMARY', pageWidth - 52.5, summaryStartY + 8, { align: 'center' });
+      
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text('Subtotal:', pageWidth - 75, summaryStartY + 10);
-      doc.text(`$${quotation.total_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, summaryStartY + 10, { align: 'right' });
+      
+      doc.text('Subtotal:', pageWidth - 80, summaryStartY + 22);
+      doc.text(`€${quotation.total_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, summaryStartY + 22, { align: 'right' });
       
       if (quotation.discount_percentage > 0) {
-        doc.text(`Discount (${quotation.discount_percentage}%):`, pageWidth - 75, summaryStartY + 20);
+        doc.setTextColor(220, 38, 38); // Red for discount
+        doc.text(`Discount (${quotation.discount_percentage}%):`, pageWidth - 80, summaryStartY + 32);
         const discountAmount = (quotation.total_amount * quotation.discount_percentage / 100) || 0;
-        doc.text(`-$${discountAmount.toFixed(2)}`, pageWidth - 25, summaryStartY + 20, { align: 'right' });
+        doc.text(`-€${discountAmount.toFixed(2)}`, pageWidth - 25, summaryStartY + 32, { align: 'right' });
+        doc.setTextColor(0, 0, 0); // Reset color
       }
       
+      // Total with emphasis
       doc.setFont('helvetica', 'bold');
-      doc.text('Total:', pageWidth - 75, summaryStartY + 30);
-      doc.text(`$${quotation.final_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, summaryStartY + 30, { align: 'right' });
+      doc.setFontSize(12);
+      doc.setTextColor(220, 38, 38);
+      const totalY = quotation.discount_percentage > 0 ? summaryStartY + 42 : summaryStartY + 32;
+      doc.text('TOTAL:', pageWidth - 80, totalY);
+      doc.text(`€${quotation.final_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, totalY, { align: 'right' });
       
-      // Notes
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+      
+      // Notes with enhanced styling
       if (quotation.notes) {
-        const notesY = summaryStartY + 50;
+        const notesY = summaryStartY + 65;
+        
+        // Notes header with background
+        doc.setFillColor(248, 249, 250);
+        doc.setDrawColor(220, 38, 38);
+        doc.setLineWidth(1);
+        doc.rect(20, notesY - 5, pageWidth - 40, 8, 'FD');
+        
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text('Notes:', 20, notesY);
+        doc.setTextColor(220, 38, 38);
+        doc.text('Notes:', 25, notesY);
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        const splitNotes = doc.splitTextToSize(quotation.notes, pageWidth - 40);
-        doc.text(splitNotes, 20, notesY + 10);
+        doc.setTextColor(0, 0, 0);
+        const splitNotes = doc.splitTextToSize(quotation.notes, pageWidth - 50);
+        doc.text(splitNotes, 25, notesY + 12);
       }
       
-      // Footer
+      // Enhanced Footer
+      doc.setFillColor(220, 38, 38);
+      doc.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+      
+      doc.setFontSize(10);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Thank you for choosing ChefPro Equipment!', pageWidth / 2, pageHeight - 15, { align: 'center' });
+      
       doc.setFontSize(8);
-      doc.setTextColor(128, 128, 128);
-      doc.text('Thank you for your business!', pageWidth / 2, pageHeight - 20, { align: 'center' });
-      doc.text('ChefPro Equipment - Professional Kitchen Solutions', pageWidth / 2, pageHeight - 15, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      doc.text('Professional Kitchen Solutions | www.chefpro.com | info@chefpro.com', pageWidth / 2, pageHeight - 8, { align: 'center' });
       
       // Save the PDF
       doc.save(`quotation-${quotation.quotation_number}.pdf`);
@@ -719,13 +787,8 @@ const QuotationBuilderPage: React.FC = () => {
     
     if (!quotation) return;
     
-    // If the quotation is in 'accepted' status, first change it to 'confirm_order'
+    // If the quotation is in 'accepted' status, proceed with the conversion
     if (quotation.status === 'accepted') {
-      updateQuotationStatus(quotationId, 'confirm_order');
-      alert('Quotation status updated to "Confirm Order". Click "Convert to Order" again to proceed with conversion.');
-    } 
-    // If it's already in 'confirm_order' status, proceed with the conversion
-    else if (quotation.status === 'confirm_order') {
       setQuotationToConvert(quotation);
       setIsOrderConfirmModalOpen(true);
     }
@@ -810,7 +873,7 @@ const QuotationBuilderPage: React.FC = () => {
   };
 
   const canConvertToOrder = (quotation: any) => {
-    return (quotation.status === 'accepted' || quotation.status === 'confirm_order') && !quotation.order_id;
+    return quotation.status === 'accepted' && !quotation.order_id;
   };
 
   const getStatusIcon = (status: string) => {
@@ -821,8 +884,6 @@ const QuotationBuilderPage: React.FC = () => {
         return <Send className="h-4 w-4" />;
       case 'accepted':
         return <CheckCircle className="h-4 w-4" />;
-      case 'confirm_order':
-        return <ShoppingCart className="h-4 w-4" />;
       case 'rejected':
         return <X className="h-4 w-4" />;
       case 'expired':
@@ -1070,7 +1131,7 @@ const QuotationBuilderPage: React.FC = () => {
                                 />
                               </div>
                               <div className="text-sm font-bold text-slate-800">
-                                ${(product.unit_price * product.quantity).toFixed(2)}
+                                €{(product.unit_price * product.quantity).toFixed(2)}
                               </div>
                               <Button
                                 type="button"
@@ -1089,7 +1150,7 @@ const QuotationBuilderPage: React.FC = () => {
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-slate-700">Subtotal ({selectedProducts.length} items):</span>
                             <span className="text-lg font-bold text-slate-800">
-                              ${selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0).toFixed(2)}
+                              €{selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0).toFixed(2)}
                             </span>
                           </div>
                         </div>
@@ -1138,14 +1199,14 @@ const QuotationBuilderPage: React.FC = () => {
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-600">Subtotal:</span>
                       <span className="font-medium text-slate-800">
-                        ${selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0).toFixed(2)}
+                        €{selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0).toFixed(2)}
                       </span>
                     </div>
                     {formData.discount_percentage > 0 && (
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-slate-600">Discount ({formData.discount_percentage}%):</span>
                         <span className="font-medium text-red-600">
-                          -${(selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0) * (formData.discount_percentage / 100)).toFixed(2)}
+                          -€{(selectedProducts.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0) * (formData.discount_percentage / 100)).toFixed(2)}
                         </span>
                       </div>
                     )}
@@ -1153,7 +1214,7 @@ const QuotationBuilderPage: React.FC = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold text-slate-800">Total Amount:</span>
                         <span className="text-xl font-bold text-green-600">
-                          ${calculateTotal().toFixed(2)}
+                          €{calculateTotal().toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -1312,7 +1373,7 @@ const QuotationBuilderPage: React.FC = () => {
                           <p className="text-sm text-slate-600 line-clamp-2 break-words leading-relaxed">{product.description}</p>
                           <div className="flex items-center justify-between">
                             <p className="text-xl font-bold text-green-600">
-                              ${product.price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                              €{product.price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                             </p>
                             {product.page_reference && (
                               <span className="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded">
@@ -1441,7 +1502,7 @@ const QuotationBuilderPage: React.FC = () => {
                       <div key={quotation.id} className="text-xs text-blue-600 bg-white p-2 rounded border">
                         <span className="font-medium">{quotation.quotation_number}</span> - 
                         <span className="capitalize">{quotation.status}</span> - 
-                        <span>${quotation.final_amount?.toFixed(2) || '0.00'}</span> - 
+                        <span>€{quotation.final_amount?.toFixed(2) || '0.00'}</span> - 
                         <span>{new Date(quotation.created_at).toLocaleDateString()}</span>
                       </div>
                     ))}
@@ -1581,11 +1642,11 @@ const QuotationBuilderPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1 mr-2">
                 <p className="text-sm font-medium text-slate-600 truncate mb-1">Total Value</p>
-                <p className="text-lg lg:text-2xl xl:text-3xl font-bold text-slate-900 group-hover:text-green-700 transition-colors" title={`$${quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
-                  ${quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                <p className="text-lg lg:text-2xl xl:text-3xl font-bold text-slate-900 group-hover:text-green-700 transition-colors" title={`€${quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
+                €{quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
                 <div className="text-xs text-slate-500 mt-1">
-                  Avg: ${quotations.length > 0 ? (quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0) / quotations.length).toFixed(0) : '0'}
+                  Avg: €{quotations.length > 0 ? (quotations.reduce((sum, q) => sum + (q.final_amount || 0), 0) / quotations.length).toFixed(0) : '0'}
                 </div>
               </div>
               <div className="bg-green-100 p-3 rounded-full group-hover:bg-green-200 transition-colors">
@@ -1805,7 +1866,7 @@ const QuotationBuilderPage: React.FC = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="font-semibold text-slate-900">
-                              ${quotation.final_amount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                              €{quotation.final_amount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                             </div>
                             {quotation.discount_percentage > 0 && (
                               <div className="text-xs text-green-600">
@@ -2053,7 +2114,7 @@ const QuotationBuilderPage: React.FC = () => {
                           <div className="min-w-0">
                             <div className="font-medium truncate">{product.name}</div>
                             <div className="text-sm text-gray-500 truncate">{product.page_reference === 'inoksan' ? product.supplier_code : product.code}</div>
-                            <div className="text-sm text-gray-600">${product.price?.toFixed(2)}</div>
+                            <div className="text-sm text-gray-600">€{product.price?.toFixed(2)}</div>
                           </div>
                         </div>
                         <div className="flex items-center justify-center sm:justify-end space-x-2 flex-shrink-0">
@@ -2245,10 +2306,10 @@ const QuotationBuilderPage: React.FC = () => {
                                 {item.quantity}
                               </td>
                               <td className="border border-gray-300 px-4 py-3 text-right font-mono text-base">
-                                ${(item.unit_price || 0).toFixed(2)}
+                                €{(item.unit_price || 0).toFixed(2)}
                               </td>
                               <td className="border border-gray-300 px-4 py-3 text-right font-mono font-bold text-base">
-                                ${(item.total_price || 0).toFixed(2)}
+                                €{(item.total_price || 0).toFixed(2)}
                               </td>
                             </tr>
                           ))}
@@ -2272,17 +2333,17 @@ const QuotationBuilderPage: React.FC = () => {
                         <div className="space-y-3">
                           <div className="flex justify-between text-sm sm:text-base">
                             <span>Subtotal:</span>
-                            <span className="font-mono font-semibold">${(viewingQuotation.total_amount || 0).toFixed(2)}</span>
+                            <span className="font-mono font-semibold">€{(viewingQuotation.total_amount || 0).toFixed(2)}</span>
                           </div>
                           {viewingQuotation.discount_percentage > 0 && (
                             <div className="flex justify-between text-sm sm:text-base text-red-600">
                               <span>Discount ({viewingQuotation.discount_percentage}%):</span>
-                              <span className="font-mono font-semibold">-${((viewingQuotation.total_amount * viewingQuotation.discount_percentage / 100) || 0).toFixed(2)}</span>
+                              <span className="font-mono font-semibold">-€{((viewingQuotation.total_amount * viewingQuotation.discount_percentage / 100) || 0).toFixed(2)}</span>
                             </div>
                           )}
                           <div className="border-t pt-3 flex justify-between font-bold text-lg sm:text-xl">
                             <span>Total:</span>
-                            <span className="font-mono text-green-600">${(viewingQuotation.final_amount || 0).toFixed(2)}</span>
+                            <span className="font-mono text-green-600">€{(viewingQuotation.final_amount || 0).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -2478,7 +2539,7 @@ const QuotationBuilderPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Amount:</span>
-                  <span>${quotationToConvert.final_amount?.toLocaleString() || 0}</span>
+                  <span>€{quotationToConvert.final_amount?.toLocaleString() || 0}</span>
                 </div>
               </div>
             )}
@@ -2600,7 +2661,7 @@ const QuotationBuilderPage: React.FC = () => {
                     q.quotation_number,
                     q.client?.company_name || 'N/A',
                     q.status?.toUpperCase(),
-                    `$${q.final_amount?.toFixed(2) || '0.00'}`,
+                    `€${q.final_amount?.toFixed(2) || '0.00'}`,
                     new Date(q.created_at).toLocaleDateString()
                   ]);
                   
@@ -2617,7 +2678,7 @@ const QuotationBuilderPage: React.FC = () => {
                   
                   doc.setFontSize(14);
                   doc.text(`Total Quotations: ${filteredData.length}`, 20, finalY);
-                  doc.text(`Total Value: $${totalAmount.toFixed(2)}`, 20, finalY + 10);
+                  doc.text(`Total Value: €${totalAmount.toFixed(2)}`, 20, finalY + 10);
                   
                   doc.save(`quotation-report-${reportData.reportType}-${new Date().toISOString().split('T')[0]}.pdf`);
                   setIsReportsModalOpen(false);
@@ -2690,15 +2751,15 @@ const QuotationBuilderPage: React.FC = () => {
               <div className="space-y-1 text-sm sm:text-base">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span className="font-mono">${(calculatorData.basePrice * calculatorData.quantity).toFixed(2)}</span>
+                  <span className="font-mono">€{(calculatorData.basePrice * calculatorData.quantity).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Discount:</span>
-                  <span className="font-mono text-red-600">-${((calculatorData.basePrice * calculatorData.quantity * calculatorData.discount) / 100).toFixed(2)}</span>
+                  <span className="font-mono text-red-600">-€{((calculatorData.basePrice * calculatorData.quantity * calculatorData.discount) / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax:</span>
-                  <span className="font-mono">${(((calculatorData.basePrice * calculatorData.quantity) - ((calculatorData.basePrice * calculatorData.quantity * calculatorData.discount) / 100)) * calculatorData.tax / 100).toFixed(2)}</span>
+                  <span className="font-mono">€{(((calculatorData.basePrice * calculatorData.quantity) - ((calculatorData.basePrice * calculatorData.quantity * calculatorData.discount) / 100)) * calculatorData.tax / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-base sm:text-lg border-t pt-1">
                   <span>Total:</span>
@@ -2760,7 +2821,7 @@ const QuotationBuilderPage: React.FC = () => {
                 <div className="text-sm font-medium">{quotationToConvert.quotation_number}</div>
                 <div className="text-sm text-gray-600">{quotationToConvert.client?.company_name}</div>
                 <div className="text-sm font-medium text-green-600">
-                  ${quotationToConvert.final_amount?.toFixed(2) || '0.00'}
+                  €{quotationToConvert.final_amount?.toFixed(2) || '0.00'}
                 </div>
               </div>
             )}

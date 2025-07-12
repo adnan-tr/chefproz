@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import { PageConfigProvider } from './contexts/PageConfigContext';
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
 import HomePage from './pages/HomePage';
@@ -24,6 +25,8 @@ import QuotationBuilderPage from './pages/admin/QuotationBuilderPage';
 import QuotationEditPage from './pages/admin/QuotationEditPage';
 import ServicesPage from './pages/admin/ServicesPage';
 import SetupServicesPage from './pages/admin/SetupServicesPage';
+import PageManagementPage from './pages/admin/PageManagementPage';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 const AppContent: React.FC = () => {
@@ -69,6 +72,7 @@ const AppContent: React.FC = () => {
               <Route path="quotations/edit/:id" element={<QuotationEditPage />} />
               <Route path="services" element={<ServicesPage />} />
               <Route path="setup-services" element={<SetupServicesPage />} />
+              <Route path="page-management" element={<PageManagementPage />} />
             </Route>
       </Routes>
     </div>
@@ -77,11 +81,15 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </LanguageProvider>
+    <ErrorBoundary>
+      <PageConfigProvider>
+        <LanguageProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </LanguageProvider>
+      </PageConfigProvider>
+    </ErrorBoundary>
   );
 }
 

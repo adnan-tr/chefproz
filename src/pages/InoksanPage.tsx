@@ -5,12 +5,14 @@ import { ProductModal } from '@/components/product/ProductModal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageConfig } from '@/contexts/PageConfigContext';
 import { Product } from '@/types';
 import { Search, X } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 
 const InoksanPage: React.FC = () => {
   const { t } = useLanguage();
+  const { isPageActive, shouldShowPrices } = usePageConfig();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +20,22 @@ const InoksanPage: React.FC = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Get current page status
+  const pageActive = isPageActive('inoksan');
+  const showPrices = shouldShowPrices('inoksan');
+
+  // Check if page is active
+  if (!pageActive) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-slate-800 mb-4">Page Not Available</h1>
+          <p className="text-slate-600">This page is currently disabled.</p>
+        </div>
+      </div>
+    );
+  }
 
 
   useEffect(() => {
@@ -62,18 +80,35 @@ const InoksanPage: React.FC = () => {
   };
 
   const filteredProducts = useMemo(() => {
-    // First filter the products
-    const filtered = products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-      const matchesSubcategory = selectedSubcategory === 'all' || product.subcategory === selectedSubcategory;
+    try {
+      // First filter the products
+      const filtered = products.filter(product => {
+        if (!product) return false;
+        
+        const productName = (product.name || '').toLowerCase();
+        const productDescription = (product.description || '').toLowerCase();
+        const productCode = (product.code || '').toLowerCase();
+        const productSupplierCode = (product.supplier_code || '').toLowerCase();
+        const searchTermLower = searchTerm.toLowerCase().trim();
+        
+        const matchesSearch = searchTermLower === '' || 
+                             productName.includes(searchTermLower) ||
+                             productDescription.includes(searchTermLower) ||
+                             productCode.includes(searchTermLower) ||
+                             productSupplierCode.includes(searchTermLower);
+        
+        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+        const matchesSubcategory = selectedSubcategory === 'all' || product.subcategory === selectedSubcategory;
+        
+        return matchesSearch && matchesCategory && matchesSubcategory;
+      });
       
-      return matchesSearch && matchesCategory && matchesSubcategory;
-    });
-    
-    // Then shuffle the filtered results
-    return shuffleArray(filtered);
+      // Then shuffle the filtered results
+      return shuffleArray(filtered);
+    } catch (error) {
+      console.error('Error filtering products:', error);
+      return products;
+    }
   }, [products, searchTerm, selectedCategory, selectedSubcategory]);
 
   const handleViewDetails = (product: Product) => {
@@ -161,6 +196,7 @@ const InoksanPage: React.FC = () => {
                   product={product}
                   onViewDetails={handleViewDetails}
                   className="elegant-card"
+                  showPrices={showPrices}
                 />
               ))}
             </div>

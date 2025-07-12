@@ -232,7 +232,7 @@ const AdminDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-1 min-w-0 flex-1">
                 <p className="text-xs font-medium text-slate-600 truncate">Total Revenue</p>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900">${stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">€{stats.totalRevenue.toLocaleString()}</p>
                 <p className="text-xs text-green-600 font-medium">From orders</p>
               </div>
               <div className="p-2 sm:p-3 rounded-xl bg-emerald-50 shadow-sm flex-shrink-0">
@@ -322,7 +322,7 @@ const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0 ml-2">
-                      <p className="text-xs lg:text-sm font-medium text-slate-900">${order.final_amount?.toLocaleString() || 0}</p>
+                      <p className="text-xs lg:text-sm font-medium text-slate-900">€{order.final_amount?.toLocaleString() || 0}</p>
                       <p className="text-xs text-slate-500">{new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>

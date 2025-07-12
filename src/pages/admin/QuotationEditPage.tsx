@@ -352,7 +352,7 @@ const QuotationEditPage: React.FC = () => {
                               <TableRow key={product.id}>
                                 <TableCell>{product.name}</TableCell>
                                 <TableCell>{product.category}</TableCell>
-                                <TableCell>${product.price.toFixed(2)}</TableCell>
+                                <TableCell>€{product.price.toFixed(2)}</TableCell>
                                 <TableCell>
                                   <Button size="sm" onClick={() => addProduct(product)}>
                                     Add
@@ -391,8 +391,8 @@ const QuotationEditPage: React.FC = () => {
                             className="w-20"
                           />
                         </TableCell>
-                        <TableCell>${item.unit_price.toFixed(2)}</TableCell>
-                        <TableCell>${item.total_price.toFixed(2)}</TableCell>
+                        <TableCell>€{item.unit_price.toFixed(2)}</TableCell>
+                        <TableCell>€{item.total_price.toFixed(2)}</TableCell>
                         <TableCell>
                           <Button
                             variant="outline"
@@ -441,15 +441,15 @@ const QuotationEditPage: React.FC = () => {
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>${calculateSubtotal().toFixed(2)}</span>
+                  <span>€{calculateSubtotal().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Discount ({formData.discount}%):</span>
-                  <span>-${(calculateSubtotal() * formData.discount / 100).toFixed(2)}</span>
+                  <span>-€{(calculateSubtotal() * formData.discount / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold border-t pt-2">
                   <span>Total:</span>
-                  <span>${calculateFinalAmount().toFixed(2)}</span>
+                  <span>€{calculateFinalAmount().toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>

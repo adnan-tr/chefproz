@@ -32,6 +32,7 @@ const AdminLayout: React.FC = () => {
     { name: 'Image Manager', href: '/secure-mgmt-portal-x7f9q2/images', icon: Image },
     { name: 'Product Manager', href: '/secure-mgmt-portal-x7f9q2/products', icon: Package },
     { name: 'Services', href: '/secure-mgmt-portal-x7f9q2/services', icon: Utensils },
+    { name: 'Page Management', href: '/secure-mgmt-portal-x7f9q2/page-management', icon: Settings },
     { name: 'Portal Users', href: '/secure-mgmt-portal-x7f9q2/users', icon: Users },
     { name: 'Quotation Builder', href: '/secure-mgmt-portal-x7f9q2/quotations', icon: FileText },
   ];

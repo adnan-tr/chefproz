@@ -258,11 +258,11 @@ const OrderEditPage: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Total Amount</Label>
-                <Input value={`$${order.total_amount.toLocaleString()}`} disabled />
+                <Input value={`€${order.total_amount.toLocaleString()}`} disabled />
               </div>
               <div>
                 <Label>Final Amount</Label>
-                <Input value={`$${order.final_amount.toLocaleString()}`} disabled />
+                <Input value={`€${order.final_amount.toLocaleString()}`} disabled />
               </div>
             </div>
           </CardContent>
@@ -451,7 +451,7 @@ const OrderEditPage: React.FC = () => {
                   <div className="flex-1">
                     <h4 className="font-medium">{item.product_name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Quantity: {item.quantity} × ${item.unit_price.toLocaleString()}
+                      Quantity: {item.quantity} × €{item.unit_price.toLocaleString()}
                     </p>
                     {item.discount_percentage > 0 && (
                       <p className="text-sm text-green-600">
@@ -460,14 +460,14 @@ const OrderEditPage: React.FC = () => {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">${item.total_price.toLocaleString()}</p>
+                    <p className="font-medium">€{item.total_price.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
               <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between items-center font-medium">
                   <span>Total Amount:</span>
-                  <span>${order.final_amount.toLocaleString()}</span>
+                  <span>€{order.final_amount.toLocaleString()}</span>
                 </div>
               </div>
             </div>

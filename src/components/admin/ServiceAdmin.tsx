@@ -328,7 +328,7 @@ export default function ServiceAdmin() {
                     <Input
                       id="title"
                       name="title"
-                      value={currentService.title}
+                      value={currentService.title || ''}
                       onChange={handleInputChange}
                       placeholder="Service Title"
                       required
@@ -339,7 +339,7 @@ export default function ServiceAdmin() {
                     <Input
                       id="service_id"
                       name="service_id"
-                      value={currentService.service_id}
+                      value={currentService.service_id || ''}
                       onChange={handleInputChange}
                       placeholder="service-id"
                       disabled={isEditing}
@@ -353,7 +353,7 @@ export default function ServiceAdmin() {
                   <Textarea
                     id="description"
                     name="description"
-                    value={currentService.description}
+                    value={currentService.description || ''}
                     onChange={handleInputChange}
                     placeholder="Service description"
                     rows={3}
@@ -367,19 +367,19 @@ export default function ServiceAdmin() {
                     <Input
                       id="timeline"
                       name="timeline"
-                      value={currentService.timeline}
+                      value={currentService.timeline || ''}
                       onChange={handleInputChange}
                       placeholder="e.g. 2-3 weeks"
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="starting_price">Starting Price ($)</Label>
+                    <Label htmlFor="starting_price">Starting Price (€)</Label>
                     <Input
                       id="starting_price"
                       name="starting_price"
                       type="number"
-                      value={currentService.starting_price}
+                      value={currentService.starting_price || ''}
                       onChange={handleInputChange}
                       placeholder="0"
                       min="0"
@@ -408,7 +408,7 @@ export default function ServiceAdmin() {
                     <Input
                       id="image"
                       name="image"
-                      value={currentService.image}
+                      value={currentService.image || ''}
                       onChange={handleInputChange}
                       placeholder="/images/services/example.jpg"
                     />
@@ -432,7 +432,7 @@ export default function ServiceAdmin() {
                     {currentService.included_services.map((service, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <Input
-                          value={service}
+                          value={service || ''}
                           onChange={(e) => handleEditIncludedService(index, e.target.value)}
                           placeholder="Service item"
                         />
@@ -449,7 +449,7 @@ export default function ServiceAdmin() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Input
-                      value={includedService}
+                      value={includedService || ''}
                       onChange={(e) => setIncludedService(e.target.value)}
                       placeholder="Add new service item"
                     />
@@ -532,7 +532,7 @@ export default function ServiceAdmin() {
                   services.map((service) => (
                     <TableRow key={service.id}>
                       <TableCell className="font-medium truncate">{service.title}</TableCell>
-                      <TableCell className="truncate">${service.starting_price.toLocaleString()}</TableCell>
+                      <TableCell className="truncate">€{service.starting_price.toLocaleString()}</TableCell>
                       <TableCell className="truncate">{service.timeline}</TableCell>
                       <TableCell>
                         {service.is_active ? (

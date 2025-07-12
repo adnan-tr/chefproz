@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePageConfig } from '@/contexts/PageConfigContext';
 import { 
   CheckCircle, 
   Clock, 
@@ -37,9 +38,27 @@ interface Service {
 
 const SpecialRequestPage: React.FC = () => {
   const { t } = useLanguage();
+  const { isPageActive, shouldShowPrices } = usePageConfig();
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Get current page status
+  const pageActive = isPageActive('special-requests');
+  const showPrices = shouldShowPrices('special-requests');
+
+  // Check if page is active
+  if (!pageActive) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-slate-800 mb-4">Page Not Available</h1>
+          <p className="text-slate-600">This page is currently disabled.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Map icon strings to Lucide icon components
   const iconMap: Record<string, React.ElementType> = {
@@ -126,12 +145,14 @@ const SpecialRequestPage: React.FC = () => {
                       <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                         <Icon className="h-6 w-6 text-blue-600" />
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500">{t('special_request.starting_from')}</div>
-                        <div className="text-lg font-bold text-green-600">
-                          ${service.starting_price.toLocaleString()}
+                      {showPrices && (
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500">{t('special_request.starting_from')}</div>
+                          <div className="text-lg font-bold text-green-600">
+                            €{service.starting_price.toLocaleString()}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                     <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
                       {service.title}

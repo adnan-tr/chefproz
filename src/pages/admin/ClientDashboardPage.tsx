@@ -431,7 +431,7 @@ const ClientDashboardPage: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="p-2">
-            <div className="text-2xl font-bold">${totalStats.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">€{totalStats.totalValue.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
@@ -449,7 +449,7 @@ const ClientDashboardPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-green-600">
-            ${((window as any).totalQuotationValue || 0).toLocaleString()}
+            €{((window as any).totalQuotationValue || 0).toLocaleString()}
           </div>
           <p className="text-sm text-muted-foreground mt-2">
             Based on {totalStats.totalQuotations} quotations
@@ -564,7 +564,7 @@ const ClientDashboardPage: React.FC = () => {
                       <TableCell className="text-center hidden sm:table-cell">
                         <Badge variant="default">{client.total_orders}</Badge>
                       </TableCell>
-                      <TableCell className="truncate">${client.total_value.toLocaleString()}</TableCell>
+                      <TableCell className="truncate">€{client.total_value.toLocaleString()}</TableCell>
                       <TableCell className="truncate hidden lg:table-cell">
                         {new Date(client.last_activity).toLocaleDateString()}
                       </TableCell>
@@ -747,7 +747,7 @@ const ClientDashboardPage: React.FC = () => {
                     <CardTitle className="text-sm">Total Value</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">${selectedClient.total_value.toLocaleString()}</div>
+                    <div className="text-2xl font-bold">€{selectedClient.total_value.toLocaleString()}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -817,7 +817,7 @@ const ClientDashboardPage: React.FC = () => {
                               </div>
                               <div className="text-right">
                                 <div className="font-semibold text-slate-900">
-                                  ${order.final_amount?.toLocaleString() || '0'}
+                                  €{order.final_amount?.toLocaleString() || '0'}
                                 </div>
                               </div>
                             </div>
@@ -920,7 +920,7 @@ const ClientDashboardPage: React.FC = () => {
                               </div>
                               <div className="text-sm">{quotation.title}</div>
                               <div className="flex justify-between items-center mt-1">
-                                <span className="font-medium">${quotation.final_amount?.toLocaleString() || 0}</span>
+                                <span className="font-medium">€{quotation.final_amount?.toLocaleString() || 0}</span>
                                 <Badge variant={quotation.status === 'accepted' ? 'default' : 'outline'}>
                                   {quotation.status}
                                 </Badge>
@@ -952,7 +952,7 @@ const ClientDashboardPage: React.FC = () => {
                               </div>
                               <div className="text-sm">{order.title}</div>
                               <div className="flex justify-between items-center mt-1">
-                                <span className="font-medium">${order.final_amount?.toLocaleString() || 0}</span>
+                                <span className="font-medium">€{order.final_amount?.toLocaleString() || 0}</span>
                                 <Badge variant="default">Confirmed</Badge>
                               </div>
                             </div>

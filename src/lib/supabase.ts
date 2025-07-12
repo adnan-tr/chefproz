@@ -117,19 +117,19 @@ export const dbService = {
   },
 
   async createProduct(product: any) {
-    const { data, error } = await supabase.from('products').insert(product).select().single();
+    const { data, error } = await supabaseAdmin.from('products').insert(product).select().single();
     if (error) throw error;
     return data;
   },
 
   async updateProduct(id: string, updates: any) {
-    const { data, error } = await supabase.from('products').update(updates).eq('id', id).select().single();
+    const { data, error } = await supabaseAdmin.from('products').update(updates).eq('id', id).select().single();
     if (error) throw error;
     return data;
   },
 
   async deleteProduct(id: string) {
-    const { error } = await supabase.from('products').delete().eq('id', id);
+    const { error } = await supabaseAdmin.from('products').delete().eq('id', id);
     if (error) throw error;
     return true;
   },
@@ -269,7 +269,7 @@ export const dbService = {
   },
 
   async addQuotation(quotation: any) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quotations')
       .insert(quotation)
       .select('*')
@@ -394,25 +394,25 @@ export const dbService = {
 
   // UI Images
   async getUIImages() {
-    const { data, error } = await supabase.from('ui_images').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabaseAdmin.from('ui_images').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     return data;
   },
 
   async createUIImage(image: any) {
-    const { data, error } = await supabase.from('ui_images').insert(image).select().single();
+    const { data, error } = await supabaseAdmin.from('ui_images').insert(image).select().single();
     if (error) throw error;
     return data;
   },
 
   async updateUIImage(id: string, updates: any) {
-    const { data, error } = await supabase.from('ui_images').update(updates).eq('id', id).select().single();
+    const { data, error } = await supabaseAdmin.from('ui_images').update(updates).eq('id', id).select().single();
     if (error) throw error;
     return data;
   },
 
   async deleteUIImage(id: string) {
-    const { error } = await supabase.from('ui_images').delete().eq('id', id);
+    const { error } = await supabaseAdmin.from('ui_images').delete().eq('id', id);
     if (error) throw error;
     return true;
   },
@@ -472,6 +472,36 @@ export const dbService = {
     return true;
   },
 
+  async generateOrderNumber() {
+    // Get all existing orders to find the highest order number
+    const { data: orders, error } = await supabaseAdmin
+      .from('orders')
+      .select('order_number')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    let maxNumber = 0;
+    if (orders && orders.length > 0) {
+      orders.forEach(order => {
+        if (order.order_number) {
+          // Extract the numeric part from the order number (e.g., "ORD-001" -> 1)
+          const match = order.order_number.match(/ORD-(\d+)/);
+          if (match && match[1]) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNumber) {
+              maxNumber = num;
+            }
+          }
+        }
+      });
+    }
+    
+    // Generate next order number
+    const nextNumber = maxNumber + 1;
+    return `ORD-${nextNumber.toString().padStart(3, '0')}`;
+  },
+
   async convertQuotationToOrder(quotationId: string) {
     // Get quotation with items
     const quotation = await this.getQuotationById(quotationId);
@@ -479,9 +509,13 @@ export const dbService = {
     
     if (!quotation) throw new Error('Quotation not found');
     
+    // Generate order number
+    const orderNumber = await this.generateOrderNumber();
+    
     // Create order
     const orderData = {
       quotation_id: quotationId,
+      order_number: orderNumber,
       client_id: quotation.client_id,
       title: quotation.title,
       total_amount: quotation.total_amount,
@@ -490,6 +524,7 @@ export const dbService = {
       payment_status: 'pending',
       supplier_status: 'pending',
       shipment_status: 'pending',
+      order_date: new Date().toISOString(),
       notes: quotation.notes
     };
     
@@ -558,7 +593,7 @@ export const dbService = {
 
   // Quotation Templates
   async getQuotationTemplates() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quotation_templates')
       .select('*')
       .eq('is_active', true)
@@ -568,7 +603,7 @@ export const dbService = {
   },
 
   async createQuotationTemplate(template: any) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quotation_templates')
       .insert(template)
       .select('*')
@@ -578,7 +613,7 @@ export const dbService = {
   },
 
   async updateQuotationTemplate(id: string, updates: any) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quotation_templates')
       .update(updates)
       .eq('id', id)
@@ -589,7 +624,7 @@ export const dbService = {
   },
 
   async deleteQuotationTemplate(id: string) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quotation_templates')
       .update({ is_active: false })
       .eq('id', id)
@@ -626,7 +661,7 @@ export const dbService = {
 
   // Analytics
   async getOrderAnalytics() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('order_analytics')
       .select('*')
       .limit(12);
@@ -635,7 +670,7 @@ export const dbService = {
   },
 
   async getQuotationStats() {
-    const { data: quotations, error } = await supabase
+    const { data: quotations, error } = await supabaseAdmin
       .from('quotations')
       .select('status');
     
@@ -656,7 +691,7 @@ export const dbService = {
   },
 
   async getOrderStats() {
-    const { data: orders, error } = await supabase
+    const { data: orders, error } = await supabaseAdmin
       .from('orders')
       .select('order_status, final_amount');
     
@@ -675,7 +710,7 @@ export const dbService = {
   
   // Services for Special Request Page
   async getServices(activeOnly: boolean = true) {
-    let query = supabase.from('services').select('*');
+    let query = supabaseAdmin.from('services').select('*');
     
     if (activeOnly) {
       query = query.eq('is_active', true);
@@ -687,7 +722,7 @@ export const dbService = {
   },
   
   async getServiceById(id: string) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('services')
       .select('*')
       .eq('id', id)
@@ -697,7 +732,7 @@ export const dbService = {
   },
   
   async getServiceByServiceId(serviceId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('services')
       .select('*')
       .eq('service_id', serviceId)
@@ -707,7 +742,7 @@ export const dbService = {
   },
   
   async createService(service: any) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('services')
       .insert(service)
       .select('*')
@@ -717,7 +752,7 @@ export const dbService = {
   },
   
   async updateService(id: string, updates: any) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('services')
       .update(updates)
       .eq('id', id)
@@ -729,7 +764,7 @@ export const dbService = {
   
   async deleteService(id: string) {
     // Soft delete by setting is_active to false
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('services')
       .update({ is_active: false })
       .eq('id', id)
@@ -741,7 +776,7 @@ export const dbService = {
   
   async hardDeleteService(id: string) {
     // Hard delete - permanently removes the service
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('services')
       .delete()
       .eq('id', id);
