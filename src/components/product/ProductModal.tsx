@@ -53,7 +53,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           {/* Product Image */}
           <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden">
             <img
-              src={product.image_url || '/api/placeholder/400/400'}
+              src={product.image_url || '/placeholder-product.svg'}
               alt={product.name}
               className="w-full h-full object-cover"
             />

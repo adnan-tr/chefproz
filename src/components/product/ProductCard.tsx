@@ -36,7 +36,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         
         <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200">
           <img
-            src={product.image_url || '/api/placeholder/300/300'}
+            src={product.image_url || '/placeholder-product.svg'}
             alt={product.name}
             className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-2"
           />

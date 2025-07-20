@@ -73,7 +73,7 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mr-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"

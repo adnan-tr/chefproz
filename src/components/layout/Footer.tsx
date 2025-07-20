@@ -8,10 +8,10 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="footer-gradient text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Company Info */}
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1 sm:col-span-2 md:col-span-2">
             <Link to="/" className="flex items-center space-x-3 mb-6 group">
               <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
                 <ChefHat className="h-8 w-8 text-white" />
@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-white">{t('footer.email')}</p>
-                  <p className="text-slate-300 text-sm">info@chefgear.com</p>
+                  <p className="text-slate-300 text-sm">{t('footer.email_address', 'info@chefgear.com')}</p>
                 </div>
               </div>
             </div>
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-white">{t('footer.phone')}</p>
-                  <p className="text-slate-300 text-sm">+90 (212) 555-1234</p>
+                  <p className="text-slate-300 text-sm">{t('footer.phone_number', '+90 (212) 555-1234')}</p>
                 </div>
               </div>
               
@@ -77,9 +77,9 @@ const Footer: React.FC = () => {
                 <div>
                   <p className="font-medium text-white">{t('footer.address')}</p>
                   <p className="text-slate-300 text-sm">
-                    Atatürk Mah. Ertuğrul Gazi Sok.<br />
-                    No: 25, Kat: 3<br />
-                    34758 Ataşehir/İstanbul
+                    {t('footer.address_line1', 'Atatürk Mah. Ertuğrul Gazi Sok.')}<br />
+                    {t('footer.address_line2', 'No: 25, Kat: 3')}<br />
+                    {t('footer.address_line3', '34758 Ataşehir/İstanbul')}
                   </p>
                 </div>
               </div>
@@ -87,12 +87,12 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-600 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-slate-600 mt-8 sm:mt-12 pt-6 sm:pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center">
             <p className="text-slate-400 text-sm">
               &copy; {t('footer.copyright_year')}. {t('footer.rights')}
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 mt-4 sm:mt-0">
               <a href="#" className="text-slate-400 hover:text-red-400 text-sm transition-colors duration-300">{t('footer.privacy_policy')}</a>
               <a href="#" className="text-slate-400 hover:text-red-400 text-sm transition-colors duration-300">{t('footer.terms_of_service')}</a>
               <a href="#" className="text-slate-400 hover:text-red-400 text-sm transition-colors duration-300">{t('footer.cookie_policy')}</a>

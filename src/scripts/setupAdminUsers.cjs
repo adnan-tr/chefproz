@@ -24,35 +24,17 @@ async function setupAdminUsers() {
 
     console.log('Inserting sample admin users data...');
     
-    // Sample admin users data using allowed roles: 'editor' and 'viewer'
-    const sampleUsers = [
-      {
-        name: 'Content Editor',
-        email: 'editor@chefpro.com',
-        role: 'editor',
-        status: 'active',
-        last_login: new Date().toISOString()
-      },
-      {
-        name: 'Content Viewer',
-        email: 'viewer@chefpro.com',
-        role: 'viewer',
-        status: 'active',
-        last_login: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-      },
-      {
-        name: 'Senior Editor',
-        email: 'senior.editor@chefpro.com',
-        role: 'editor',
-        status: 'active',
-        last_login: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 1 week ago
-      }
-    ];
-
+    // No sample data - admin users should be created manually through proper authentication
+    console.log('Admin users table is ready. Create admin users through proper authentication flow.');
+    
     const { data, error } = await supabase
       .from('admin_users')
-      .insert(sampleUsers)
-      .select();
+      .select('count');
+    
+    if (error) {
+      console.error('❌ Error checking admin users table:', error.message);
+      return;
+    }
 
     if (error) {
       console.error('❌ Error setting up admin users:', error.message);

@@ -7,33 +7,7 @@ const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 // Create Supabase client with service role key to bypass RLS
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// Portal users sample data
-const portalUsersData = [
-  {
-    email: 'admin@chefpro.com',
-    full_name: 'Admin User',
-    role: 'admin',
-    is_active: true,
-    last_login: new Date().toISOString(),
-    permissions: ['read', 'write', 'delete', 'admin']
-  },
-  {
-    email: 'manager@chefpro.com',
-    full_name: 'Manager User',
-    role: 'manager',
-    is_active: true,
-    last_login: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    permissions: ['read', 'write']
-  },
-  {
-    email: 'user@chefpro.com',
-    full_name: 'Regular User',
-    role: 'user',
-    is_active: true,
-    last_login: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-    permissions: ['read']
-  }
-];
+// Portal users table setup - no sample data
 
 async function setupPortalUsers() {
   try {
@@ -61,22 +35,13 @@ async function setupPortalUsers() {
       console.log('Note: Could not clear existing data (table might not exist yet):', deleteError.message);
     }
     
-    // Insert portal users data
-    console.log('Inserting portal users data...');
-    const { data, error } = await supabase
+    // Check if table exists and is accessible
+    const { count, error } = await supabase
       .from('portal_users')
-      .insert(portalUsersData)
-      .select();
+      .select('count');
     
-    if (error) {
-      throw error;
-    }
-    
-    console.log('✅ Portal users setup completed successfully!');
-    console.log(`Inserted ${data.length} portal users:`);
-    data.forEach(user => {
-      console.log(`- ${user.full_name} (${user.email}) - ${user.role}`);
-    });
+    console.log('✅ Portal users table setup completed successfully!');
+    console.log('No sample data inserted - portal users should be created through proper registration flow.');
     
   } catch (error) {
     console.error('❌ Error setting up portal users:', error.message);

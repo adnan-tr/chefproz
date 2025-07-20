@@ -227,33 +227,37 @@ const HomePage: React.FC = () => {
         backgroundRepeat: 'no-repeat'
       }}>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-          <div className="text-left max-w-2xl">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 h-full flex flex-col justify-between">
+          <div className="text-left max-w-2xl pt-8 sm:pt-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {t('hero.title')}
             </h1>
             <p className="text-lg md:text-xl mb-8 opacity-90 leading-relaxed">
               {t('hero.subtitle')}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+          </div>
+          
+          {/* CTA Buttons positioned at bottom left on mobile, normal position on larger screens */}
+          <div className="absolute bottom-6 left-4 sm:relative sm:bottom-auto sm:left-auto sm:max-w-2xl">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button
-                size="lg"
-                className="btn-primary px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl"
+                size="sm"
+                className="btn-primary px-4 py-2 text-sm font-semibold shadow-lg hover:shadow-xl sm:px-8 sm:py-4 sm:text-lg w-fit"
                 asChild
               >
                 <Link to="/contact">
                   {t('hero.cta')}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-3 w-3 sm:h-5 sm:w-5" />
                 </Link>
               </Button>
               <Button
-                size="lg"
-                className="btn-secondary px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl"
+                size="sm"
+                className="btn-secondary px-4 py-2 text-sm font-semibold shadow-lg hover:shadow-xl sm:px-8 sm:py-4 sm:text-lg w-fit"
                 asChild
               >
                 <Link to="/special-request">
                   {t('hero.services', 'View Services')}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-3 w-3 sm:h-5 sm:w-5" />
                 </Link>
               </Button>
             </div>
@@ -369,7 +373,7 @@ const HomePage: React.FC = () => {
               <p className="text-slate-600">{t('gallery.no_images', 'No images found. Add images to the \'trans\' folder in Supabase storage.')}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               {transformationImages.reduce((pairs: any[], image, index) => {
                 if (index % 2 === 0) {
                   const beforeImage = image;
@@ -442,7 +446,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (

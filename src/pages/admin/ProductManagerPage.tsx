@@ -534,13 +534,13 @@ const ProductManagerPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
                   <div className="w-full sm:w-16 lg:w-20 h-16 lg:h-20 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                     <img
-                      src={product.image_url || '/api/placeholder/80/80'}
+                      src={product.image_url || '/placeholder-product.svg'}
                       alt={product.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = '/api/placeholder/80/80';
+                        target.src = '/placeholder-product.svg';
                       }}
                     />
                   </div>
@@ -638,13 +638,13 @@ const ProductManagerPage: React.FC = () => {
                 <div className="space-y-4">
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
                     <img
-                      src={viewingProduct.image_url || '/api/placeholder/400/400'}
+                      src={viewingProduct.image_url || '/placeholder-product.svg'}
                       alt={viewingProduct.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = '/api/placeholder/400/400';
+                        target.src = '/placeholder-product.svg';
                       }}
                     />
                   </div>
@@ -735,7 +735,7 @@ const ProductManagerPage: React.FC = () => {
             <div className="space-y-4">
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
                 <img
-                  src={formData.image_url || '/api/placeholder/300/300'}
+                  src={formData.image_url || '/placeholder-product.svg'}
                   alt={formData.name || 'Product'}
                   className="w-full h-full object-cover"
                 />

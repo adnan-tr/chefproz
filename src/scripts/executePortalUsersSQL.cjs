@@ -51,50 +51,19 @@ CREATE TABLE public.portal_users (
       console.log('Warning: Could not clear existing data:', deleteError.message);
     }
     
-    // Insert sample data
-    console.log('Inserting sample portal users data...');
-    
-    const sampleUsers = [
-      {
-        email: 'admin@chefpro.com',
-        full_name: 'Admin User',
-        role: 'admin',
-        is_active: true,
-        last_login: new Date().toISOString(),
-        permissions: ['read', 'write', 'delete', 'admin']
-      },
-      {
-        email: 'manager@chefpro.com',
-        full_name: 'Manager User',
-        role: 'manager',
-        is_active: true,
-        last_login: new Date(Date.now() - 86400000).toISOString(),
-        permissions: ['read', 'write']
-      },
-      {
-        email: 'user@chefpro.com',
-        full_name: 'Regular User',
-        role: 'user',
-        is_active: true,
-        last_login: new Date(Date.now() - 172800000).toISOString(),
-        permissions: ['read']
-      }
-    ];
+    // No sample data - portal users should be created through proper registration flow
+    console.log('Portal users table is ready. Users should register through the application.');
     
     const { data, error } = await supabase
       .from('portal_users')
-      .insert(sampleUsers)
-      .select();
+      .select('count');
     
     if (error) {
       throw error;
     }
     
-    console.log('✅ Portal users setup completed successfully!');
-    console.log(`Inserted ${data.length} portal users:`);
-    data.forEach(user => {
-      console.log(`- ${user.full_name} (${user.email}) - ${user.role}`);
-    });
+    console.log('✅ Portal users table setup completed successfully!');
+    console.log('Table is ready for user registration through the application.');
     
   } catch (error) {
     console.error('❌ Error setting up portal users:', error.message);

@@ -30,8 +30,8 @@ const RefrigerationPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">Page Not Available</h1>
-          <p className="text-slate-600">This page is currently disabled.</p>
+          <h1 className="text-4xl font-bold text-slate-800 mb-4">{t('common.page_not_available')}</h1>
+          <p className="text-slate-600">{t('common.page_disabled')}</p>
         </div>
       </div>
     );

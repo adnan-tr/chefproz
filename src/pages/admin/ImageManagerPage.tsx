@@ -763,7 +763,7 @@ const ImageManagerPage: React.FC = () => {
               <CardContent className="p-3 lg:p-4">
                 <div className="aspect-video rounded-lg overflow-hidden mb-3 lg:mb-4 bg-slate-100">
                   <img
-                    src={image.url || '/api/placeholder/300/200'}
+                    src={image.url || '/placeholder-image.svg'}
                     alt={image.alt_text || image.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -829,7 +829,7 @@ const ImageManagerPage: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
                       <img
-                        src={image.url || '/api/placeholder/64/64'}
+                        src={image.url || '/placeholder-image.svg'}
                         alt={image.alt_text || image.name}
                         className="w-full h-full object-cover"
                       />
