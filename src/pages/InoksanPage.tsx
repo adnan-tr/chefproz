@@ -27,7 +27,7 @@ const InoksanPage: React.FC = () => {
   const showPrices = shouldShowPrices;
 
   // Use lazy loading for products
-  const { products, allProducts, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+  const { allProducts, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
     pageReference: 'inoksan',
     initialCount: 50,  // Show only 50 products initially
     loadMoreCount: 30   // Load 30 more products when scrolling
