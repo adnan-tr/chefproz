@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Product } from '../types/product';
+import { useState, useEffect, useCallback } from 'react';
+import { Product } from '../types';
 import { dbService } from "../lib/supabase";
 
 interface UseLazyProductsOptions {

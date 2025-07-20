@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
-import { Product } from '../types/product';
+import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
@@ -23,8 +23,8 @@ const HotelEquipmentPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Get current page status
-  const pageActive = isPageActive('hotel-equipment');
-  const showPrices = shouldShowPrices('hotel-equipment');
+  const pageActive = isPageActive;
+  const showPrices = shouldShowPrices;
 
   // Filter function for hotel equipment products
   const hotelEquipmentFilter = (products: Product[]) => {

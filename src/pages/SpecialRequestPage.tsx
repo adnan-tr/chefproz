@@ -44,8 +44,8 @@ const SpecialRequestPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Get current page status
-  const pageActive = isPageActive('special-requests');
-  const showPrices = shouldShowPrices('special-requests');
+  const pageActive = isPageActive;
+  const showPrices = shouldShowPrices;
 
   // Check if page is active
   if (!pageActive) {

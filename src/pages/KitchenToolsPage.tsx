@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
-import { Product } from '../types/product';
+import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
@@ -23,8 +23,8 @@ const KitchenToolsPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Get current page status
-  const pageActive = isPageActive('kitchen-tools');
-  const showPrices = shouldShowPrices('kitchen-tools');
+  const pageActive = isPageActive;
+  const showPrices = shouldShowPrices;
 
   // Filter function for kitchen tools products
   const kitchenToolsFilter = (products: Product[]) => {
@@ -233,7 +233,7 @@ const KitchenToolsPage: React.FC = () => {
                 <div className="text-center mt-8 py-8 border-t border-slate-200">
                   <p className="text-slate-500 font-medium">{t('products.all_loaded')}</p>
                   <p className="text-slate-400 text-sm mt-1">
-                    {t('products.showing_count', { count: filteredProducts.length })}
+                    {t('products.showing_count').replace('{count}', filteredProducts.length.toString())}
                   </p>
                 </div>
               )}
