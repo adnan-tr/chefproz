@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { defaultLanguage } from '@/lib/languages';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 interface LanguageContextType {
   currentLanguage: string;
@@ -39,7 +39,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       try {
         setIsLoading(true);
         // First check if translations table exists by trying a simple count query
-        const { error: tableError } = await supabase
+        const { error: tableError } = await supabaseAdmin
           .from('translations')
           .select('count', { count: 'exact', head: true })
           .limit(1);
@@ -49,7 +49,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return;
         }
         // Fetch translations from the column-based table structure (key, en, ar, tr, es, ru)
-        const { data: translationsData, error } = await supabase
+        const { data: translationsData, error } = await supabaseAdmin
           .from('translations')
           .select('key, en, ar, tr, es, ru');
         if (error) {
