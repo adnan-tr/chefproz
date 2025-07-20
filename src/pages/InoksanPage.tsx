@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { CategoryFilters } from '@/components/product/CategoryFilters';
-import { ProductCard } from '@/components/product/ProductCard';
-import { ProductModal } from '@/components/product/ProductModal';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageConfig } from '@/contexts/PageConfigContext';
-import { Product } from '@/types';
-import { Search, X } from 'lucide-react';
-import { dbService } from '@/lib/supabase';
+import React, { useState, useMemo } from 'react';
+import { Search, X, Loader2 } from 'lucide-react';
+import { Product } from '../types/product';
+import { ProductCard } from '../components/product/ProductCard';
+import { ProductModal } from '../components/product/ProductModal';
+import { CategoryFilters } from '../components/product/CategoryFilters';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { useLanguage } from '../contexts/LanguageContext';
+import { usePageSettings } from '../hooks/usePageSettings';
+import { usePriceSettings } from '../hooks/usePriceSettings';
+import { useLazyProducts } from '../hooks/useLazyProducts';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const InoksanPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive, shouldShowPrices } = usePageConfig();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { isPageActive } = usePageSettings();
+  const { shouldShowPrices } = usePriceSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
@@ -24,6 +25,21 @@ const InoksanPage: React.FC = () => {
   // Get current page status
   const pageActive = isPageActive('inoksan');
   const showPrices = shouldShowPrices('inoksan');
+
+  // Use lazy loading for products
+  const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+    brand: 'inoksan',
+    initialCount: 35,
+    loadMoreCount: 20
+  });
+
+  // Enable infinite scroll
+  useInfiniteScroll({
+    hasMore,
+    loading: loadingMore,
+    onLoadMore: loadMore,
+    threshold: 300
+  });
 
   // Check if page is active
   if (!pageActive) {
@@ -38,20 +54,7 @@ const InoksanPage: React.FC = () => {
   }
 
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await dbService.getProducts('inoksan');
-        setProducts(data || []);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchProducts();
-  }, []);
 
   const categories = useMemo(() => {
     return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
@@ -69,20 +72,9 @@ const InoksanPage: React.FC = () => {
     ));
   }, [products, selectedCategory]);
 
-  // Function to shuffle array (Fisher-Yates algorithm)
-  const shuffleArray = (array: any[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
   const filteredProducts = useMemo(() => {
     try {
-      // First filter the products
-      const filtered = products.filter(product => {
+      return products.filter(product => {
         if (!product) return false;
         
         const productName = (product.name || '').toLowerCase();
@@ -102,9 +94,6 @@ const InoksanPage: React.FC = () => {
         
         return matchesSearch && matchesCategory && matchesSubcategory;
       });
-      
-      // Then shuffle the filtered results
-      return shuffleArray(filtered);
     } catch (error) {
       console.error('Error filtering products:', error);
       return products;
@@ -189,17 +178,37 @@ const InoksanPage: React.FC = () => {
         {/* Products Grid */}
         <div className="elegant-card p-8">
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
-              {filteredProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onViewDetails={handleViewDetails}
-                  className="elegant-card"
-                  showPrices={showPrices}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {filteredProducts.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onViewDetails={handleViewDetails}
+                    className="elegant-card"
+                    showPrices={showPrices}
+                  />
+                ))}
+              </div>
+              
+              {/* Load More Indicator */}
+              {loadingMore && (
+                <div className="flex justify-center items-center mt-8 py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-red-600 mr-3" />
+                  <span className="text-slate-600 font-medium">{t('products.loading_more')}</span>
+                </div>
+              )}
+              
+              {/* End of Results Indicator */}
+              {!hasMore && !loadingMore && filteredProducts.length >= 35 && (
+                <div className="text-center mt-8 py-8 border-t border-slate-200">
+                  <p className="text-slate-500 font-medium">{t('products.all_loaded')}</p>
+                  <p className="text-slate-400 text-sm mt-1">
+                    {t('products.showing_count', { count: filteredProducts.length })}
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-20">
               <div className="text-slate-400 text-6xl mb-6">🔍</div>

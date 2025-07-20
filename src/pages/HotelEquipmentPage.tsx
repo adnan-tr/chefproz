@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { CategoryFilters } from '@/components/product/CategoryFilters';
-import { ProductCard } from '@/components/product/ProductCard';
-import { ProductModal } from '@/components/product/ProductModal';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageConfig } from '@/contexts/PageConfigContext';
-import { Product } from '@/types';
-import { Search, X } from 'lucide-react';
-import { dbService } from '@/lib/supabase';
+import React, { useState, useMemo } from 'react';
+import { Search, X, Loader2 } from 'lucide-react';
+import { Product } from '../types/product';
+import { ProductCard } from '../components/product/ProductCard';
+import { ProductModal } from '../components/product/ProductModal';
+import { CategoryFilters } from '../components/product/CategoryFilters';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { useLanguage } from '../contexts/LanguageContext';
+import { usePageSettings } from '../hooks/usePageSettings';
+import { usePriceSettings } from '../hooks/usePriceSettings';
+import { useLazyProducts } from '../hooks/useLazyProducts';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const HotelEquipmentPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive, shouldShowPrices } = usePageConfig();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { isPageActive } = usePageSettings();
+  const { shouldShowPrices } = usePriceSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
@@ -24,6 +25,53 @@ const HotelEquipmentPage: React.FC = () => {
   // Get current page status
   const pageActive = isPageActive('hotel-equipment');
   const showPrices = shouldShowPrices('hotel-equipment');
+
+  // Filter function for hotel equipment products
+  const hotelEquipmentFilter = (products: Product[]) => {
+    return products.filter(product => {
+      if (!product) return false;
+      
+      const productName = (product.name || '').toLowerCase();
+      const productDescription = (product.description || '').toLowerCase();
+      const productCode = (product.code || '').toLowerCase();
+      
+      return productName.includes('hotel') ||
+             productName.includes('hospitality') ||
+             productName.includes('room') ||
+             productName.includes('service') ||
+             productName.includes('trolley') ||
+             productName.includes('cart') ||
+             productName.includes('housekeeping') ||
+             productName.includes('laundry') ||
+             productName.includes('cleaning') ||
+             productName.includes('guest') ||
+             productName.includes('reception') ||
+             productName.includes('lobby') ||
+             productDescription.includes('hotel') ||
+             productDescription.includes('hospitality') ||
+             productDescription.includes('room') ||
+             productDescription.includes('service') ||
+             productDescription.includes('guest') ||
+             productCode.includes('hotel') ||
+             productCode.includes('hosp') ||
+             productCode.includes('room');
+    });
+  };
+
+  // Use lazy loading for products
+  const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+    filterFunction: hotelEquipmentFilter,
+    initialCount: 35,
+    loadMoreCount: 20
+  });
+
+  // Enable infinite scroll
+  useInfiniteScroll({
+    hasMore,
+    loading: loadingMore,
+    onLoadMore: loadMore,
+    threshold: 300
+  });
 
   // Check if page is active
   if (!pageActive) {
@@ -37,20 +85,7 @@ const HotelEquipmentPage: React.FC = () => {
     );
   }
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await dbService.getProducts('hotel-equipment');
-        setProducts(data || []);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchProducts();
-  }, []);
 
   const categories = useMemo(() => {
     return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
@@ -73,28 +108,9 @@ const HotelEquipmentPage: React.FC = () => {
       return products.filter(product => {
         if (!product) return false;
         
-        // Filter for hotel-related products
         const productName = (product.name || '').toLowerCase();
         const productDescription = (product.description || '').toLowerCase();
         const productCode = (product.code || '').toLowerCase();
-        
-        const isHotelProduct = 
-          productName.includes('hotel') ||
-          productName.includes('banquet') ||
-          productName.includes('serving') ||
-          productName.includes('trolley') ||
-          productName.includes('cart') ||
-          productName.includes('dish') ||
-          productName.includes('tray') ||
-          productName.includes('collect') ||
-          productName.includes('transport') ||
-          productDescription.includes('hotel') ||
-          productDescription.includes('banquet') ||
-          productDescription.includes('serving') ||
-          productDescription.includes('trolley') ||
-          productCode.includes('tr') ||
-          productCode.includes('cart') ||
-          product.category === 'Trolley';
         
         const searchTermLower = searchTerm.toLowerCase().trim();
         const matchesSearch = searchTermLower === '' || 
@@ -105,7 +121,7 @@ const HotelEquipmentPage: React.FC = () => {
         const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
         const matchesSubcategory = selectedSubcategory === 'all' || product.subcategory === selectedSubcategory;
         
-        return isHotelProduct && matchesSearch && matchesCategory && matchesSubcategory;
+        return matchesSearch && matchesCategory && matchesSubcategory;
       });
     } catch (error) {
       console.error('Error filtering products:', error);
@@ -191,17 +207,35 @@ const HotelEquipmentPage: React.FC = () => {
         {/* Products Grid */}
         <div className="elegant-card p-8">
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
-              {filteredProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onViewDetails={handleViewDetails}
-                  className="elegant-card"
-                  showPrices={showPrices}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {filteredProducts.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onViewDetails={handleViewDetails}
+                    className="elegant-card"
+                    showPrices={showPrices}
+                  />
+                ))}
+              </div>
+              
+              {/* Loading More Indicator */}
+              {loadingMore && (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-red-600 mr-3" />
+                  <span className="text-slate-600">{t('products.loading_more')}</span>
+                </div>
+              )}
+              
+              {/* End of Results Indicator */}
+              {!hasMore && !loadingMore && filteredProducts.length > 0 && (
+                <div className="text-center py-8">
+                  <div className="text-slate-400 text-2xl mb-2">✨</div>
+                  <p className="text-slate-600">{t('products.end_of_results')}</p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-20">
               <div className="text-slate-400 text-6xl mb-6">🔍</div>

@@ -134,51 +134,51 @@ const ContactPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
           <div className="lg:col-span-1">
-            <Card className="h-fit bg-slate-800 border-slate-700">
-              <CardHeader>
+            <Card className="h-fit bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-red-600 to-red-700 text-white">
                 <CardTitle className="text-lg font-semibold mb-6 text-white">
                   Contact Information
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3 group">
-                    <div className="p-2 bg-slate-700/50 rounded-lg group-hover:bg-red-600 transition-colors duration-300">
-                      <Mail className="h-5 w-5 text-red-400 group-hover:text-white" />
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4 group">
+                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
+                      <Mail className="h-5 w-5 text-red-600 group-hover:text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-white">Email</p>
-                      <p className="text-slate-300 text-sm">info@chefgear.com</p>
+                      <p className="font-semibold text-slate-800">Email</p>
+                      <p className="text-slate-600 text-sm mt-1">info@chefgear.com</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-3 group">
-                    <div className="p-2 bg-slate-700/50 rounded-lg group-hover:bg-red-600 transition-colors duration-300">
-                      <Phone className="h-5 w-5 text-red-400 group-hover:text-white" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
+                      <Phone className="h-5 w-5 text-red-600 group-hover:text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-white">Phone</p>
-                      <p className="text-slate-300 text-sm">+90 (212) 555-1234</p>
+                      <p className="font-semibold text-slate-800">Phone</p>
+                      <p className="text-slate-600 text-sm mt-1">+90 (212) 555-1234</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-3 group">
-                    <div className="p-2 bg-slate-700/50 rounded-lg group-hover:bg-red-600 transition-colors duration-300">
-                      <MapPin className="h-5 w-5 text-red-400 group-hover:text-white" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
+                      <MapPin className="h-5 w-5 text-red-600 group-hover:text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-white">Address</p>
-                      <p className="text-slate-300 text-sm">Atatürk Mah. Ertuğrul Gazi Sok.<br />No: 25, Kat: 3<br />34758 Ataşehir/İstanbul</p>
+                      <p className="font-semibold text-slate-800">Address</p>
+                      <p className="text-slate-600 text-sm mt-1">Atatürk Mah. Ertuğrul Gazi Sok.<br />No: 25, Kat: 3<br />34758 Ataşehir/İstanbul</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-3 group">
-                    <div className="p-2 bg-slate-700/50 rounded-lg group-hover:bg-red-600 transition-colors duration-300">
-                      <Clock className="h-5 w-5 text-red-400 group-hover:text-white" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
+                      <Clock className="h-5 w-5 text-red-600 group-hover:text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-white">Business Hours</p>
-                      <p className="text-slate-300 text-sm">
+                      <p className="font-semibold text-slate-800">Business Hours</p>
+                      <p className="text-slate-600 text-sm mt-1">
                         Monday - Friday: 8:00 AM - 6:00 PM<br />
                         Saturday: 9:00 AM - 4:00 PM<br />
                         Sunday: Closed

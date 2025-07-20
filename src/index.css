@@ -258,10 +258,19 @@ button:focus-visible {
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05) 0%, transparent 50%);
-  opacity: 0.7;
+    /* Calligraphy-inspired flowing lines */
+    linear-gradient(45deg, transparent 20%, rgba(255,255,255,0.08) 21%, rgba(255,255,255,0.08) 23%, transparent 24%),
+    linear-gradient(-45deg, transparent 35%, rgba(255,255,255,0.06) 36%, rgba(255,255,255,0.06) 38%, transparent 39%),
+    linear-gradient(135deg, transparent 60%, rgba(255,255,255,0.04) 61%, rgba(255,255,255,0.04) 63%, transparent 64%),
+    /* Abstract geometric patterns */
+    radial-gradient(ellipse at 15% 25%, rgba(255,255,255,0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 75%, rgba(255,255,255,0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 30%),
+    /* Texture overlay */
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+  background-size: 200px 200px, 150px 150px, 180px 180px, 300px 200px, 250px 180px, 400px 100px, 8px 8px;
+  opacity: 0.8;
+  animation: calligraphyFlow 25s ease-in-out infinite;
 }
 
 .product-hero-abstract::after {
@@ -272,16 +281,51 @@ button:focus-visible {
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%),
-    linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%);
-  animation: abstractFlow 20s ease-in-out infinite;
+    /* Premium abstract shapes */
+    conic-gradient(from 45deg at 20% 30%, transparent 0deg, rgba(255,255,255,0.05) 60deg, transparent 120deg),
+    conic-gradient(from 225deg at 80% 70%, transparent 0deg, rgba(255,255,255,0.04) 90deg, transparent 180deg),
+    /* Flowing curves */
+    radial-gradient(ellipse 200px 100px at 30% 60%, rgba(255,255,255,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 150px 80px at 70% 40%, rgba(255,255,255,0.05) 0%, transparent 70%),
+    /* Subtle grid pattern */
+    linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.02) 50%, transparent 51%),
+    linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.02) 50%, transparent 51%);
+  background-size: 400px 300px, 350px 250px, 300px 200px, 250px 150px, 40px 40px, 40px 40px;
+  animation: abstractFlow 30s ease-in-out infinite reverse;
+}
+
+@keyframes calligraphyFlow {
+  0%, 100% { 
+    transform: translateX(0) translateY(0) rotate(0deg);
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 50% 0%, 0% 0%;
+  }
+  25% { 
+    transform: translateX(15px) translateY(-8px) rotate(1deg);
+    background-position: 10% 10%, 90% 90%, 60% 40%, 10% 90%, 90% 10%, 40% 10%, 5% 5%;
+  }
+  50% { 
+    transform: translateX(-8px) translateY(12px) rotate(-0.8deg);
+    background-position: 20% 20%, 80% 80%, 70% 30%, 20% 80%, 80% 20%, 30% 20%, 10% 10%;
+  }
+  75% { 
+    transform: translateX(8px) translateY(-6px) rotate(0.6deg);
+    background-position: 15% 15%, 85% 85%, 55% 45%, 15% 85%, 85% 15%, 45% 15%, 7% 7%;
+  }
 }
 
 @keyframes abstractFlow {
-  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
-  25% { transform: translateX(10px) translateY(-10px) rotate(1deg); }
-  50% { transform: translateX(-5px) translateY(5px) rotate(-0.5deg); }
-  75% { transform: translateX(5px) translateY(-5px) rotate(0.5deg); }
+  0%, 100% { 
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%, 0% 0%, 100% 100%;
+  }
+  33% { 
+    transform: translateX(-12px) translateY(8px) rotate(-1.2deg) scale(1.02);
+    background-position: 15% 15%, 85% 85%, 15% 85%, 85% 15%, 10% 10%, 90% 90%;
+  }
+  66% { 
+    transform: translateX(10px) translateY(-10px) rotate(1deg) scale(0.98);
+    background-position: 30% 30%, 70% 70%, 30% 70%, 70% 30%, 20% 20%, 80% 80%;
+  }
 }
 
 /* Language Bar Styles */
