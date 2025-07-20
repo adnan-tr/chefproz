@@ -437,14 +437,28 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
         });
         
-        // Merge with mock translations to ensure all keys are available
+        // Merge with mock translations as fallback only for missing keys
         Object.keys(mockTranslations).forEach(lang => {
           Object.keys(mockTranslations[lang]).forEach(key => {
-            if (!transformedTranslations[lang][key]) {
+            if (!transformedTranslations[lang] || !transformedTranslations[lang][key] || transformedTranslations[lang][key] === key) {
+              if (!transformedTranslations[lang]) transformedTranslations[lang] = {};
               transformedTranslations[lang][key] = mockTranslations[lang][key];
             }
           });
         });
+        
+        // Add any missing keys from the database to mockTranslations for future use
+        Object.keys(transformedTranslations).forEach(lang => {
+          if (!mockTranslations[lang]) mockTranslations[lang] = {};
+          Object.keys(transformedTranslations[lang]).forEach(key => {
+            if (transformedTranslations[lang][key] && transformedTranslations[lang][key] !== key && (!mockTranslations[lang][key] || mockTranslations[lang][key] === key)) {
+              mockTranslations[lang][key] = transformedTranslations[lang][key];
+            }
+          });
+        });
+        
+        // Log for debugging
+        console.log('Loaded translations:', transformedTranslations);
         
         setTranslations(transformedTranslations);
       } catch (error) {

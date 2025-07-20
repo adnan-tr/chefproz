@@ -59,14 +59,14 @@ const Header: React.FC = () => {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    'flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300',
+                    'flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 w-[140px] justify-center',
                     isActive(item.href)
                       ? 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200'
                       : 'text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 hover:shadow-sm'
                   )}
                 >
-                  <Icon className="h-6 w-6" />
-                  <span>{item.name}</span>
+                  <Icon className="h-6 w-6 flex-shrink-0" />
+                  <span className="truncate">{item.name}</span>
                 </Link>
               );
             })}
