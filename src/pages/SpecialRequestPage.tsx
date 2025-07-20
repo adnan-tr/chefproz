@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePageConfig } from '@/contexts/PageConfigContext';
+import { usePriceSettings } from '@/hooks/usePriceSettings';
 import { 
   CheckCircle, 
   Clock, 
@@ -38,7 +39,8 @@ interface Service {
 
 const SpecialRequestPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive, shouldShowPrices } = usePageConfig();
+  const { isPageActive } = usePageConfig();
+  const { shouldShowPrices } = usePriceSettings();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
