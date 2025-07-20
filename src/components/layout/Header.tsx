@@ -35,7 +35,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-white shadow-lg sticky top-[40px] z-40 border-b border-slate-200 w-full transition-all duration-300">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
@@ -51,7 +51,7 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1">
+          <nav className="hidden lg:flex space-x-1 overflow-hidden">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
@@ -59,14 +59,14 @@ const Header: React.FC = () => {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    'flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 w-[140px] justify-center',
+                    'flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 min-w-0 flex-shrink-0',
                     isActive(item.href)
                       ? 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200'
                       : 'text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 hover:shadow-sm'
                   )}
                 >
-                  <Icon className="h-6 w-6 flex-shrink-0" />
-                  <span className="truncate">{item.name}</span>
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="truncate text-xs">{item.name}</span>
                 </Link>
               );
             })}
