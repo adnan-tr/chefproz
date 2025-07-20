@@ -26,43 +26,11 @@ const HotelEquipmentPage: React.FC = () => {
   const pageActive = isPageActive;
   const showPrices = shouldShowPrices;
 
-  // Filter function for hotel equipment products
-  const hotelEquipmentFilter = (products: Product[]) => {
-    return products.filter(product => {
-      if (!product) return false;
-      
-      const productName = (product.name || '').toLowerCase();
-      const productDescription = (product.description || '').toLowerCase();
-      const productCode = (product.code || '').toLowerCase();
-      
-      return productName.includes('hotel') ||
-             productName.includes('hospitality') ||
-             productName.includes('room') ||
-             productName.includes('service') ||
-             productName.includes('trolley') ||
-             productName.includes('cart') ||
-             productName.includes('housekeeping') ||
-             productName.includes('laundry') ||
-             productName.includes('cleaning') ||
-             productName.includes('guest') ||
-             productName.includes('reception') ||
-             productName.includes('lobby') ||
-             productDescription.includes('hotel') ||
-             productDescription.includes('hospitality') ||
-             productDescription.includes('room') ||
-             productDescription.includes('service') ||
-             productDescription.includes('guest') ||
-             productCode.includes('hotel') ||
-             productCode.includes('hosp') ||
-             productCode.includes('room');
-    });
-  };
-
-  // Use lazy loading for products
-  const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
-    filterFunction: hotelEquipmentFilter,
-    initialCount: 35,
-    loadMoreCount: 20
+  // Use lazy loading for products - fetch products with page_reference 'hotel-equipment'
+   const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+    pageReference: 'hotel-equipment',
+    initialCount: 200,  // Show more products initially
+    loadMoreCount: 100   // Load more products at once
   });
 
   // Enable infinite scroll

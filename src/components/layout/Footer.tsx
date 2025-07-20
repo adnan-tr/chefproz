@@ -114,10 +114,8 @@ const Footer: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-semibold text-white mb-2">{t('footer.address')}</h4>
-                      <p className="text-slate-300 leading-relaxed">
-                        {t('footer.address_line1', 'Atatürk Mah. Ertuğrul Gazi Sok.')}<br />
-                        {t('footer.address_line2', 'No: 25, Kat: 3')}<br />
-                        {t('footer.address_line3', '34758 Ataşehir/İstanbul')}
+                      <p className="text-slate-300">
+                        {t('footer.address_line1', 'Atatürk Mah. Ertuğrul Gazi Sok.')} {t('footer.address_line2', 'No: 25, Kat: 3')} {t('footer.address_line3', '34758 Ataşehir/İstanbul')}
                       </p>
                     </div>
                   </div>

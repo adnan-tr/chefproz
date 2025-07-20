@@ -9,6 +9,7 @@ export interface Product {
   description: string;
   image_url: string;
   page_reference: string;
+  brand?: string;
   discount?: number;
   created_at: string;
   updated_at: string;

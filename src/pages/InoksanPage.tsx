@@ -27,10 +27,10 @@ const InoksanPage: React.FC = () => {
   const showPrices = shouldShowPrices;
 
   // Use lazy loading for products
-  const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
-    brand: 'inoksan',
-    initialCount: 35,
-    loadMoreCount: 20
+  const { products, allProducts, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+    pageReference: 'inoksan',
+    initialCount: 50,  // Show only 50 products initially
+    loadMoreCount: 30   // Load 30 more products when scrolling
   });
 
   // Enable infinite scroll
@@ -57,24 +57,24 @@ const InoksanPage: React.FC = () => {
 
 
   const categories = useMemo(() => {
-    return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
-  }, [products]);
+    return Array.from(new Set(allProducts.map(p => p.category).filter(Boolean)));
+  }, [allProducts]);
 
   const subcategories = useMemo(() => {
     if (selectedCategory === 'all') {
-      return Array.from(new Set(products.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
+      return Array.from(new Set(allProducts.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
     }
     return Array.from(new Set(
-      products
+      allProducts
         .filter(p => p.category === selectedCategory)
         .map(p => p.subcategory)
         .filter((subcat): subcat is string => subcat !== undefined)
     ));
-  }, [products, selectedCategory]);
+  }, [allProducts, selectedCategory]);
 
   const filteredProducts = useMemo(() => {
     try {
-      return products.filter(product => {
+      return allProducts.filter(product => {
         if (!product) return false;
         
         const productName = (product.name || '').toLowerCase();
@@ -96,9 +96,9 @@ const InoksanPage: React.FC = () => {
       });
     } catch (error) {
       console.error('Error filtering products:', error);
-      return products;
+      return allProducts;
     }
-  }, [products, searchTerm, selectedCategory, selectedSubcategory]);
+  }, [allProducts, searchTerm, selectedCategory, selectedSubcategory]);
 
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);

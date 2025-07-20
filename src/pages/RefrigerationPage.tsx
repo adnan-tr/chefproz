@@ -27,36 +27,11 @@ const RefrigerationPage: React.FC = () => {
   const showPrices = shouldShowPrices;
 
   // Filter function for refrigeration products
-  const refrigerationFilter = (products: Product[]) => {
-    return products.filter(product => {
-      if (!product) return false;
-      
-      const productName = (product.name || '').toLowerCase();
-      const productDescription = (product.description || '').toLowerCase();
-      const productCode = (product.code || '').toLowerCase();
-      
-      return productName.includes('refrigerat') ||
-             productName.includes('cool') ||
-             productName.includes('freez') ||
-             productName.includes('chill') ||
-             productName.includes('cold') ||
-             productName.includes('beverage') ||
-             productDescription.includes('refrigerat') ||
-             productDescription.includes('cool') ||
-             productDescription.includes('freez') ||
-             productDescription.includes('chill') ||
-             productDescription.includes('cold') ||
-             productCode.includes('ref') ||
-             productCode.includes('cool') ||
-             productCode.includes('cold');
-    });
-  };
-
-  // Use lazy loading for products
+  // Use lazy loading for products - fetch products with page_reference 'refrigeration'
   const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
-    filterFunction: refrigerationFilter,
-    initialCount: 35,
-    loadMoreCount: 20
+    pageReference: 'refrigeration',
+    initialCount: 200,  // Show more products initially
+    loadMoreCount: 100   // Load more products at once
   });
 
   // Enable infinite scroll

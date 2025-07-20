@@ -69,7 +69,7 @@ export const dbService = {
     }
     
     if (searchTerm) {
-      query = query.or(`name.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`);
+      query = query.or(`name.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%,supplier_code.ilike.%${searchTerm}%`);
     }
     
     if (category && category !== 'all') {
@@ -81,9 +81,13 @@ export const dbService = {
       const from = page * limit;
       const to = from + limit - 1;
       query = query.range(from, to);
+    } else {
+      // Ensure we get all records by setting a high limit when no pagination is specified
+      query = query.limit(10000);
     }
     
-    const { data, error } = await query.order('created_at', { ascending: false });
+    // Optimize ordering for better performance
+    const { data, error } = await query.order('name', { ascending: true });
     
     if (error) throw error;
     return data;
@@ -139,6 +143,20 @@ export const dbService = {
     const { data, error } = await supabase
       .from('products')
       .select('category')
+      .not('category', 'is', null)
+      .not('category', 'eq', '')
+      .order('category');
+    
+    if (error) throw error;
+    const categories = Array.from(new Set(data?.map(item => item.category).filter(Boolean) || []));
+    return categories;
+  },
+
+  async getProductCategoriesByPage(pageReference: string) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('category')
+      .eq('page_reference', pageReference)
       .not('category', 'is', null)
       .not('category', 'eq', '')
       .order('category');

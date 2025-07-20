@@ -27,42 +27,11 @@ const KitchenToolsPage: React.FC = () => {
   const showPrices = shouldShowPrices;
 
   // Filter function for kitchen tools products
-  const kitchenToolsFilter = (products: Product[]) => {
-    return products.filter(product => {
-      if (!product) return false;
-      
-      const productName = (product.name || '').toLowerCase();
-      const productDescription = (product.description || '').toLowerCase();
-      const productCode = (product.code || '').toLowerCase();
-      
-      return productName.includes('tool') ||
-             productName.includes('knife') ||
-             productName.includes('utensil') ||
-             productName.includes('spoon') ||
-             productName.includes('fork') ||
-             productName.includes('ladle') ||
-             productName.includes('spatula') ||
-             productName.includes('whisk') ||
-             productName.includes('tong') ||
-             productName.includes('peeler') ||
-             productName.includes('grater') ||
-             productName.includes('slicer') ||
-             productName.includes('chopper') ||
-             productDescription.includes('tool') ||
-             productDescription.includes('knife') ||
-             productDescription.includes('utensil') ||
-             productDescription.includes('kitchen') ||
-             productCode.includes('tool') ||
-             productCode.includes('knife') ||
-             productCode.includes('utensil');
-    });
-  };
-
-  // Use lazy loading for products
+  // Use lazy loading for products - fetch products with page_reference 'kitchen-tools'
   const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
-    filterFunction: kitchenToolsFilter,
-    initialCount: 35,
-    loadMoreCount: 20
+    pageReference: 'kitchen-tools',
+    initialCount: 200,  // Show more products initially
+    loadMoreCount: 100   // Load more products at once
   });
 
   // Enable infinite scroll

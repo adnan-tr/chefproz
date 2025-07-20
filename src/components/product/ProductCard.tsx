@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,16 +12,17 @@ interface ProductCardProps {
   showPrices?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ 
+const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(({ 
   product, 
   onViewDetails, 
   className,
   showPrices = true
-}) => {
+}, ref) => {
   const { t } = useLanguage();
 
   return (
     <Card 
+      ref={ref}
       className={cn(
         "group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-gray-200 hover:border-red-200",
         className
@@ -34,12 +35,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {product.page_reference === 'inoksan' ? (product.supplier_code || product.code) : product.code}
         </div>
         
+        {/* Product Image - Optimized with lazy loading */}
         <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200">
-          <img
-            src={product.image_url || '/placeholder-product.svg'}
-            alt={product.name}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-2"
-          />
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-2"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <div className={`w-full h-full flex items-center justify-center text-gray-400 ${product.image_url ? 'hidden' : ''}`}>
+            <img
+              src="/placeholder-product.svg"
+              alt={product.name}
+              className="w-full h-full object-contain p-2"
+            />
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -74,4 +92,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+ProductCardComponent.displayName = 'ProductCard';
+
+export const ProductCard = memo(ProductCardComponent);

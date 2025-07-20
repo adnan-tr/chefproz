@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Product } from '../types';
 import { dbService } from "../lib/supabase";
 
 interface UseLazyProductsOptions {
   brand?: string;
+  pageReference?: string;
   filterFunction?: (products: Product[]) => Product[];
   initialCount?: number;
   loadMoreCount?: number;
@@ -11,9 +12,10 @@ interface UseLazyProductsOptions {
 
 export const useLazyProducts = ({
   brand,
+  pageReference,
   filterFunction,
-  initialCount = 35,
-  loadMoreCount = 20
+  initialCount = 100,  // Default value for other pages
+  loadMoreCount = 50   // Default value for other pages
 }: UseLazyProductsOptions = {}) => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
@@ -22,8 +24,9 @@ export const useLazyProducts = ({
   const [hasMore, setHasMore] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Shuffle array function (Fisher-Yates algorithm)
+  // Shuffle array function (Fisher-Yates algorithm) - optimized
   const shuffleArray = useCallback((array: Product[]) => {
+    if (array.length <= 1) return array;
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -37,7 +40,16 @@ export const useLazyProducts = ({
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = brand ? await dbService.getProducts(brand) : await dbService.getProducts();
+        let data;
+        if (pageReference) {
+          data = await dbService.getProducts(pageReference);
+        } else if (brand) {
+          // For brand filtering, we need to get all products and filter by brand
+          const allData = await dbService.getProducts();
+          data = allData?.filter(product => product.brand?.toLowerCase() === brand.toLowerCase()) || [];
+        } else {
+          data = await dbService.getProducts();
+        }
         let products = data || [];
         
         // Apply custom filter if provided
@@ -62,16 +74,16 @@ export const useLazyProducts = ({
     };
 
     fetchProducts();
-  }, [brand, filterFunction, initialCount, shuffleArray]);
+  }, [brand, pageReference, filterFunction, initialCount, shuffleArray]);
 
-  // Load more products
+  // Load more products - optimized
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     
     setLoadingMore(true);
     
-    // Simulate a small delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Reduced delay for better performance
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     const nextProducts = allProducts.slice(currentIndex, currentIndex + loadMoreCount);
     setDisplayedProducts(prev => [...prev, ...nextProducts]);
@@ -90,7 +102,7 @@ export const useLazyProducts = ({
     setHasMore(shuffledProducts.length > initialCount);
   }, [allProducts, initialCount, shuffleArray]);
 
-  return {
+  return useMemo(() => ({
     products: displayedProducts,
     allProducts,
     loading,
@@ -98,5 +110,5 @@ export const useLazyProducts = ({
     hasMore,
     loadMore,
     reset
-  };
+  }), [displayedProducts, allProducts, loading, loadingMore, hasMore, loadMore, reset]);
 };

@@ -54,15 +54,16 @@ const HomePage: React.FC = () => {
       }
     };
 
-    // Fetch products with images for slideshow
+    // Fetch products with images for slideshow - optimized
     const fetchProductsWithImages = async () => {
       try {
-        const products = await dbService.getProducts();
+        // Fetch limited products for better performance
+        const products = await dbService.getProducts(undefined, 0, 50);
         // Filter products that have image URLs and shuffle them
-        const productsWithImages = products.filter(product => 
+        const productsWithImages = products?.filter(product => 
           product.image_url && product.image_url.trim() !== ''
-        );
-        setProductImages(shuffleArray(productsWithImages).slice(0, 10)); // Limit to 10 products
+        ) || [];
+        setProductImages(shuffleArray(productsWithImages).slice(0, 8)); // Reduced to 8 products
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {

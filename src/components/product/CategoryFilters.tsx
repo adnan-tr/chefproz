@@ -15,7 +15,7 @@ import {
 
 interface CategoryFiltersProps {
   categories: string[];
-  subcategories: string[];
+  subcategories: (string | undefined)[];
   selectedCategory: string;
   selectedSubcategory: string;
   onCategoryChange: (category: string) => void;
@@ -172,7 +172,7 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
                 </CardContent>
               </Card>
               
-              {subcategories.map((subcategory) => {
+              {subcategories.filter((subcategory): subcategory is string => subcategory !== undefined).map((subcategory) => {
                 const Icon = getSubcategoryIcon(subcategory);
                 return (
                   <Card
