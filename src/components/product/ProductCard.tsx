@@ -36,14 +36,14 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
         </div>
         
         {/* Product Image - Optimized with lazy loading */}
-        <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200">
+        <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200 flex items-center justify-center">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-2"
+              className="max-w-full max-h-full object-contain p-2"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
@@ -55,7 +55,7 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
             <img
               src="/placeholder-product.svg"
               alt={product.name}
-              className="w-full h-full object-contain p-2"
+              className="max-w-full max-h-full object-contain p-2"
             />
           </div>
         </div>

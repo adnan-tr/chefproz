@@ -83,7 +83,7 @@ export const dbService = {
       query = query.range(from, to);
     } else {
       // Ensure we get all records by setting a high limit when no pagination is specified
-      query = query.limit(10000);
+      query = query.limit(50000);
     }
     
     // Optimize ordering for better performance
@@ -600,6 +600,26 @@ export const dbService = {
     return data;
   },
 
+  async updateOrderItem(id: string, updates: any) {
+    const { data, error } = await supabaseAdmin
+      .from('order_items')
+      .update(updates)
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteOrderItem(id: string) {
+    const { error } = await supabaseAdmin
+      .from('order_items')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return true;
+  },
+
   async deleteOrderItems(orderId: string) {
     const { error } = await supabaseAdmin
       .from('order_items')
@@ -607,6 +627,24 @@ export const dbService = {
       .eq('order_id', orderId);
     if (error) throw error;
     return true;
+  },
+
+  async getAllOrderItems() {
+    const { data, error } = await supabaseAdmin
+      .from('order_items')
+      .select('*, product:products(*), order:orders(*, client:clients(*))')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getAllQuotationItems() {
+    const { data, error } = await supabaseAdmin
+      .from('quotation_items')
+      .select('*, product:products(*), quotation:quotations(*, client:clients(*))')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
   },
 
   // Quotation Templates
@@ -699,11 +737,14 @@ export const dbService = {
       if (q.status === 'draft') acc.draft++;
       if (q.status === 'sent') acc.sent++;
       if (q.status === 'accepted') acc.accepted++;
+      if (q.status === 'converted_to_order') acc.convertedToOrder++;
       if (q.status === 'rejected') acc.rejected++;
       return acc;
-    }, { total: 0, draft: 0, sent: 0, accepted: 0, rejected: 0 });
+    }, { total: 0, draft: 0, sent: 0, accepted: 0, convertedToOrder: 0, rejected: 0 });
     
-    stats.conversionRate = stats.total > 0 ? (stats.accepted / stats.total) * 100 : 0;
+    // Include both accepted and converted_to_order in the conversion rate
+    const successfulQuotations = stats.accepted + stats.convertedToOrder;
+    stats.conversionRate = stats.total > 0 ? (successfulQuotations / stats.total) * 100 : 0;
     
     return stats;
   },

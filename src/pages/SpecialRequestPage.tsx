@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePageConfig } from '@/contexts/PageConfigContext';
-import { usePriceSettings } from '@/hooks/usePriceSettings';
 import { 
   CheckCircle, 
   Clock, 
@@ -39,15 +38,14 @@ interface Service {
 
 const SpecialRequestPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive } = usePageConfig();
-  const { shouldShowPrices } = usePriceSettings();
+  const { isPageActive, shouldShowPrices } = usePageConfig();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Get current page status
-  const pageActive = isPageActive;
-  const showPrices = shouldShowPrices;
+  const pageActive = isPageActive('special-requests');
+  const showPrices = shouldShowPrices('special-requests');
 
   // Check if page is active
   if (!pageActive) {
@@ -103,13 +101,13 @@ const SpecialRequestPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('nav.special_request')}
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600">
             {t('special_request.page_description')}
           </p>
         </div>
@@ -193,7 +191,7 @@ const SpecialRequestPage: React.FC = () => {
                     <div className="pt-4 border-t border-gray-200">
                       <Button
                         asChild
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:bg-blue-700"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white group-hover:bg-red-700"
                       >
                         <Link to="/contact">
                           {t('special_request.get_consultation')}
@@ -210,7 +208,7 @@ const SpecialRequestPage: React.FC = () => {
 
         {/* Call to Action */}
         <div className="mt-16 text-center">
-          <div className="bg-blue-600 text-white rounded-lg p-8">
+          <div className="bg-red-600 text-white rounded-lg p-8">
             <h2 className="text-2xl font-bold mb-4">
               {t('special_request.custom_solution')}
             </h2>
@@ -220,7 +218,7 @@ const SpecialRequestPage: React.FC = () => {
             <Button
               asChild
               size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg font-semibold"
+              className="bg-white text-red-600 hover:bg-gray-100 px-8 py-6 text-lg font-semibold"
             >
               <Link to="/contact">
                 {t('special_request.discuss_project')}

@@ -464,3 +464,81 @@ button:focus-visible {
 .language-bar button[class*="inspect"] {
   display: none !important;
 }
+
+/* Page-specific hero backgrounds to match header colors */
+.hero-refrigeration {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 25%, #1e40af 50%, #1e3a8a 75%, #1e3a8a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-kitchen-tools {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 25%, #166534 50%, #14532d 75%, #14532d 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-hotel-equipment {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 25%, #6d28d9 50%, #5b21b6 75%, #5b21b6 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-special-request {
+  background: linear-gradient(135deg, #ea580c 0%, #dc2626 25%, #c2410c 50%, #9a3412 75%, #9a3412 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-inoksan {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 25%, #991b1b 50%, #7f1d1d 75%, #450a0a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Apply the same abstract patterns to all hero variants */
+.hero-refrigeration::before,
+.hero-kitchen-tools::before,
+.hero-hotel-equipment::before,
+.hero-special-request::before,
+.hero-inoksan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(45deg, transparent 20%, rgba(255,255,255,0.08) 21%, rgba(255,255,255,0.08) 23%, transparent 24%),
+    linear-gradient(-45deg, transparent 35%, rgba(255,255,255,0.06) 36%, rgba(255,255,255,0.06) 38%, transparent 39%),
+    linear-gradient(135deg, transparent 60%, rgba(255,255,255,0.04) 61%, rgba(255,255,255,0.04) 63%, transparent 64%),
+    radial-gradient(ellipse at 15% 25%, rgba(255,255,255,0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 75%, rgba(255,255,255,0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 30%),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+  background-size: 200px 200px, 150px 150px, 180px 180px, 300px 200px, 250px 180px, 400px 100px, 8px 8px;
+  opacity: 0.8;
+  animation: calligraphyFlow 25s ease-in-out infinite;
+}
+
+.hero-refrigeration::after,
+.hero-kitchen-tools::after,
+.hero-hotel-equipment::after,
+.hero-special-request::after,
+.hero-inoksan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    conic-gradient(from 45deg at 20% 30%, transparent 0deg, rgba(255,255,255,0.05) 60deg, transparent 120deg),
+    conic-gradient(from 225deg at 80% 70%, transparent 0deg, rgba(255,255,255,0.04) 90deg, transparent 180deg),
+    radial-gradient(ellipse 200px 100px at 30% 60%, rgba(255,255,255,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 150px 80px at 70% 40%, rgba(255,255,255,0.05) 0%, transparent 70%),
+    linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.02) 50%, transparent 51%),
+    linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.02) 50%, transparent 51%);
+  background-size: 400px 300px, 350px 250px, 300px 200px, 250px 150px, 40px 40px, 40px 40px;
+  animation: abstractFlow 30s ease-in-out infinite reverse;
+}

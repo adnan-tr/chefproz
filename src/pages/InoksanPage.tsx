@@ -1,43 +1,53 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
+import { ViewModeSelector } from '../components/product/ViewModeSelector';
+import { PaginationControls } from '../components/product/PaginationControls';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
-import { usePageSettings } from '../hooks/usePageSettings';
-import { usePriceSettings } from '../hooks/usePriceSettings';
-import { useLazyProducts } from '../hooks/useLazyProducts';
+import { usePageConfig } from '../contexts/PageConfigContext';
+import { useInoksanProducts } from '../hooks/useInoksanProducts';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const InoksanPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive } = usePageSettings();
-  const { shouldShowPrices } = usePriceSettings();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
+  const { isPageActive, shouldShowPrices } = usePageConfig();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
+  const [filteredDisplayCount, setFilteredDisplayCount] = useState(50);
 
   // Get current page status
-  const pageActive = isPageActive;
-  const showPrices = shouldShowPrices;
+  const pageActive = isPageActive('inoksan');
+  const showPrices = shouldShowPrices('inoksan');
 
-  // Use lazy loading for products
-  const { allProducts, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
-    pageReference: 'inoksan',
-    initialCount: 50,  // Show only 50 products initially
-    loadMoreCount: 30   // Load 30 more products when scrolling
-  });
-
-  // Enable infinite scroll
-  useInfiniteScroll({
+  const {
+    allProducts,
+    displayedProducts,
+    categories,
+    loading,
+    viewMode,
+    currentPage,
+    totalPages,
     hasMore,
-    loading: loadingMore,
-    onLoadMore: loadMore,
+    setViewMode,
+    loadMore,
+    goToPage,
+    nextPage,
+    previousPage
+  } = useInoksanProducts();
+
+  // Set up infinite scroll only when in infinite mode
+  useInfiniteScroll({
+    hasMore: viewMode === 'infinite' && hasMore,
+    loading,
+    onLoadMore: viewMode === 'infinite' ? loadMore : () => {},
     threshold: 300
   });
 
@@ -56,23 +66,20 @@ const InoksanPage: React.FC = () => {
 
 
 
-  const categories = useMemo(() => {
-    return Array.from(new Set(allProducts.map(p => p.category).filter(Boolean)));
-  }, [allProducts]);
-
+  // Categories and subcategories are now derived from products
   const subcategories = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return Array.from(new Set(allProducts.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
-    }
-    return Array.from(new Set(
-      allProducts
-        .filter(p => p.category === selectedCategory)
-        .map(p => p.subcategory)
-        .filter((subcat): subcat is string => subcat !== undefined)
-    ));
+    if (selectedCategory === 'all') return [];
+    const subcategorySet = new Set<string>();
+    allProducts.forEach(product => {
+      if (product.category === selectedCategory && product.subcategory && product.subcategory.trim() !== '') {
+        subcategorySet.add(product.subcategory);
+      }
+    });
+    return Array.from(subcategorySet).sort();
   }, [allProducts, selectedCategory]);
 
-  const filteredProducts = useMemo(() => {
+  // First filter all products based on search and category criteria
+  const filteredAllProducts = useMemo(() => {
     try {
       return allProducts.filter(product => {
         if (!product) return false;
@@ -100,6 +107,26 @@ const InoksanPage: React.FC = () => {
     }
   }, [allProducts, searchTerm, selectedCategory, selectedSubcategory]);
 
+  // Reset display count when filters change
+  useEffect(() => {
+    setFilteredDisplayCount(50);
+    if (viewMode === 'pagination') {
+      goToPage(1);
+    }
+  }, [searchTerm, selectedCategory, selectedSubcategory, viewMode, goToPage]);
+
+  // Then apply display logic (pagination/infinite scroll) to filtered products
+  const filteredProducts = useMemo(() => {
+    if (viewMode === 'infinite') {
+      return filteredAllProducts.slice(0, filteredDisplayCount);
+    } else {
+      // Pagination mode
+      const startIndex = (currentPage - 1) * 50; // ITEMS_PER_PAGE
+      const endIndex = startIndex + 50;
+      return filteredAllProducts.slice(startIndex, endIndex);
+    }
+  }, [filteredAllProducts, viewMode, filteredDisplayCount, currentPage]);
+
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
     setModalOpen(true);
@@ -110,6 +137,32 @@ const InoksanPage: React.FC = () => {
     setSelectedCategory('all');
     setSelectedSubcategory('all');
   };
+
+  // Custom load more function for filtered products
+  const loadMoreFiltered = () => {
+    if (viewMode === 'infinite' && filteredDisplayCount < filteredAllProducts.length) {
+      setFilteredDisplayCount(prev => Math.min(prev + 30, filteredAllProducts.length));
+    }
+  };
+
+  // Check if there are more filtered products to load
+  const hasMoreFiltered = viewMode === 'infinite' && filteredDisplayCount < filteredAllProducts.length;
+
+  // Infinite scroll effect for filtered products
+  useEffect(() => {
+    if (viewMode !== 'infinite') return;
+
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+        if (hasMoreFiltered && !loading) {
+          loadMoreFiltered();
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [viewMode, hasMoreFiltered, loading, loadMoreFiltered]);
 
   if (loading) {
     return (
@@ -125,18 +178,18 @@ const InoksanPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section with Abstract Background */}
-      <section className="product-hero-abstract text-white py-20">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      <section className="hero-inoksan text-white py-20">
+        <div className="relative px-4 sm:px-6 lg:px-8 text-center z-10">
           <h1 className="text-5xl font-bold mb-6">
             {t('products.inoksan_title')}
           </h1>
-          <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
+          <p className="text-xl leading-relaxed opacity-90">
             {t('products.inoksan_description')}
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="px-4 sm:px-6 lg:px-8 py-12">
         {/* Search Bar */}
         <div className="elegant-card p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
@@ -173,6 +226,14 @@ const InoksanPage: React.FC = () => {
             onCategoryChange={setSelectedCategory}
             onSubcategoryChange={setSelectedSubcategory}
           />
+
+          {/* View Mode Selector */}
+          <ViewModeSelector
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            totalProducts={filteredAllProducts.length}
+            displayedProducts={filteredProducts.length}
+          />
         </div>
 
         {/* Products Grid */}
@@ -191,20 +252,33 @@ const InoksanPage: React.FC = () => {
                 ))}
               </div>
               
-              {/* Load More Indicator */}
-              {loadingMore && (
-                <div className="flex justify-center items-center mt-8 py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-red-600 mr-3" />
-                  <span className="text-slate-600 font-medium">{t('products.loading_more')}</span>
+              {/* Pagination Controls - only show in pagination mode */}
+              {viewMode === 'pagination' && Math.ceil(filteredAllProducts.length / 50) > 1 && (
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredAllProducts.length / 50)}
+                  onPageChange={goToPage}
+                  onPrevious={previousPage}
+                  onNext={nextPage}
+                />
+              )}
+
+              {/* Loading indicator */}
+              {loading && (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+                  <span className="ml-2 text-slate-600">
+                    {viewMode === 'infinite' ? t('products.loading_more', 'Loading more products...') : t('products.loading', 'Loading products...')}
+                  </span>
                 </div>
               )}
               
               {/* End of Results Indicator */}
-              {!hasMore && !loadingMore && filteredProducts.length >= 35 && (
+              {viewMode === 'infinite' && !hasMoreFiltered && !loading && filteredProducts.length >= 35 && (
                 <div className="text-center mt-8 py-8 border-t border-slate-200">
-                  <p className="text-slate-500 font-medium">{t('products.all_loaded')}</p>
+                  <p className="text-slate-500 font-medium">{t('products.all_loaded', 'All products loaded')}</p>
                   <p className="text-slate-400 text-sm mt-1">
-                    {t('products.showing_count').replace('{count}', filteredProducts.length.toString())}
+                    {t('products.showing_count', 'Showing {count} products').replace('{count}', filteredProducts.length.toString())}
                   </p>
                 </div>
               )}

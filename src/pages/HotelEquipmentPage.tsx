@@ -1,44 +1,38 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
+import { ViewModeSelector } from '../components/product/ViewModeSelector';
+import { PaginationControls } from '../components/product/PaginationControls';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
-import { usePageSettings } from '../hooks/usePageSettings';
-import { usePriceSettings } from '../hooks/usePriceSettings';
-import { useLazyProducts } from '../hooks/useLazyProducts';
+import { usePageConfig } from '../contexts/PageConfigContext';
+import { useProducts } from '../hooks/useProducts';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const HotelEquipmentPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isPageActive } = usePageSettings();
-  const { shouldShowPrices } = usePriceSettings();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
+  const { isPageActive, shouldShowPrices } = usePageConfig();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
+  const [filteredDisplayCount, setFilteredDisplayCount] = useState(50);
+  const [viewMode, setViewMode] = useState<'infinite' | 'pagination'>('infinite');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Get current page status
-  const pageActive = isPageActive;
-  const showPrices = shouldShowPrices;
+  const pageActive = isPageActive('hotel-equipment');
+  const showPrices = shouldShowPrices('hotel-equipment');
 
-  // Use lazy loading for products - fetch products with page_reference 'hotel-equipment'
-   const { products, loading, loadingMore, hasMore, loadMore } = useLazyProducts({
+  // Fetch all products with page_reference 'hotel-equipment'
+  const { products: allProducts, loading } = useProducts({
     pageReference: 'hotel-equipment',
-    initialCount: 200,  // Show more products initially
-    loadMoreCount: 100   // Load more products at once
-  });
-
-  // Enable infinite scroll
-  useInfiniteScroll({
-    hasMore,
-    loading: loadingMore,
-    onLoadMore: loadMore,
-    threshold: 300
+    limit: 50000
   });
 
   // Check if page is active
@@ -55,36 +49,40 @@ const HotelEquipmentPage: React.FC = () => {
 
 
 
+  // Categories derived from all products
   const categories = useMemo(() => {
-    return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
-  }, [products]);
+    return Array.from(new Set(allProducts.map(p => p.category).filter(Boolean)));
+  }, [allProducts]);
 
+  // Subcategories derived from all products based on selected category
   const subcategories = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return Array.from(new Set(products.map(p => p.subcategory).filter((subcat): subcat is string => subcat !== undefined)));
-    }
-    return Array.from(new Set(
-      products
-        .filter(p => p.category === selectedCategory)
-        .map(p => p.subcategory)
-        .filter((subcat): subcat is string => subcat !== undefined)
-    ));
-  }, [products, selectedCategory]);
+    if (selectedCategory === 'all') return [];
+    const subcategorySet = new Set<string>();
+    allProducts.forEach(product => {
+      if (product.category === selectedCategory && product.subcategory && product.subcategory.trim() !== '') {
+        subcategorySet.add(product.subcategory);
+      }
+    });
+    return Array.from(subcategorySet).sort();
+  }, [allProducts, selectedCategory]);
 
-  const filteredProducts = useMemo(() => {
+  // First filter all products based on search and category criteria
+  const filteredAllProducts = useMemo(() => {
     try {
-      return products.filter(product => {
+      return allProducts.filter(product => {
         if (!product) return false;
         
         const productName = (product.name || '').toLowerCase();
         const productDescription = (product.description || '').toLowerCase();
         const productCode = (product.code || '').toLowerCase();
-        
+        const productSupplierCode = (product.supplier_code || '').toLowerCase();
         const searchTermLower = searchTerm.toLowerCase().trim();
+        
         const matchesSearch = searchTermLower === '' || 
                              productName.includes(searchTermLower) ||
                              productDescription.includes(searchTermLower) ||
-                             productCode.includes(searchTermLower);
+                             productCode.includes(searchTermLower) ||
+                             productSupplierCode.includes(searchTermLower);
         
         const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
         const matchesSubcategory = selectedSubcategory === 'all' || product.subcategory === selectedSubcategory;
@@ -93,9 +91,29 @@ const HotelEquipmentPage: React.FC = () => {
       });
     } catch (error) {
       console.error('Error filtering products:', error);
-      return products; // Return all products if filtering fails
+      return allProducts;
     }
-  }, [products, searchTerm, selectedCategory, selectedSubcategory]);
+  }, [allProducts, searchTerm, selectedCategory, selectedSubcategory]);
+
+  // Reset display count when filters change
+  useEffect(() => {
+    setFilteredDisplayCount(50);
+    if (viewMode === 'pagination') {
+      setCurrentPage(1);
+    }
+  }, [searchTerm, selectedCategory, selectedSubcategory, viewMode]);
+
+  // Then apply display logic (pagination/infinite scroll) to filtered products
+  const filteredProducts = useMemo(() => {
+    if (viewMode === 'infinite') {
+      return filteredAllProducts.slice(0, filteredDisplayCount);
+    } else {
+      // Pagination mode
+      const startIndex = (currentPage - 1) * 50; // ITEMS_PER_PAGE
+      const endIndex = startIndex + 50;
+      return filteredAllProducts.slice(startIndex, endIndex);
+    }
+  }, [filteredAllProducts, viewMode, filteredDisplayCount, currentPage]);
 
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
@@ -107,6 +125,40 @@ const HotelEquipmentPage: React.FC = () => {
     setSelectedCategory('all');
     setSelectedSubcategory('all');
   };
+
+  // Pagination functions
+  const totalPages = Math.ceil(filteredAllProducts.length / 50);
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+  const nextPage = () => goToPage(currentPage + 1);
+  const previousPage = () => goToPage(currentPage - 1);
+
+  // Custom load more function for filtered products
+  const loadMoreFiltered = () => {
+    if (viewMode === 'infinite' && filteredDisplayCount < filteredAllProducts.length) {
+      setFilteredDisplayCount(prev => Math.min(prev + 30, filteredAllProducts.length));
+    }
+  };
+
+  // Check if there are more filtered products to load
+  const hasMoreFiltered = viewMode === 'infinite' && filteredDisplayCount < filteredAllProducts.length;
+
+  // Infinite scroll effect for filtered products
+  useEffect(() => {
+    if (viewMode !== 'infinite') return;
+
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+        if (hasMoreFiltered && !loading) {
+          loadMoreFiltered();
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [viewMode, hasMoreFiltered, loading]);
 
   if (loading) {
     return (
@@ -122,18 +174,18 @@ const HotelEquipmentPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section with Abstract Background */}
-      <section className="product-hero-abstract text-white py-20">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      <section className="hero-hotel-equipment text-white py-20">
+        <div className="relative px-4 sm:px-6 lg:px-8 text-center z-10">
           <h1 className="text-5xl font-bold mb-6">
-            {t('nav.hotel_equipment')}
+            Hotel Hub
           </h1>
-          <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
+          <p className="text-xl leading-relaxed opacity-90">
             {t('products.hotel_equipment_description')}
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="px-4 sm:px-6 lg:px-8 py-12">
         {/* Search Bar */}
         <div className="elegant-card p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
@@ -172,6 +224,16 @@ const HotelEquipmentPage: React.FC = () => {
           />
         </div>
 
+        {/* View Mode Selector */}
+        <div className="elegant-card p-6 mb-8">
+          <ViewModeSelector
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            totalProducts={filteredAllProducts.length}
+            displayedProducts={filteredProducts.length}
+          />
+        </div>
+
         {/* Products Grid */}
         <div className="elegant-card p-8">
           {filteredProducts.length > 0 ? (
@@ -188,27 +250,44 @@ const HotelEquipmentPage: React.FC = () => {
                 ))}
               </div>
               
-              {/* Loading More Indicator */}
-              {loadingMore && (
-                <div className="flex justify-center items-center py-8">
+              {/* Pagination Controls */}
+              {viewMode === 'pagination' && (
+                <div className="mt-8">
+                  <PaginationControls
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={goToPage}
+                    onPreviousPage={previousPage}
+                    onNextPage={nextPage}
+                  />
+                </div>
+              )}
+              
+              {/* Infinite Scroll Loading Indicator */}
+              {viewMode === 'infinite' && hasMoreFiltered && (
+                <div className="flex justify-center items-center mt-8 py-8">
                   <Loader2 className="h-8 w-8 animate-spin text-red-600 mr-3" />
-                  <span className="text-slate-600">{t('products.loading_more')}</span>
+                  <span className="text-slate-600 font-medium">{t('products.loading_more')}</span>
                 </div>
               )}
               
               {/* End of Results Indicator */}
-              {!hasMore && !loadingMore && filteredProducts.length > 0 && (
-                <div className="text-center py-8">
+              {viewMode === 'infinite' && !hasMoreFiltered && (
+                <div className="text-center mt-8 py-8 border-t border-slate-200">
                   <div className="text-slate-400 text-2xl mb-2">✨</div>
-                  <p className="text-slate-600">{t('products.end_of_results')}</p>
+                  <p className="text-slate-600 font-medium">{t('products.end_of_results')}</p>
+                  <p className="text-slate-500 text-sm mt-1">{t('products.total_products_shown', { count: filteredProducts.length })}</p>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-center py-20">
-              <div className="text-slate-400 text-6xl mb-6">🔍</div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">{t('products.no_products_found')}</h3>
-              <p className="text-slate-600 text-lg">{t('products.try_adjusting_filters')}</p>
+            <div className="text-center py-16">
+              <div className="text-slate-400 text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-slate-700 mb-2">{t('products.no_products_found')}</h3>
+              <p className="text-slate-500 mb-6">{t('products.try_different_search')}</p>
+              <Button onClick={handleClearFilters} className="btn-primary">
+                {t('products.clear_filters')}
+              </Button>
             </div>
           )}
         </div>

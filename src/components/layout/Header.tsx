@@ -25,17 +25,33 @@ const Header: React.FC = () => {
     { name: t('nav.home'), href: '/', icon: Home },
     { name: t('nav.inoksan'), href: '/inoksan', icon: Factory },
     { name: t('nav.refrigeration'), href: '/refrigeration', icon: Snowflake },
-    { name: t('nav.kitchen_tools'), href: '/kitchen-tools', icon: ChefHat },
-    { name: t('nav.hotel_equipment'), href: '/hotel-equipment', icon: Hotel },
+    { name: 'PrepLinq', href: '/kitchen-tools', icon: ChefHat },
+    { name: 'Hotel Hub', href: '/hotel-equipment', icon: Hotel },
     { name: t('nav.special_request'), href: '/special-request', icon: FileText },
     { name: t('nav.contact'), href: '/contact', icon: Phone },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
+  const getActiveStyles = (path: string) => {
+    if (!isActive(path)) return '';
+    
+    const pageColors: Record<string, string> = {
+      '/': 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 shadow-md border border-gray-200',
+      '/inoksan': 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200',
+      '/refrigeration': 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 shadow-md border border-blue-200',
+      '/kitchen-tools': 'bg-gradient-to-r from-green-50 to-green-100 text-green-600 shadow-md border border-green-200',
+      '/hotel-equipment': 'bg-gradient-to-r from-purple-50 to-purple-100 text-purple-600 shadow-md border border-purple-200',
+      '/special-request': 'bg-gradient-to-r from-orange-50 to-orange-100 text-orange-600 shadow-md border border-orange-200',
+      '/contact': 'bg-gradient-to-r from-teal-50 to-teal-100 text-teal-600 shadow-md border border-teal-200'
+    };
+    
+    return pageColors[path] || 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200';
+  };
+
   return (
     <header className="bg-white shadow-lg sticky top-[40px] z-40 border-b border-slate-200 w-full transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
@@ -61,12 +77,12 @@ const Header: React.FC = () => {
                   className={cn(
                     'flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 min-w-0 flex-shrink-0',
                     isActive(item.href)
-                      ? 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200'
+                      ? getActiveStyles(item.href)
                       : 'text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 hover:shadow-sm'
                   )}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0" />
-                  <span className="truncate text-xs">{item.name}</span>
+                  <span className="truncate text-sm uppercase font-semibold">{item.name}</span>
                 </Link>
               );
             })}
@@ -97,12 +113,12 @@ const Header: React.FC = () => {
                     className={cn(
                       'flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300',
                       isActive(item.href)
-                        ? 'bg-gradient-to-r from-red-50 to-red-100 text-red-600 shadow-md border border-red-200'
+                        ? getActiveStyles(item.href)
                         : 'text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100'
                     )}
                   >
                     <Icon className="h-7 w-7" />
-                    <span>{item.name}</span>
+                    <span className="uppercase font-semibold">{item.name}</span>
                   </Link>
                 );
               })}

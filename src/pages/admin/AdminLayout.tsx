@@ -15,7 +15,8 @@ import {
   Settings,
   UserCheck,
   ShoppingCart,
-  Utensils
+  Utensils,
+  BarChart3
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +36,7 @@ const AdminLayout: React.FC = () => {
     { name: 'Page Management', href: '/secure-mgmt-portal-x7f9q2/page-management', icon: Settings },
     { name: 'Portal Users', href: '/secure-mgmt-portal-x7f9q2/users', icon: Users },
     { name: 'Quotation Builder', href: '/secure-mgmt-portal-x7f9q2/quotations', icon: FileText },
+    { name: 'Reports', href: '/secure-mgmt-portal-x7f9q2/reports', icon: BarChart3 },
   ];
 
   const isActive = (path: string) => {
@@ -81,7 +83,7 @@ const AdminLayout: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-6 px-4 flex-1 overflow-y-auto">
+        <nav className="mt-6 px-4 overflow-y-auto">
           <div className="space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;

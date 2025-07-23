@@ -171,10 +171,20 @@ const OrdersPage: React.FC = () => {
     }
   };
 
+  const [updating, setUpdating] = useState(false);
+
   const handleUpdateOrderStatus = async () => {
     if (!editingOrder) return;
 
     try {
+      setUpdating(true);
+      
+      // Validate required fields
+      if (!formData.order_status) {
+        alert('Please select an order status');
+        return;
+      }
+      
       // Filter out empty date strings to prevent database errors
       const cleanedFormData = { ...formData };
       if (cleanedFormData.expected_delivery === '') {
@@ -192,8 +202,12 @@ const OrdersPage: React.FC = () => {
       
       setEditingOrder(null);
       setFormData({});
+      alert('Order status updated successfully!');
     } catch (error) {
       console.error('Error updating order:', error);
+      alert('Error updating order status. Please try again.');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -757,8 +771,8 @@ const OrdersPage: React.FC = () => {
             <Button variant="outline" onClick={() => setEditingOrder(null)}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateOrderStatus}>
-              Update Order
+            <Button onClick={handleUpdateOrderStatus} disabled={updating}>
+              {updating ? 'Updating...' : 'Update Order'}
             </Button>
           </div>
         </DialogContent>

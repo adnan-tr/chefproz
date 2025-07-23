@@ -228,7 +228,7 @@ const HomePage: React.FC = () => {
         backgroundRepeat: 'no-repeat'
       }}>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 h-full flex flex-col justify-between">
+        <div className="relative px-4 sm:px-6 lg:px-8 z-10 h-full flex flex-col justify-between">
           <div className="text-left max-w-2xl pt-8 sm:pt-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {t('hero.title')}
@@ -270,7 +270,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 bg-white">
         <div className="relative">
           <div className="absolute inset-0 bg-white"></div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="px-4 sm:px-6 lg:px-8 relative">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold text-slate-800 mb-4">
                 {t('products.featured', 'Featured Products')}
@@ -288,7 +288,7 @@ const HomePage: React.FC = () => {
                 <p className="text-slate-600">{t('products.no_images', 'No product images available.')}</p>
               </div>
             ) : (
-              <div className="max-w-4xl mx-auto">
+              <div>
                 <Swiper
                   modules={[Navigation, Pagination, Autoplay]}
                   spaceBetween={20}
@@ -358,7 +358,7 @@ const HomePage: React.FC = () => {
 
       {/* Transformation Gallery */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-800 mb-6">{t('transformations.title', 'Kitchen Transformations')}</h2>
             <p className="text-xl text-slate-600">{t('transformations.subtitle', 'Explore our portfolio of professional kitchen solutions')}</p>
@@ -437,7 +437,7 @@ const HomePage: React.FC = () => {
 
       {/* Product Range */}
       <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-800 mb-6">
               {t('products.title')}
@@ -472,7 +472,7 @@ const HomePage: React.FC = () => {
 
       {/* Achievements Section - Redesigned */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-800 mb-6">
               {t('achievements.title', 'Our Achievements & Recognition')}
@@ -520,7 +520,7 @@ const HomePage: React.FC = () => {
         {/* Abstract Background */}
         <div className="absolute inset-0 bg-white"></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+        <div className="relative px-4 sm:px-6 lg:px-8 text-center z-10">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-800">
             {t('cta.title', 'Ready to Elevate Your Kitchen?')}
           </h2>

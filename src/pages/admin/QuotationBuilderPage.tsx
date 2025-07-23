@@ -190,6 +190,16 @@ const QuotationBuilderPage: React.FC = () => {
         return;
       }
 
+      if (!formData.title.trim()) {
+        alert('Quotation title is required');
+        return;
+      }
+
+      if (selectedProducts.length === 0) {
+        alert('Please add at least one product to the quotation');
+        return;
+      }
+
       let clientId = selectedClient.id;
       
       // If client doesn't have a real ID (temp client), create the client first
@@ -197,6 +207,7 @@ const QuotationBuilderPage: React.FC = () => {
         const newClient = await dbService.addClient(selectedClient);
         if (!newClient) {
           console.error('Error creating client');
+          alert('Error creating client. Please try again.');
           return;
         }
         clientId = newClient.id;
@@ -220,12 +231,16 @@ const QuotationBuilderPage: React.FC = () => {
       if (quotationResult) {
         // Add quotation items
         await addQuotationItems(quotationResult.id);
-        fetchQuotations();
+        await fetchQuotations();
         setIsAddModalOpen(false);
         resetForm();
+        alert('Quotation created successfully!');
+      } else {
+        alert('Error creating quotation. Please try again.');
       }
     } catch (error) {
       console.error('Error adding quotation:', error);
+      alert('Error creating quotation. Please check your input and try again.');
     }
   };
 
@@ -384,30 +399,32 @@ const QuotationBuilderPage: React.FC = () => {
       // Reset text color for content
       doc.setTextColor(0, 0, 0);
       
-      // Quotation Number and Date with better spacing
+      // Left side - Quotation Number and Date
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.text(`Quotation #: ${quotation.quotation_number}`, 20, 90);
       doc.text(`Date: ${new Date(quotation.created_at).toLocaleDateString()}`, 20, 100);
       doc.text(`Valid Until: ${quotation.valid_until || 'N/A'}`, 20, 110);
       
-      // Client Information Box with enhanced styling
+      // Right side - Client Information Box (moved to the right)
+      const billBoxX = pageWidth - 95; // Position on the right side
       doc.setFillColor(248, 249, 250); // Light gray background
       doc.setDrawColor(220, 38, 38); // Red border
       doc.setLineWidth(1);
-      doc.rect(20, 120, pageWidth - 40, 45, 'FD');
+      doc.rect(billBoxX, 85, 75, 45, 'FD');
       
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(220, 38, 38);
-      doc.text('Bill To:', 25, 135);
+      doc.text('Bill To:', billBoxX + 5, 100);
       
-      doc.setFontSize(11);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text(quotation.client?.company_name || 'N/A', 25, 145);
-      doc.text(quotation.client?.contact_person || 'N/A', 25, 152);
-      doc.text(quotation.client?.email || 'N/A', 25, 159);
+      const companyName = doc.splitTextToSize(quotation.client?.company_name || 'N/A', 65);
+      doc.text(companyName, billBoxX + 5, 110);
+      doc.text(quotation.client?.contact_person || 'N/A', billBoxX + 5, 117);
+      doc.text(quotation.client?.email || 'N/A', billBoxX + 5, 124);
       
       // Quotation Title with enhanced styling
       if (quotation.title) {
@@ -419,10 +436,11 @@ const QuotationBuilderPage: React.FC = () => {
       }
       
       // Items Table
-      const tableStartY = quotation.title ? 190 : 175;
+      const tableStartY = quotation.title ? 150 : 135;
       
       if (items.length > 0) {
         const tableData = items.map(item => [
+          '', // Image column (empty, will be filled in didDrawCell)
           item.code,
           item.name,
           item.quantity.toString(),
@@ -432,46 +450,49 @@ const QuotationBuilderPage: React.FC = () => {
         
         autoTable(doc, {
           startY: tableStartY,
-          head: [['Code', 'Description', 'Qty', 'Unit Price', 'Total']],
+          head: [['Image', 'Code', 'Description', 'Qty', 'Unit Price', 'Total']],
           body: tableData,
           theme: 'striped',
           headStyles: {
             fillColor: [220, 38, 38],
             textColor: [255, 255, 255],
             fontStyle: 'bold',
-            fontSize: 11,
-            cellPadding: 6
+            fontSize: 10,
+            cellPadding: 4
           },
           styles: {
-            fontSize: 10,
-            cellPadding: 6,
+            fontSize: 9,
+            cellPadding: 4,
             lineColor: [200, 200, 200],
-            lineWidth: 0.5
+            lineWidth: 0.5,
+            overflow: 'linebreak'
           },
           alternateRowStyles: {
             fillColor: [248, 249, 250]
           },
           columnStyles: {
-            0: { cellWidth: 25, fontStyle: 'bold' },
-            1: { cellWidth: 80 },
-            2: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
-            3: { cellWidth: 30, halign: 'right' },
-            4: { cellWidth: 30, halign: 'right', fontStyle: 'bold' }
+            0: { cellWidth: 20, halign: 'center' }, // Image column
+            1: { cellWidth: 25, fontStyle: 'bold', overflow: 'linebreak' }, // Code column with line break
+            2: { cellWidth: 65, overflow: 'linebreak' }, // Description column
+            3: { cellWidth: 15, halign: 'center', fontStyle: 'bold' }, // Quantity
+            4: { cellWidth: 25, halign: 'right' }, // Unit Price
+            5: { cellWidth: 25, halign: 'right', fontStyle: 'bold' } // Total
           },
           didDrawCell: (data) => {
-            // Add product image to the description cell
-            if (data.section === 'body' && data.column.index === 1 && data.row.index < items.length) {
+            // Add product image to the dedicated image column
+            if (data.section === 'body' && data.column.index === 0 && data.row.index < items.length) {
               const item = items[data.row.index];
               if (item.image_url) {
                 try {
-                  // Position the image to the left of the text
-                  const imageSize = 15; // Size of the image in mm
-                  const padding = 2; // Padding from cell border
+                  // Center the image in the image column
+                  const imageSize = 12; // Size of the image in mm
+                  const centerX = data.cell.x + (data.cell.width - imageSize) / 2;
+                  const centerY = data.cell.y + (data.cell.height - imageSize) / 2;
                   doc.addImage(
                     item.image_url,
                     'JPEG',
-                    data.cell.x + padding,
-                    data.cell.y + padding,
+                    centerX,
+                    centerY,
                     imageSize,
                     imageSize
                   );
@@ -782,15 +803,41 @@ const QuotationBuilderPage: React.FC = () => {
     return variants[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleConvertToOrder = (quotationId: string) => {
+  const updateQuotationStatus = async (quotationId: string, status: string) => {
+    try {
+      await dbService.updateQuotation(quotationId, { status });
+      fetchQuotations(); // Refresh the quotations list
+    } catch (error) {
+      console.error('Error updating quotation status:', error);
+      alert('Error updating quotation status. Please try again.');
+    }
+  };
+
+  const handleConvertToOrder = async (quotationId: string) => {
     const quotation = quotations.find(q => q.id === quotationId);
     
-    if (!quotation) return;
+    if (!quotation) {
+      alert('Quotation not found');
+      return;
+    }
     
-    // If the quotation is in 'accepted' status, proceed with the conversion
-    if (quotation.status === 'accepted') {
-      setQuotationToConvert(quotation);
-      setIsOrderConfirmModalOpen(true);
+    try {
+      // If the quotation is in 'accepted' status, first change it to 'confirm_order'
+      if (quotation.status === 'accepted') {
+        await updateQuotationStatus(quotationId, 'confirm_order');
+        alert('Quotation status updated to "Confirm Order". Click the button again to proceed with conversion.');
+      } 
+      // If it's already in 'confirm_order' status, proceed with the conversion
+      else if (quotation.status === 'confirm_order') {
+        setQuotationToConvert(quotation);
+        setIsOrderConfirmModalOpen(true);
+      }
+      else {
+        alert('This quotation cannot be converted to an order. Status must be "accepted" or "confirm_order".');
+      }
+    } catch (error) {
+      console.error('Error in handleConvertToOrder:', error);
+      alert('Error processing the conversion request. Please try again.');
     }
   };
   
@@ -972,7 +1019,7 @@ const QuotationBuilderPage: React.FC = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => setSelectedClient(null)}
-                            className="w-full sm:w-auto hover:bg-green-100"
+                            className="w-full sm:w-auto hover:bg-blue-100 hover:text-blue-700"
                           >
                             <X className="h-4 w-4" />
                             Change
@@ -1076,7 +1123,7 @@ const QuotationBuilderPage: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setIsProductModalOpen(true)}
-                      className="w-full sm:w-auto border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300"
+                      className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Products
@@ -1653,7 +1700,7 @@ const QuotationBuilderPage: React.FC = () => {
                   {quotations.filter(q => q.status === 'accepted').length}
                 </p>
                 <div className="text-xs text-slate-500 mt-1">
-                  {quotations.length > 0 ? Math.round((quotations.filter(q => q.status === 'accepted').length / quotations.length) * 100) : 0}% rate
+                  {quotations.length > 0 ? Math.round((quotations.filter(q => q.status === 'converted_to_order').length / quotations.length) * 100) : 0}% rate
                 </div>
               </div>
               <div className="bg-purple-100 p-3 rounded-full group-hover:bg-purple-200 transition-colors">
@@ -1800,7 +1847,7 @@ const QuotationBuilderPage: React.FC = () => {
                     <TableHead className="min-w-[140px] hidden sm:table-cell font-semibold text-slate-700">Client</TableHead>
                     <TableHead className="min-w-[180px] font-semibold text-slate-700">Title</TableHead>
                     <TableHead className="min-w-[120px] font-semibold text-slate-700 text-right">Amount</TableHead>
-                    <TableHead className="min-w-[100px] font-semibold text-slate-700">Status</TableHead>
+                    <TableHead className="min-w-[130px] font-semibold text-slate-700">Status</TableHead>
                     <TableHead className="min-w-[110px] hidden md:table-cell font-semibold text-slate-700">Created</TableHead>
                     <TableHead className="min-w-[110px] hidden lg:table-cell font-semibold text-slate-700">Valid Until</TableHead>
                     <TableHead className="min-w-[80px] hidden lg:table-cell font-semibold text-slate-700 text-center">Discount</TableHead>
@@ -1810,14 +1857,10 @@ const QuotationBuilderPage: React.FC = () => {
                 <TableBody>
                   {filteredQuotations.length > 0 ? (
                     filteredQuotations.map((quotation) => {
-                      const isExpiringSoon = quotation.valid_until && new Date(quotation.valid_until) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-                      
                       return (
                         <TableRow 
                           key={quotation.id}
-                          className={`cursor-pointer transition-all duration-200 hover:bg-slate-50 border-b border-slate-100 ${
-                            isExpiringSoon && quotation.status !== 'expired' ? 'border-l-4 border-l-orange-400' : ''
-                          }`}
+                          className="cursor-pointer transition-all duration-200 hover:bg-slate-50 border-b border-slate-100"
                           onClick={() => {
                             setViewingQuotation(quotation);
                             loadQuotationItems(quotation.id);
@@ -1863,16 +1906,12 @@ const QuotationBuilderPage: React.FC = () => {
                               </div>
                             )}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="min-w-[130px]">
                             <div className="flex flex-col gap-1">
                               <Badge className={getStatusBadge(quotation.status)}>
                                 {quotation.status?.toUpperCase()}
                               </Badge>
-                              {isExpiringSoon && quotation.status !== 'expired' && (
-                                <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
-                                  Expiring Soon
-                                </Badge>
-                              )}
+
                             </div>
                           </TableCell>
                           <TableCell className="hidden md:table-cell text-slate-600">
@@ -1932,6 +1971,20 @@ const QuotationBuilderPage: React.FC = () => {
                               >
                                 <Edit className="h-4 w-4 text-green-600" />
                               </Button>
+                              {canConvertToOrder(quotation) && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleConvertToOrder(quotation.id);
+                                  }}
+                                  className="h-8 w-8 p-0 hover:bg-orange-100"
+                                  title="Convert to Order"
+                                >
+                                  <ShoppingCart className="h-4 w-4 text-orange-600" />
+                                </Button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -2046,7 +2099,7 @@ const QuotationBuilderPage: React.FC = () => {
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="sent">Sent</SelectItem>
                   <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="confirm_order">Confirm Order</SelectItem>
+
                   <SelectItem value="rejected">Rejected</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
                   <SelectItem value="converted_to_order">Converted to Order</SelectItem>

@@ -70,17 +70,17 @@ const AboutPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section with Abstract Background */}
       <section className="product-hero-abstract text-white py-20">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+        <div className="relative px-4 sm:px-6 lg:px-8 text-center z-10">
           <h1 className="text-5xl font-bold mb-6">
             {t('nav.about')}
           </h1>
-          <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
+          <p className="text-xl leading-relaxed opacity-90">
             {t('about.hero_description', 'ChefGear has been at the forefront of professional kitchen solutions for over 15 years, providing exceptional equipment and consultancy services to culinary professionals worldwide.')}
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="px-4 sm:px-6 lg:px-8 py-16">
         {/* Company Story */}
         <section className="mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

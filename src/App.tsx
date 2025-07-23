@@ -4,7 +4,9 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { PageConfigProvider } from './contexts/PageConfigContext';
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
+import OrderLayout from './components/layout/OrderLayout';
 import HomePage from './pages/HomePage';
+import PageWrapper from './components/PageWrapper';
 
 import InoksanPage from './pages/InoksanPage';
 import RefrigerationPage from './pages/RefrigerationPage';
@@ -26,6 +28,7 @@ import QuotationEditPage from './pages/admin/QuotationEditPage';
 import ServicesPage from './pages/admin/ServicesPage';
 import SetupServicesPage from './pages/admin/SetupServicesPage';
 import PageManagementPage from './pages/admin/PageManagementPage';
+import ReportsPage from './pages/admin/ReportsPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
@@ -48,13 +51,13 @@ const AppContent: React.FC = () => {
       <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="inoksan" element={<InoksanPage />} />
-              <Route path="refrigeration" element={<RefrigerationPage />} />
-              <Route path="kitchen-tools" element={<KitchenToolsPage />} />
-              <Route path="hotel-equipment" element={<HotelEquipmentPage />} />
-              <Route path="contact" element={<ContactPage />} />
-              <Route path="special-request" element={<SpecialRequestPage />} />
+              <Route index element={<PageWrapper pageId="home"><HomePage /></PageWrapper>} />
+              <Route path="inoksan" element={<PageWrapper pageId="inoksan"><InoksanPage /></PageWrapper>} />
+              <Route path="refrigeration" element={<PageWrapper pageId="refrigeration"><RefrigerationPage /></PageWrapper>} />
+              <Route path="kitchen-tools" element={<PageWrapper pageId="kitchen-tools"><KitchenToolsPage /></PageWrapper>} />
+              <Route path="hotel-equipment" element={<PageWrapper pageId="hotel-equipment"><HotelEquipmentPage /></PageWrapper>} />
+              <Route path="contact" element={<PageWrapper pageId="contact"><ContactPage /></PageWrapper>} />
+              <Route path="special-request" element={<PageWrapper pageId="special-request"><SpecialRequestPage /></PageWrapper>} />
             </Route>
 
             {/* Admin Routes - Secure Path */}
@@ -63,7 +66,6 @@ const AppContent: React.FC = () => {
               <Route path="requests" element={<ClientRequestsPage />} />
               <Route path="clients" element={<ClientDashboardPage />} />
               <Route path="orders" element={<OrdersPage />} />
-              <Route path="orders/edit/:orderId" element={<OrderEditPage />} />
               <Route path="translations" element={<TranslationsPage />} />
               <Route path="images" element={<ImageManagerPage />} />
               <Route path="products" element={<ProductManagerPage />} />
@@ -73,6 +75,12 @@ const AppContent: React.FC = () => {
               <Route path="services" element={<ServicesPage />} />
               <Route path="setup-services" element={<SetupServicesPage />} />
               <Route path="page-management" element={<PageManagementPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+            </Route>
+
+            {/* Order Management Routes - No Sidebar */}
+            <Route path="/secure-mgmt-portal-x7f9q2/orders" element={<OrderLayout />}>
+              <Route path="edit/:orderId" element={<OrderEditPage />} />
             </Route>
       </Routes>
     </div>

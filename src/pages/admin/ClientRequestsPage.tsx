@@ -22,6 +22,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
+import { EmailService } from '@/lib/emailService';
 
 // Add CSS for spinner
 const spinnerCSS = `
@@ -136,16 +137,8 @@ const ClientRequestsPage: React.FC = () => {
   // Function to send email response using Resend API
   const sendEmailResponse = async (to: string, subject: string, message: string) => {
     try {
-      // This is a placeholder for actual email sending implementation
-      // In a real implementation, you would use the SENDER_API_KEY from .env
-      // to authenticate with an email service like Resend
-      
-      console.log('Sending email to:', to);
-      console.log('Subject:', subject);
-      console.log('Message:', message);
-      
-      // Simulate API call success
-      return { success: true };
+      const result = await EmailService.sendResponseEmail(to, subject, message);
+      return result;
     } catch (error) {
       console.error('Error sending email:', error);
       return { success: false, error };

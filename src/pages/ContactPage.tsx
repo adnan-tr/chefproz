@@ -9,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
+import { EmailService } from '@/lib/emailService';
 
 const ContactPage: React.FC = () => {
   const { t } = useLanguage();
@@ -75,6 +76,23 @@ const ContactPage: React.FC = () => {
       // Submit the data to the contact_messages table
       await dbService.createContactMessage(messageData);
       
+      // Send email notifications
+      try {
+        await EmailService.sendContactFormNotification({
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+          request_type: formData.request_type,
+          sla_level: formData.sla_level,
+          country: formData.country
+        });
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Don't fail the form submission if email fails
+      }
+      
       // Show success message
       setSubmitSuccess(true);
       
@@ -103,7 +121,7 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         {submitSuccess && (
           <Alert className="mb-6 bg-green-50 border-green-200">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -126,7 +144,7 @@ const ContactPage: React.FC = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('nav.contact')}
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600">
             {t('contact.page_description', 'Get in touch with our experts for professional consultation and customized solutions')}
           </p>
         </div>
