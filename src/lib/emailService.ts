@@ -1,6 +1,11 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(import.meta.env.VITE_SENDER_API_KEY);
+// Use a placeholder API key if not provided to prevent initialization errors
+const API_KEY = import.meta.env.VITE_SENDER_API_KEY || 'placeholder_key_for_development';
+const resend = new Resend(API_KEY);
+
+// Check if we have a valid API key
+const hasValidApiKey = import.meta.env.VITE_SENDER_API_KEY && import.meta.env.VITE_SENDER_API_KEY !== 'placeholder_key_for_development';
 
 export interface EmailNotificationData {
   to: string;
@@ -25,6 +30,12 @@ export class EmailService {
   private static readonly ADMIN_EMAIL = 'info@chefgear.com';
 
   static async sendContactFormNotification(formData: ContactFormData): Promise<{ success: boolean; error?: any }> {
+    // If no valid API key, return mock success to prevent app crashes
+    if (!hasValidApiKey) {
+      console.warn('Email service: No valid API key provided. Email functionality is disabled.');
+      return { success: true, warning: 'Email service disabled - no API key' };
+    }
+
     try {
       // Send notification to admin
       const adminEmailHtml = this.generateAdminNotificationHtml(formData);
@@ -52,6 +63,12 @@ export class EmailService {
   }
 
   static async sendSpecialRequestNotification(formData: any): Promise<{ success: boolean; error?: any }> {
+    // If no valid API key, return mock success to prevent app crashes
+    if (!hasValidApiKey) {
+      console.warn('Email service: No valid API key provided. Email functionality is disabled.');
+      return { success: true, warning: 'Email service disabled - no API key' };
+    }
+
     try {
       // Send notification to admin
       const adminEmailHtml = this.generateSpecialRequestAdminHtml(formData);
@@ -81,6 +98,12 @@ export class EmailService {
   }
 
   static async sendResponseEmail(to: string, subject: string, message: string): Promise<{ success: boolean; error?: any }> {
+    // If no valid API key, return mock success to prevent app crashes
+    if (!hasValidApiKey) {
+      console.warn('Email service: No valid API key provided. Email functionality is disabled.');
+      return { success: true, warning: 'Email service disabled - no API key' };
+    }
+
     try {
       const emailHtml = this.generateResponseEmailHtml(message);
       await resend.emails.send({
