@@ -33,7 +33,7 @@ export class EmailService {
     // If no valid API key, return mock success to prevent app crashes
     if (!hasValidApiKey) {
       console.warn('Email service: No valid API key provided. Email functionality is disabled.');
-      return { success: true, warning: 'Email service disabled - no API key' };
+      return { success: true };
     }
 
     try {
@@ -64,10 +64,10 @@ export class EmailService {
 
   static async sendSpecialRequestNotification(formData: any): Promise<{ success: boolean; error?: any }> {
     // If no valid API key, return mock success to prevent app crashes
-    if (!hasValidApiKey) {
-      console.warn('Email service: No valid API key provided. Email functionality is disabled.');
-      return { success: true, warning: 'Email service disabled - no API key' };
-    }
+     if (!hasValidApiKey) {
+       console.warn('Email service: No valid API key provided. Email functionality is disabled.');
+       return { success: true };
+     }
 
     try {
       // Send notification to admin
@@ -101,7 +101,7 @@ export class EmailService {
     // If no valid API key, return mock success to prevent app crashes
     if (!hasValidApiKey) {
       console.warn('Email service: No valid API key provided. Email functionality is disabled.');
-      return { success: true, warning: 'Email service disabled - no API key' };
+      return { success: true };
     }
 
     try {
