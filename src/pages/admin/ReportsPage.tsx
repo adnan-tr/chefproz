@@ -25,14 +25,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
-  BarChart3, 
   TrendingUp, 
   Users, 
   Package, 
   FileText, 
   Download,
-  Search,
-  Calendar
+  Search
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 
@@ -57,7 +55,7 @@ interface ClientReport {
 const ReportsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('top-quoted-products');
-  const [selectedClient, setSelectedClient] = useState<string>('all');
+  const [selectedClient] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState('all');
   

@@ -29,12 +29,10 @@ const InoksanPage: React.FC = () => {
 
   const {
     allProducts,
-    displayedProducts,
     categories,
     loading,
     viewMode,
     currentPage,
-    totalPages,
     hasMore,
     setViewMode,
     loadMore,

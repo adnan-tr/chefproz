@@ -257,7 +257,7 @@ const OrderEditPage: React.FC = () => {
       }
       
       // Recalculate order total
-       const newTotal = calculateTotalAmount(order.items, editingItems);
+       const newTotal = calculateTotalAmount();
        await dbService.updateOrder(order.id, { final_amount: newTotal });
       
       // Refresh order data
@@ -289,7 +289,7 @@ const OrderEditPage: React.FC = () => {
   const loadProducts = async () => {
     setLoadingProducts(true);
     try {
-      const productsData = await dbService.fetchProducts();
+      const productsData = await dbService.getProducts();
       setProducts(productsData || []);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -313,7 +313,7 @@ const OrderEditPage: React.FC = () => {
       await dbService.addOrderItems([orderItem]);
       
       // Reload order data to get updated items
-      await loadOrder();
+      await fetchOrder(order!.id);
       setShowProductModal(false);
       setProductSearchTerm('');
     } catch (error) {

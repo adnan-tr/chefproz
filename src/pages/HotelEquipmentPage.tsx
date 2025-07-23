@@ -11,7 +11,6 @@ import { Button } from '../components/ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
 import { usePageConfig } from '../contexts/PageConfigContext';
 import { useProducts } from '../hooks/useProducts';
-import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const HotelEquipmentPage: React.FC = () => {
   const { t } = useLanguage();
@@ -257,8 +256,8 @@ const HotelEquipmentPage: React.FC = () => {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={goToPage}
-                    onPreviousPage={previousPage}
-                    onNextPage={nextPage}
+                    onPrevious={previousPage}
+                    onNext={nextPage}
                   />
                 </div>
               )}
@@ -276,7 +275,7 @@ const HotelEquipmentPage: React.FC = () => {
                 <div className="text-center mt-8 py-8 border-t border-slate-200">
                   <div className="text-slate-400 text-2xl mb-2">✨</div>
                   <p className="text-slate-600 font-medium">{t('products.end_of_results')}</p>
-                  <p className="text-slate-500 text-sm mt-1">{t('products.total_products_shown', { count: filteredProducts.length })}</p>
+                  <p className="text-slate-500 text-sm mt-1">{t('products.total_products_shown').replace('{count}', filteredProducts.length.toString())}</p>
                 </div>
               )}
             </>
