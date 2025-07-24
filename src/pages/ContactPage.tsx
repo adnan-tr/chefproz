@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 import { EmailService } from '@/lib/emailService';
+import { AdvertisementService, type AdvertisementBrand } from '@/lib/advertisementService';
+import AdvertisementBar from '@/components/AdvertisementBar';
 
 const ContactPage: React.FC = () => {
   const { t } = useLanguage();
@@ -28,6 +30,25 @@ const ContactPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [advertisementBrands, setAdvertisementBrands] = useState<AdvertisementBrand[]>([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+
+  // Load advertisement brands on component mount
+  useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        setBrandsLoading(true);
+        const brands = await AdvertisementService.getActiveBrands();
+        setAdvertisementBrands(brands);
+      } catch (error) {
+        console.error('Error loading advertisement brands:', error);
+      } finally {
+        setBrandsLoading(false);
+      }
+    };
+
+    loadBrands();
+  }, []);
 
   const slaLevels = [
     { value: 'standard', label: t('contact.sla_standard', 'Standard (3-5 business days)') },
@@ -113,10 +134,10 @@ const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-4">
       <div className="px-4 sm:px-6 lg:px-8">
         {submitSuccess && (
-          <Alert className="mb-6 bg-green-50 border-green-200">
+          <Alert className="mb-4 bg-green-50 border-green-200">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <AlertTitle className="text-green-800">Success!</AlertTitle>
             <AlertDescription className="text-green-700">
@@ -126,14 +147,14 @@ const ContactPage: React.FC = () => {
         )}
         
         {submitError && (
-          <Alert className="mb-6 bg-red-50 border-red-200">
+          <Alert className="mb-4 bg-red-50 border-red-200">
             <AlertCircle className="h-4 w-4 text-red-600" />
             <AlertTitle className="text-red-800">Error</AlertTitle>
             <AlertDescription className="text-red-700">{submitError}</AlertDescription>
           </Alert>
         )}
         
-        <div className="text-center mb-12">
+        <div className="text-center mb-4">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {t('nav.contact')}
           </h1>
@@ -143,22 +164,12 @@ const ContactPage: React.FC = () => {
         </div>
 
         {/* Advertisement Bar - Top */}
-        <div className="mb-8 overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-sm">
-          <div className="animate-marquee whitespace-nowrap py-4">
-            <div className="inline-flex items-center space-x-8">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="inline-flex items-center space-x-4 px-6 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500 text-xs font-medium">LOGO</span>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-700">Your Brand Here</p>
-                    <p className="text-xs text-gray-500">Advertise with us</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="mb-4">
+          <AdvertisementBar 
+            brands={advertisementBrands} 
+            direction="left" 
+            loading={brandsLoading} 
+          />
         </div>
 
         {/* Centered Contact Form */}
@@ -342,22 +353,12 @@ const ContactPage: React.FC = () => {
         </div>
 
         {/* Advertisement Bar - Bottom */}
-        <div className="mt-8 overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-sm">
-          <div className="animate-marquee-reverse whitespace-nowrap py-4">
-            <div className="inline-flex items-center space-x-8">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="inline-flex items-center space-x-4 px-6 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500 text-xs font-medium">LOGO</span>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-700">Partner Brand</p>
-                    <p className="text-xs text-gray-500">Join our network</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="mt-4">
+          <AdvertisementBar 
+            brands={advertisementBrands} 
+            direction="right" 
+            loading={brandsLoading} 
+          />
         </div>
       </div>
     </div>
