@@ -7,8 +7,10 @@ import Footer from './Footer';
 const Layout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <LanguageBar />
-      <Header />
+      <div className="sticky top-0 z-50">
+        <LanguageBar />
+        <Header />
+      </div>
       <main className="flex-1">
         <Outlet />
       </main>

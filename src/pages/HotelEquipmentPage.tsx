@@ -4,7 +4,6 @@ import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
-import { ViewModeSelector } from '../components/product/ViewModeSelector';
 import { PaginationControls } from '../components/product/PaginationControls';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
@@ -21,7 +20,7 @@ const HotelEquipmentPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [filteredDisplayCount, setFilteredDisplayCount] = useState(50);
-  const [viewMode, setViewMode] = useState<'infinite' | 'pagination'>('infinite');
+  const [viewMode, setViewMode] = useState<'infinite' | 'pagination'>('pagination');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Get current page status
@@ -220,16 +219,6 @@ const HotelEquipmentPage: React.FC = () => {
             selectedSubcategory={selectedSubcategory}
             onCategoryChange={setSelectedCategory}
             onSubcategoryChange={setSelectedSubcategory}
-          />
-        </div>
-
-        {/* View Mode Selector */}
-        <div className="elegant-card p-6 mb-8">
-          <ViewModeSelector
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            totalProducts={filteredAllProducts.length}
-            displayedProducts={filteredProducts.length}
           />
         </div>
 

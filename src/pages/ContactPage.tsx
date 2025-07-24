@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 import { EmailService } from '@/lib/emailService';
 
@@ -59,7 +59,6 @@ const ContactPage: React.FC = () => {
     setSubmitError(null);
     
     try {
-      // Prepare the data for submission
       const messageData = {
         name: formData.name,
         company: formData.company,
@@ -73,10 +72,8 @@ const ContactPage: React.FC = () => {
         updated_at: new Date().toISOString()
       };
       
-      // Submit the data to the contact_messages table
       await dbService.createContactMessage(messageData);
       
-      // Send email notifications
       try {
         await EmailService.sendContactFormNotification({
           name: formData.name,
@@ -90,13 +87,10 @@ const ContactPage: React.FC = () => {
         });
       } catch (emailError) {
         console.error('Email notification failed:', emailError);
-        // Don't fail the form submission if email fails
       }
       
-      // Show success message
       setSubmitSuccess(true);
       
-      // Reset form
       setFormData({
         name: '',
         company: '',
@@ -109,7 +103,6 @@ const ContactPage: React.FC = () => {
         file: null,
       });
       
-      // Scroll to top to show the success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error submitting contact form:', error);
@@ -149,243 +142,221 @@ const ContactPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Information */}
-          <div className="lg:col-span-1">
-            <Card className="h-fit bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-red-600 to-red-700 text-white">
-                <CardTitle className="text-lg font-semibold mb-6 text-white">
-                  Contact Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4 group">
-                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
-                      <Mail className="h-5 w-5 text-red-600 group-hover:text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-800">Email</p>
-                      <p className="text-slate-600 text-sm mt-1">info@chefgear.com</p>
-                    </div>
+        {/* Advertisement Bar - Top */}
+        <div className="mb-8 overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-sm">
+          <div className="animate-marquee whitespace-nowrap py-4">
+            <div className="inline-flex items-center space-x-8">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="inline-flex items-center space-x-4 px-6 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-xs font-medium">LOGO</span>
                   </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
-                      <Phone className="h-5 w-5 text-red-600 group-hover:text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-800">Phone</p>
-                      <p className="text-slate-600 text-sm mt-1">+90 (212) 555-1234</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
-                      <MapPin className="h-5 w-5 text-red-600 group-hover:text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-800">Address</p>
-                      <p className="text-slate-600 text-sm mt-1">Atatürk Mah. Ertuğrul Gazi Sok.<br />No: 25, Kat: 3<br />34758 Ataşehir/İstanbul</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 transition-all duration-300 shadow-sm">
-                      <Clock className="h-5 w-5 text-red-600 group-hover:text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-800">Business Hours</p>
-                      <p className="text-slate-600 text-sm mt-1">
-                        Monday - Friday: 8:00 AM - 6:00 PM<br />
-                        Saturday: 9:00 AM - 4:00 PM<br />
-                        Sunday: Closed
-                      </p>
-                    </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-gray-700">Your Brand Here</p>
+                    <p className="text-xs text-gray-500">Advertise with us</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-gray-900">
-                  {t('contact.send_us_message', 'Send us a Message')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                        {t('contact.form.name')} *
-                      </Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                        className="mt-1"
-                        placeholder={t('contact.name_placeholder', 'Enter your full name')}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="company" className="text-sm font-medium text-gray-700">
-                        {t('contact.form.company')} *
-                      </Label>
-                      <Input
-                        id="company"
-                        type="text"
-                        required
-                        value={formData.company}
-                        onChange={(e) => handleInputChange('company', e.target.value)}
-                        className="mt-1"
-                        placeholder={t('contact.company_placeholder', 'Enter your company name')}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="country" className="text-sm font-medium text-gray-700">
-                        {t('contact.form.country')} *
-                      </Label>
-                      <Input
-                        id="country"
-                        type="text"
-                        required
-                        value={formData.country}
-                        onChange={(e) => handleInputChange('country', e.target.value)}
-                        className="mt-1"
-                        placeholder={t('contact.country_placeholder', 'Enter your country')}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                        {t('contact.form.phone')} *
-                      </Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        required
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="mt-1"
-                        placeholder={t('contact.phone_placeholder', 'Enter your phone number')}
-                      />
-                    </div>
-                  </div>
-
+        {/* Centered Contact Form */}
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-900">
+                {t('contact.send_us_message', 'Send us a Message')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      {t('contact.form.email')} *
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                      {t('contact.form.name')} *
                     </Label>
                     <Input
-                      id="email"
-                      type="email"
+                      id="name"
+                      type="text"
                       required
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
                       className="mt-1"
-                      placeholder={t('contact.email_placeholder', 'Enter your email address')}
+                      placeholder={t('contact.name_placeholder', 'Enter your full name')}
                     />
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">
-                        {t('contact.service_level_agreement', 'Service Level Agreement')} *
-                      </Label>
-                      <Select value={formData.sla_level} onValueChange={(value) => handleInputChange('sla_level', value)}>
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder={t('contact.select_response_time', 'Select response time')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {slaLevels.map((sla) => (
-                            <SelectItem key={sla.value} value={sla.value}>
-                              {sla.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">
-                        {t('contact.request_type', 'Request Type')} *
-                      </Label>
-                      <Select value={formData.request_type} onValueChange={(value) => handleInputChange('request_type', value)}>
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder={t('contact.select_request_type', 'Select request type')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {requestTypes.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
+                  
                   <div>
-                    <Label htmlFor="message" className="text-sm font-medium text-gray-700">
-                      {t('contact.form.message')} *
-                    </Label>
-                    <Textarea
-                      id="message"
-                      required
-                      value={formData.message}
-                      onChange={(e) => handleInputChange('message', e.target.value)}
-                      className="mt-1"
-                      rows={5}
-                      placeholder={t('contact.message_placeholder', 'Please provide details about your requirements...')}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="file" className="text-sm font-medium text-gray-700">
-                      {t('contact.file_attachment', 'File Attachment (Optional)')}
+                    <Label htmlFor="company" className="text-sm font-medium text-gray-700">
+                      {t('contact.form.company')} *
                     </Label>
                     <Input
-                      id="file"
-                      type="file"
-                      onChange={handleFileChange}
+                      id="company"
+                      type="text"
+                      required
+                      value={formData.company}
+                      onChange={(e) => handleInputChange('company', e.target.value)}
                       className="mt-1"
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      placeholder={t('contact.company_placeholder', 'Enter your company name')}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {t('contact.file_formats', 'Supported formats: PDF, Word documents, Images (Max 10MB)')}
-                    </p>
                   </div>
+                </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                        {t('common.sending', 'Sending...')}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-5 w-5 mr-2" />
-                        {t('contact.form.submit')}
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="country" className="text-sm font-medium text-gray-700">
+                      {t('contact.form.country')} *
+                    </Label>
+                    <Input
+                      id="country"
+                      type="text"
+                      required
+                      value={formData.country}
+                      onChange={(e) => handleInputChange('country', e.target.value)}
+                      className="mt-1"
+                      placeholder={t('contact.country_placeholder', 'Enter your country')}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                      {t('contact.form.phone')} *
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="mt-1"
+                      placeholder={t('contact.phone_placeholder', 'Enter your phone number')}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    {t('contact.form.email')} *
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="mt-1"
+                    placeholder={t('contact.email_placeholder', 'Enter your email address')}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">
+                      {t('contact.service_level_agreement', 'Service Level Agreement')} *
+                    </Label>
+                    <Select value={formData.sla_level} onValueChange={(value) => handleInputChange('sla_level', value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder={t('contact.select_response_time', 'Select response time')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {slaLevels.map((sla) => (
+                          <SelectItem key={sla.value} value={sla.value}>
+                            {sla.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">
+                      {t('contact.request_type', 'Request Type')} *
+                    </Label>
+                    <Select value={formData.request_type} onValueChange={(value) => handleInputChange('request_type', value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder={t('contact.select_request_type', 'Select request type')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {requestTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="message" className="text-sm font-medium text-gray-700">
+                    {t('contact.form.message')} *
+                  </Label>
+                  <Textarea
+                    id="message"
+                    required
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    className="mt-1"
+                    rows={5}
+                    placeholder={t('contact.message_placeholder', 'Please provide details about your requirements...')}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="file" className="text-sm font-medium text-gray-700">
+                    {t('contact.file_attachment', 'File Attachment (Optional)')}
+                  </Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    onChange={handleFileChange}
+                    className="mt-1"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {t('contact.file_formats', 'Supported formats: PDF, Word documents, Images (Max 10MB)')}
+                  </p>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                      {t('common.sending', 'Sending...')}
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-5 w-5 mr-2" />
+                      {t('contact.form.submit')}
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Advertisement Bar - Bottom */}
+        <div className="mt-8 overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-sm">
+          <div className="animate-marquee-reverse whitespace-nowrap py-4">
+            <div className="inline-flex items-center space-x-8">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="inline-flex items-center space-x-4 px-6 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-xs font-medium">LOGO</span>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-gray-700">Partner Brand</p>
+                    <p className="text-xs text-gray-500">Join our network</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -328,9 +328,36 @@ button:focus-visible {
   }
 }
 
+/* Marquee Animation Styles */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+
 /* Language Bar Styles */
 .language-bar {
-  background: linear-gradient(90deg, #475569 0%, #64748b 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
   color: white;
   padding: 8px 0;
   font-size: 14px;

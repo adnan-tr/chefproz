@@ -27,7 +27,7 @@ const ITEMS_PER_PAGE = 50;
 export const useInoksanProducts = (): UseInoksanProductsReturn => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('infinite');
+  const [viewMode, setViewMode] = useState<ViewMode>('pagination');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [currentPage, setCurrentPage] = useState(1);
 

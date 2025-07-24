@@ -184,9 +184,11 @@ const OrderEditPage: React.FC = () => {
       // Update local state
       setOrder({ ...order, ...cleanedFormData });
       
-      // Show success message or close window
+      // Show success message
       alert('Order updated successfully!');
-      window.close();
+      
+      // Optional: Navigate back to orders page instead of closing window
+      // window.history.back();
     } catch (error) {
       console.error('Error updating order:', error);
       alert('Error updating order. Please try again.');

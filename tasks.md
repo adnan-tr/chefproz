@@ -1,59 +1,55 @@
 A- Secure Portal
 1. Downloaded Quotation Page
-[X] a. Align "Bill To" and "Quotation To" at the top following the quotation format.
-[X] b. Ensure total amount and notes are visible in the PDF.
-[X] c. Add the website logo to the exported quotation.
+[X] a. Red Border Around "Bill To" Section:
+insted of Bill To:            
+┌──────────────────┐            
+│ isrf             │
+│ 0 s r a f i l     │
+│ asdahsd@fasd.com │
+│ 05319248363      │
+└──────────────────┘
 
-2. Page Management
-[X] a. Add a "Coming Soon" page.  if any page from page managent, coming soon fucntion was true, to it will be redirected to this page.
+it should be :
+Bill To:
+isrf  
+0 s r a f i l  
+asdahsd@fasd.com  
+05319248363
+
+FIXED by removing the border around the 'Bill To' section in the PDF generation code.
+
+
+[ ] b. Add a "Notes" section right under the table or above the footer in pdf downloaded versions and as well Subtotal and Total Not Visible:
+
+[ ] c. Add the website logo as icon at the left upper corner to the exported quotation.as i have downloaded the quotation, i have noticed that the logo is not visible. so when the quptation is sent, it has our own logo
 
 3. Orders Management Dashboard
-[X] a. Remove the unnecessary left menu panel that appears when viewing an order.
-[X] b. Allow product editing in the order edit screen.
-[X] c. Add ability to remove products with a reason for removal.
-[X] d. Allow adding products to the existing order during edit.
+[ ] a. Add product and edit button has been added but As for adding, i am trying to add products but it is not reflected. but the edit and removing is working. but the reason should be a doplist and the old version of the order should be saved somewhere as history or the removed item will be colored as red but wont reflect in the total and pdd and for the added prodcust to be colored as green and the total ot be updated
 
-4. Main Dashboard
-[X] Add a new tab showing the following:
+[ ] b. Edit Order Window, the payment status (opnly when choosing Completed) nad Supplier Status (opnly when choosing Contacted, In Production and Ready ) and Shipment Status (Preparing) when changed it gives an error when saving
+
+4. For Quotations and Orders, all changes should be saved in a table new or exisiting ones, to get back to it for analytics purpose and to see in the future the average time of each phase and etc.
+
+5. Reports Page
+[ ] a. Top Quoted Products, Top Ordered Products, Client Summary buttons color to be changed as it should be suits the general theme and style
+
+6. Main Dashboard
+[ ] Add a new Page for website stastics showing the following:
  • Total number of visitors
  • Visitor countries
  • Average time spent
  • Top 10–20 viewed products
 
-
-5. Reports Page
-[X] a. Create a page showing top quoted products per client.
-[X] b. Create a page showing top ordered products per client.
-[X] c. Provide client-based quotation and order history summary in a report view.
-
-6. Quotation Builder
-[X] a. Fix button background (Change button) to match theme with proper hover style.
-[X] b. Fix the card rate and order status issue:
-  • The accepted rate should only show for "Converted to Order"
-  • Remove "Confirm Order" status
-[X] c. Fix layout issue with <td> content overlapping — either wrap text or increase column width.
-[X] d. Remove "Expiring Soon" tag as it is unnecessary.
-
-7. Page Layout
-[X] Adjust layout widths across all portal pages — remove fixed widths or borders so each page fits its content cleanly and dynamically.
-
-8. Client Requests Handling
-[X] a. Provide a step-by-step guide for replying to client requests via the portal.
-[X] b. Trigger email notifications for all submitted forms (Contact Us, Special Requests, etc.).
-
-
 B- Main Website
-1. Language Bar
-[X] a. Match the language bar background and text style with the footer design.
 
-2. Full-Width Responsive Layout
-[X] b. Make all pages responsive and full-width:
- • Remove central/fixed containers and horizontal margins
- • Use Tailwind's responsive classes
- • Ensure consistent padding for readability on smaller screens
- • Ensure the header, content, and footer all stretch edge-to-edge
+[X] a. Make the header language selector identical in style and format to the footer language buttons. Match padding, shape, colors, spacing, and highlight effect.
+[X] c. ONLY in inoksan page, when trying to clicking on next page or page 2, its not wokring, please check, crashed - FIXED by adding the missing ViewModeSelector import and component to InoksanPage.tsx
 
-3. Active Page Styling
-[X] c. Apply correct active color styles consistently:
- • For example, "Refrigeration" is light blue in the header but shows red in the hero section — fix to match
- • Apply this fix across all menu pages with consistent hero colors and styling
+[X] d. for all products pages, the picture of products, when opening the product card details(when click on view details), the image should fit and centered in side the image frame - FIXED by updating the image styling in ProductModal.tsx
+
+
+2- Below 550 px Responsive Layout
+[X]  some of the languages in the language bar is outsudie the screen
+[X] The header menu button in tablet and phone as color be red and when hover (you choose the right color)
+[X] the category and subcategory to be removed only from the prouct card
+

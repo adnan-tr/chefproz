@@ -636,11 +636,11 @@ const ProductManagerPage: React.FC = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center p-4">
                     <img
                       src={viewingProduct.image_url || '/placeholder-product.svg'}
                       alt={viewingProduct.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -733,11 +733,11 @@ const ProductManagerPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column - Image and Image Controls */}
             <div className="space-y-4">
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
+              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center p-4">
                 <img
                   src={formData.image_url || '/placeholder-product.svg'}
                   alt={formData.name || 'Product'}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
               

@@ -35,15 +35,15 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
           {product.page_reference === 'inoksan' ? (product.supplier_code || product.code) : product.code}
         </div>
         
-        {/* Product Image - Optimized with lazy loading */}
-        <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200 flex items-center justify-center">
+        {/* Product Image - Optimized with lazy loading and centered */}
+        <div className="aspect-square rounded-lg bg-white mb-4 overflow-hidden border border-gray-200 flex items-center justify-center p-4">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
               loading="lazy"
               decoding="async"
-              className="max-w-full max-h-full object-contain p-2"
+              className="w-full h-full object-contain"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
@@ -55,7 +55,7 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
             <img
               src="/placeholder-product.svg"
               alt={product.name}
-              className="max-w-full max-h-full object-contain p-2"
+              className="w-full h-full object-contain opacity-50"
             />
           </div>
         </div>
@@ -65,13 +65,13 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
             {product.name}
           </h3>
           
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">
+          <div className="flex flex-col items-center space-y-2">
+            <span className="text-sm text-gray-500 text-center">
               {product.category}
               {product.subcategory && ` / ${product.subcategory}`}
             </span>
             {showPrices && (
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-lg font-bold text-gray-900 text-center">
                 €{product.price.toLocaleString()}
               </span>
             )}
@@ -80,7 +80,7 @@ const ProductCardComponent = React.forwardRef<HTMLDivElement, ProductCardProps>(
           <Button 
             variant="outline" 
             size="sm" 
-            className="w-full mt-3 group-hover:bg-red-50 group-hover:border-red-300"
+            className="w-full mt-3 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-all duration-300 font-medium"
             onClick={(e) => {
               e.stopPropagation();
               onViewDetails(product);

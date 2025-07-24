@@ -51,11 +51,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Image */}
-          <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden">
+          <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center p-4">
             <img
               src={product.image_url || '/placeholder-product.svg'}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-full object-contain"
+              style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
             />
           </div>
           

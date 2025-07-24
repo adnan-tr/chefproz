@@ -72,19 +72,29 @@ const ReportsPage: React.FC = () => {
   const loadReportsData = async () => {
     setLoading(true);
     try {
-      const [clientsData, quotationsData, ordersData, quotationItemsData, orderItemsData] = await Promise.all([
+      const [clientsData, quotationsData, ordersData, quotationItemsData, orderItemsData, productsData] = await Promise.all([
         dbService.getClients(),
         dbService.getQuotations(),
         dbService.getOrders(),
         dbService.getAllQuotationItems(),
-        dbService.getAllOrderItems()
+        dbService.getAllOrderItems(),
+        dbService.getProducts()
       ]);
 
       setClients(clientsData || []);
       
+      // Create a product lookup map
+      const productMap = new Map();
+      productsData?.forEach((product: any) => {
+        productMap.set(product.id, product);
+      });
+      
       // Process top quoted products
       const quotedProductsMap = new Map<string, TopProduct>();
       quotationItemsData?.forEach((item: any) => {
+        const product = productMap.get(item.product_id);
+        const productName = product?.name || item.product_name || 'Unknown Product';
+        
         const key = item.product_id;
         if (quotedProductsMap.has(key)) {
           const existing = quotedProductsMap.get(key)!;
@@ -93,7 +103,7 @@ const ReportsPage: React.FC = () => {
         } else {
           quotedProductsMap.set(key, {
             product_id: item.product_id,
-            product_name: item.product_name,
+            product_name: productName,
             total_quantity: item.quantity,
             total_amount: item.quantity * item.unit_price,
             client_count: 1
@@ -109,6 +119,9 @@ const ReportsPage: React.FC = () => {
       // Process top ordered products
       const orderedProductsMap = new Map<string, TopProduct>();
       orderItemsData?.forEach((item: any) => {
+        const product = productMap.get(item.product_id);
+        const productName = product?.name || item.product_name || 'Unknown Product';
+        
         const key = item.product_id;
         if (orderedProductsMap.has(key)) {
           const existing = orderedProductsMap.get(key)!;
@@ -117,7 +130,7 @@ const ReportsPage: React.FC = () => {
         } else {
           orderedProductsMap.set(key, {
             product_id: item.product_id,
-            product_name: item.product_name,
+            product_name: productName,
             total_quantity: item.quantity,
             total_amount: item.quantity * item.unit_price,
             client_count: 1
@@ -207,7 +220,7 @@ const ReportsPage: React.FC = () => {
               <SelectItem value="365">Last Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -268,17 +281,17 @@ const ReportsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="border-b border-slate-200">
-        <nav className="flex space-x-8">
+        <nav className="flex space-x-4">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-3 px-6 rounded-lg font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg ${
                   activeTab === tab.id
-                    ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-2 border-red-600'
+                    : 'bg-white text-slate-600 border-2 border-slate-200 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 hover:border-red-300'
                 }`}
               >
                 <Icon className="h-4 w-4 mr-2" />

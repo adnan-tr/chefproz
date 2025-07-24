@@ -14,6 +14,7 @@ import {
 
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+
 import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
@@ -50,7 +51,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-white shadow-lg sticky top-[40px] z-40 border-b border-slate-200 w-full transition-all duration-300">
+    <header className="bg-white shadow-lg z-40 border-b border-slate-200 w-full transition-all duration-300">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -92,7 +93,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4 mr-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
+              className="lg:hidden p-2 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

@@ -14,15 +14,19 @@ export const LanguageSelector: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        className={`flex items-center space-x-1 px-3 py-1 rounded transition-all ${
+          isOpen
+            ? 'bg-red-600 font-semibold'
+            : 'bg-white/5'
+        }`}
       >
-        <span className="text-lg">{currentLang?.flag}</span>
-        <span className="hidden sm:inline">{currentLang?.name}</span>
+        <span className="text-sm">{currentLang?.flag}</span>
+        <span className="text-sm">{currentLang?.name}</span>
         <ChevronDown className="h-4 w-4" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded shadow-lg border border-gray-200 z-50 overflow-hidden">
           <div className="py-1">
             {languages.map((language) => (
               <button
@@ -32,12 +36,14 @@ export const LanguageSelector: React.FC = () => {
                   setIsOpen(false);
                 }}
                 className={cn(
-                  'w-full flex items-center space-x-3 px-4 py-2 text-sm text-left hover:bg-gray-50 transition-colors',
-                  currentLanguage === language.code && 'bg-blue-50 text-blue-600'
+                  'w-full flex items-center space-x-3 px-4 py-3 text-sm text-left transition-all',
+                  currentLanguage === language.code
+                    ? 'bg-red-600 text-white font-semibold'
+                    : 'text-slate-700 hover:bg-red-600/80 hover:text-white'
                 )}
               >
                 <span className="text-lg">{language.flag}</span>
-                <span>{language.name}</span>
+                <span className="font-medium">{language.name}</span>
               </button>
             ))}
           </div>

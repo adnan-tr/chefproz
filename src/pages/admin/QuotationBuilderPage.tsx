@@ -364,15 +364,23 @@ const QuotationBuilderPage: React.FC = () => {
       doc.setFillColor(200, 30, 30);
       doc.rect(0, 48, pageWidth, 2, 'F');
       
+      // Company Icon/Logo placeholder (using a simple icon representation)
+      doc.setFillColor(255, 255, 255);
+      doc.circle(30, 25, 8, 'F');
+      doc.setTextColor(220, 38, 38);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('🍳', 26, 29);
+      
       // Company Logo/Name with better typography
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(28);
       doc.setFont('helvetica', 'bold');
-      doc.text('ChefPro Equipment', 20, 28);
+      doc.text('ChefPro Equipment', 45, 28);
       
       doc.setFontSize(14);
       doc.setFont('helvetica', 'normal');
-      doc.text('Professional Kitchen Solutions', 20, 38);
+      doc.text('Professional Kitchen Solutions', 45, 38);
       
       // Contact Info in header with better layout
       doc.setFontSize(9);
@@ -385,58 +393,74 @@ const QuotationBuilderPage: React.FC = () => {
       // Reset text color
       doc.setTextColor(0, 0, 0);
       
-      // Quotation Title with better styling
+      // Quotation Title centered with better styling
       doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(220, 38, 38);
-      doc.text('QUOTATION', 20, 70);
+      doc.text('QUOTATION', pageWidth / 2, 70, { align: 'center' });
       
-      // Add a decorative line under the title
+      // Add a decorative line under the title (centered)
       doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(2);
-      doc.line(20, 75, 100, 75);
+      const lineWidth = 80;
+      doc.line((pageWidth - lineWidth) / 2, 75, (pageWidth + lineWidth) / 2, 75);
       
       // Reset text color for content
       doc.setTextColor(0, 0, 0);
       
-      // Left side - Quotation Number and Date
+      // Two-column layout for Quotation details and Bill To
+      const leftColumnX = 20;
+      const rightColumnX = pageWidth / 2 + 10;
+      
+      // Left Column - Quotation Details (removed "Quotation To:")
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Quotation #: ${quotation.quotation_number}`, 20, 90);
-      doc.text(`Date: ${new Date(quotation.created_at).toLocaleDateString()}`, 20, 100);
-      doc.text(`Valid Until: ${quotation.valid_until || 'N/A'}`, 20, 110);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Quotation #: ${quotation.quotation_number}`, leftColumnX, 95);
+      doc.text(`Date: ${new Date(quotation.created_at).toLocaleDateString()}`, leftColumnX, 105);
+      doc.text(`Valid Until: ${quotation.valid_until || 'N/A'}`, leftColumnX, 115);
       
-      // Right side - Client Information Box (moved to the right)
-      const billBoxX = pageWidth - 95; // Position on the right side
-      doc.setFillColor(248, 249, 250); // Light gray background
-      doc.setDrawColor(220, 38, 38); // Red border
-      doc.setLineWidth(1);
-      doc.rect(billBoxX, 85, 75, 45, 'FD');
-      
+      // Right Column - Client Information (Bill To)
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(220, 38, 38);
-      doc.text('Bill To:', billBoxX + 5, 100);
+      doc.text('Bill To:', rightColumnX, 90);
+      
+      // Client information without any border box
+      // Reset drawing settings to ensure no border is drawn
+      doc.setDrawColor(255, 255, 255); // Set draw color to white (invisible)
+      doc.setLineWidth(0); // Set line width to 0
+      doc.setFillColor(255, 255, 255); // Set fill color to white
+      
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0, 0, 0);
+      const companyName = doc.splitTextToSize(quotation.client?.company_name || 'N/A', 75);
+      doc.text(companyName, rightColumnX, 105);
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      const companyName = doc.splitTextToSize(quotation.client?.company_name || 'N/A', 65);
-      doc.text(companyName, billBoxX + 5, 110);
-      doc.text(quotation.client?.contact_person || 'N/A', billBoxX + 5, 117);
-      doc.text(quotation.client?.email || 'N/A', billBoxX + 5, 124);
+      doc.text(quotation.client?.contact_person || 'N/A', rightColumnX, 115);
+      doc.text(quotation.client?.email || 'N/A', rightColumnX, 125);
+      doc.text(quotation.client?.phone || 'N/A', rightColumnX, 132);
+      
+      // Add website logo (using text-based logo for now)
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      doc.text('www.chefpro.com', leftColumnX, 125);
       
       // Quotation Title with enhanced styling
       if (quotation.title) {
         doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(220, 38, 38);
-        doc.text(`Project: ${quotation.title}`, 20, 180);
+        doc.text(`Project: ${quotation.title}`, leftColumnX, 140);
         doc.setTextColor(0, 0, 0);
       }
       
       // Items Table
-      const tableStartY = quotation.title ? 150 : 135;
+      const tableStartY = quotation.title ? 155 : 140;
       
       if (items.length > 0) {
         const tableData = items.map(item => [
@@ -505,85 +529,120 @@ const QuotationBuilderPage: React.FC = () => {
         });
       }
       
-      // Financial Summary with enhanced styling
+      // Financial Summary with enhanced styling - positioned to fit properly
       const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 20;
-      const summaryStartY = finalY + 25;
+      let summaryStartY = finalY + 15;
       
-      // Summary box with gradient effect
+      // Check if we need a new page for the summary
+      if (summaryStartY > pageHeight - 80) {
+        doc.addPage();
+        summaryStartY = 30;
+      }
+      
+      // Summary box with gradient effect - adjusted size and position
+      const summaryBoxWidth = 70;
+      const summaryBoxHeight = quotation.discount_percentage > 0 ? 55 : 45;
+      const summaryBoxX = pageWidth - summaryBoxWidth - 15;
+      
       doc.setFillColor(248, 249, 250); // Light background
       doc.setDrawColor(220, 38, 38); // Red border
       doc.setLineWidth(1.5);
-      doc.rect(pageWidth - 85, summaryStartY, 65, 50, 'FD');
+      doc.rect(summaryBoxX, summaryStartY, summaryBoxWidth, summaryBoxHeight, 'FD');
       
       // Add header for summary
       doc.setFillColor(220, 38, 38);
-      doc.rect(pageWidth - 85, summaryStartY, 65, 12, 'F');
+      doc.rect(summaryBoxX, summaryStartY, summaryBoxWidth, 12, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
-      doc.text('SUMMARY', pageWidth - 52.5, summaryStartY + 8, { align: 'center' });
+      doc.text('SUMMARY', summaryBoxX + summaryBoxWidth / 2, summaryStartY + 8, { align: 'center' });
       
       // Reset text color
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       
-      doc.text('Subtotal:', pageWidth - 80, summaryStartY + 22);
-      doc.text(`€${quotation.total_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, summaryStartY + 22, { align: 'right' });
+      doc.text('Subtotal:', summaryBoxX + 5, summaryStartY + 22);
+      doc.text(`€${quotation.total_amount?.toFixed(2) || '0.00'}`, summaryBoxX + summaryBoxWidth - 5, summaryStartY + 22, { align: 'right' });
       
+      let totalY = summaryStartY + 32;
       if (quotation.discount_percentage > 0) {
         doc.setTextColor(220, 38, 38); // Red for discount
-        doc.text(`Discount (${quotation.discount_percentage}%):`, pageWidth - 80, summaryStartY + 32);
+        doc.text(`Discount (${quotation.discount_percentage}%):`, summaryBoxX + 5, summaryStartY + 32);
         const discountAmount = (quotation.total_amount * quotation.discount_percentage / 100) || 0;
-        doc.text(`-€${discountAmount.toFixed(2)}`, pageWidth - 25, summaryStartY + 32, { align: 'right' });
+        doc.text(`-€${discountAmount.toFixed(2)}`, summaryBoxX + summaryBoxWidth - 5, summaryStartY + 32, { align: 'right' });
         doc.setTextColor(0, 0, 0); // Reset color
+        totalY = summaryStartY + 42;
       }
       
       // Total with emphasis
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(220, 38, 38);
-      const totalY = quotation.discount_percentage > 0 ? summaryStartY + 42 : summaryStartY + 32;
-      doc.text('TOTAL:', pageWidth - 80, totalY);
-      doc.text(`€${quotation.final_amount?.toFixed(2) || '0.00'}`, pageWidth - 25, totalY, { align: 'right' });
+      doc.text('TOTAL:', summaryBoxX + 5, totalY);
+      doc.text(`€${quotation.final_amount?.toFixed(2) || '0.00'}`, summaryBoxX + summaryBoxWidth - 5, totalY, { align: 'right' });
       
       // Reset text color
       doc.setTextColor(0, 0, 0);
       
-      // Notes with enhanced styling
-      if (quotation.notes) {
-        const notesY = summaryStartY + 65;
+      // Notes with enhanced styling - ensure they are always displayed if present
+      if (quotation.notes && quotation.notes.trim()) {
+        const notesY = summaryStartY + summaryBoxHeight + 20;
         
-        // Notes header with background
-        doc.setFillColor(248, 249, 250);
-        doc.setDrawColor(220, 38, 38);
-        doc.setLineWidth(1);
-        doc.rect(20, notesY - 5, pageWidth - 40, 8, 'FD');
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(220, 38, 38);
-        doc.text('Notes:', 25, notesY);
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        const splitNotes = doc.splitTextToSize(quotation.notes, pageWidth - 50);
-        doc.text(splitNotes, 25, notesY + 12);
+        // Check if we need a new page for notes
+        if (notesY > pageHeight - 60) {
+          doc.addPage();
+          const newNotesY = 30;
+          
+          // Notes header with background
+          doc.setFillColor(248, 249, 250);
+          doc.setDrawColor(220, 38, 38);
+          doc.setLineWidth(1);
+          doc.rect(20, newNotesY - 5, pageWidth - 40, 8, 'FD');
+          
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(220, 38, 38);
+          doc.text('Notes:', 25, newNotesY);
+          
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          const splitNotes = doc.splitTextToSize(quotation.notes, pageWidth - 50);
+          doc.text(splitNotes, 25, newNotesY + 12);
+        } else {
+          // Notes header with background
+          doc.setFillColor(248, 249, 250);
+          doc.setDrawColor(220, 38, 38);
+          doc.setLineWidth(1);
+          doc.rect(20, notesY - 5, pageWidth - 40, 8, 'FD');
+          
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(220, 38, 38);
+          doc.text('Notes:', 25, notesY);
+          
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          const splitNotes = doc.splitTextToSize(quotation.notes, pageWidth - 50);
+          doc.text(splitNotes, 25, notesY + 12);
+        }
       }
       
-      // Enhanced Footer
+      // Enhanced Footer - always at the bottom of the last page
+      const currentPageHeight = doc.internal.pageSize.height;
       doc.setFillColor(220, 38, 38);
-      doc.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+      doc.rect(0, currentPageHeight - 25, pageWidth, 25, 'F');
       
       doc.setFontSize(10);
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.text('Thank you for choosing ChefPro Equipment!', pageWidth / 2, pageHeight - 15, { align: 'center' });
+      doc.text('Thank you for choosing ChefPro Equipment!', pageWidth / 2, currentPageHeight - 15, { align: 'center' });
       
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
-      doc.text('Professional Kitchen Solutions | www.chefpro.com | info@chefpro.com', pageWidth / 2, pageHeight - 8, { align: 'center' });
+      doc.text('Professional Kitchen Solutions | www.chefpro.com | info@chefpro.com', pageWidth / 2, currentPageHeight - 8, { align: 'center' });
       
       // Save the PDF
       doc.save(`quotation-${quotation.quotation_number}.pdf`);

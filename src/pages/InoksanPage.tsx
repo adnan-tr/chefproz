@@ -4,8 +4,8 @@ import { Product } from '../types';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductModal } from '../components/product/ProductModal';
 import { CategoryFilters } from '../components/product/CategoryFilters';
-import { ViewModeSelector } from '../components/product/ViewModeSelector';
 import { PaginationControls } from '../components/product/PaginationControls';
+import { ViewModeSelector } from '../components/product/ViewModeSelector';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -146,6 +146,27 @@ const InoksanPage: React.FC = () => {
   // Check if there are more filtered products to load
   const hasMoreFiltered = viewMode === 'infinite' && filteredDisplayCount < filteredAllProducts.length;
 
+  // Pagination functions for filtered products
+  const filteredTotalPages = Math.ceil(filteredAllProducts.length / 50);
+  
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= filteredTotalPages) {
+      goToPage(page);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < filteredTotalPages) {
+      goToPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  };
+
   // Infinite scroll effect for filtered products
   useEffect(() => {
     if (viewMode !== 'infinite') return;
@@ -224,8 +245,10 @@ const InoksanPage: React.FC = () => {
             onCategoryChange={setSelectedCategory}
             onSubcategoryChange={setSelectedSubcategory}
           />
+        </div>
 
-          {/* View Mode Selector */}
+        {/* View Mode Selector */}
+        <div className="mb-8">
           <ViewModeSelector
             viewMode={viewMode}
             onViewModeChange={setViewMode}
@@ -251,13 +274,13 @@ const InoksanPage: React.FC = () => {
               </div>
               
               {/* Pagination Controls - only show in pagination mode */}
-              {viewMode === 'pagination' && Math.ceil(filteredAllProducts.length / 50) > 1 && (
+              {viewMode === 'pagination' && filteredTotalPages > 1 && (
                 <PaginationControls
                   currentPage={currentPage}
-                  totalPages={Math.ceil(filteredAllProducts.length / 50)}
-                  onPageChange={goToPage}
-                  onPrevious={previousPage}
-                  onNext={nextPage}
+                  totalPages={filteredTotalPages}
+                  onPageChange={handlePageChange}
+                  onPrevious={handlePreviousPage}
+                  onNext={handleNextPage}
                 />
               )}
 
