@@ -38,7 +38,7 @@ const AdminDashboard: React.FC = () => {
     waitingPayment: 0,
   });
 
-  const [websiteStats, setWebsiteStats] = useState({
+  const [websiteStats] = useState({
     pageViews: 12543,
     uniqueVisitors: 3421,
     bounceRate: 32.5,

@@ -36,9 +36,7 @@ const InoksanPage: React.FC = () => {
     hasMore,
     setViewMode,
     loadMore,
-    goToPage,
-    nextPage,
-    previousPage
+    goToPage
   } = useInoksanProducts();
 
   // Set up infinite scroll only when in infinite mode

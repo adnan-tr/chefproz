@@ -20,7 +20,7 @@ const KitchenToolsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [filteredDisplayCount, setFilteredDisplayCount] = useState(50);
-  const [viewMode, setViewMode] = useState<'infinite' | 'pagination'>('pagination');
+  const [viewMode] = useState<'infinite' | 'pagination'>('pagination');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Get current page status
