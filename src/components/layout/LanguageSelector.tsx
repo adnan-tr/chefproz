@@ -20,7 +20,7 @@ export const LanguageSelector: React.FC = () => {
             : 'bg-white/5'
         }`}
       >
-        <span className="text-sm">{currentLang?.flag}</span>
+        <img src={currentLang?.flagUrl} alt={currentLang?.country} className="w-4 h-3 object-cover rounded-sm" />
         <span className="text-sm">{currentLang?.name}</span>
         <ChevronDown className="h-4 w-4" />
       </button>
@@ -42,7 +42,7 @@ export const LanguageSelector: React.FC = () => {
                     : 'text-slate-700 hover:bg-red-600/80 hover:text-white'
                 )}
               >
-                <span className="text-lg">{language.flag}</span>
+                <img src={language.flagUrl} alt={language.country} className="w-5 h-4 object-cover rounded-sm" />
                 <span className="font-medium">{language.name}</span>
               </button>
             ))}

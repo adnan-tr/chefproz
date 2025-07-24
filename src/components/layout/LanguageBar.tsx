@@ -28,8 +28,8 @@ export const LanguageBar: React.FC = () => {
                     : 'bg-slate-700/50 text-slate-300 hover:bg-red-600/80 hover:text-white border border-slate-600/50 hover:border-red-500/50'
                 }`}
               >
-                <span className="text-xs sm:text-sm">{language.flag}</span>
-                <span className="text-xs sm:text-sm font-medium hidden xs:inline">{language.name}</span>
+                <img src={language.flagUrl} alt={language.country} className="w-4 h-3 object-cover rounded-sm" />
+                <span className="text-xs sm:text-sm font-medium">{language.name}</span>
               </button>
             ))}
           </div>

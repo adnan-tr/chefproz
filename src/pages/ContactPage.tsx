@@ -174,13 +174,13 @@ const ContactPage: React.FC = () => {
 
         {/* Centered Contact Form */}
         <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
+          <Card className="contact-form-abstract">
+            <CardHeader className="relative z-10">
               <CardTitle className="text-xl font-semibold text-gray-900">
                 {t('contact.send_us_message', 'Send us a Message')}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

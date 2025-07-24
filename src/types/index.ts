@@ -64,7 +64,11 @@ export interface Service {
 export interface Language {
   code: string;
   name: string;
-  flag: string;
+  nativeName: string;
+  country: string;
+  flagUrl: string;
+  dir: 'ltr' | 'rtl';
+  active: boolean;
 }
 
 export interface Translation {

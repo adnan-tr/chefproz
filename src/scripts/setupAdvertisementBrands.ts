@@ -17,7 +17,7 @@ async function createAdvertisementBrandsTable() {
     const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
     
     // Execute the SQL
-    const { data, error } = await supabase.rpc('exec_sql', { sql: sqlContent });
+    const { error } = await supabase.rpc('exec_sql', { sql: sqlContent });
     
     if (error) {
       console.error('Error creating advertisement_brands table:', error);
