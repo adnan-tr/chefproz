@@ -20,6 +20,7 @@ import {
   Settings
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
+import { useCompany } from '@/contexts/CompanyContext';
 
 interface CompanyDetails {
   name: string;
@@ -42,6 +43,7 @@ interface CompanyDetailsPopupProps {
 }
 
 const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) => {
+  const { refreshCompanyDetails } = useCompany();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [companyDetails, setCompanyDetails] = useState<CompanyDetails>({
@@ -110,6 +112,9 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
     setLoading(true);
     try {
       await dbService.updateCompanyDetails(companyDetails);
+      
+      // Refresh the company context to update all components
+      await refreshCompanyDetails();
       
       // Trigger a custom event to notify other components about the update
       window.dispatchEvent(new CustomEvent('companyDetailsUpdated', { 
@@ -212,7 +217,7 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
                 {companyDetails.logo ? (
                   <div className="space-y-4">
                     <img
-                      src={companyDetails.logo}
+                      src={`${companyDetails.logo}?t=${Date.now()}`}
                       alt="Company Logo"
                       className="mx-auto max-h-32 object-contain"
                     />

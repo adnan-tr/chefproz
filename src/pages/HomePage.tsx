@@ -221,15 +221,16 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Minimalist design with clean typography */}
-      <section className="relative text-white overflow-hidden py-16" style={{
+      <section className="relative text-white overflow-hidden py-16 min-h-[500px] sm:min-h-[600px]" style={{
         backgroundImage: 'url(https://whlkoratnodmqbmtmtqk.supabase.co/storage/v1/object/public/images//industrial-kitchen.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative px-4 sm:px-6 lg:px-8 z-10 h-full flex flex-col justify-between">
-          <div className="text-left max-w-2xl pt-8 sm:pt-16">
+        <div className="relative px-4 sm:px-6 lg:px-8 z-10 h-full flex flex-col justify-between min-h-[450px] sm:min-h-[550px]">
+          {/* Text Content - 33% width on left for mobile (<640px), normal for larger screens */}
+          <div className="text-left max-sm:w-1/3 sm:max-w-2xl pt-8 sm:pt-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {t('hero.title')}
             </h1>
@@ -238,8 +239,8 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           
-          {/* CTA Buttons positioned at bottom left on mobile, normal position on larger screens */}
-          <div className="absolute bottom-6 left-4 sm:relative sm:bottom-auto sm:left-auto sm:max-w-2xl">
+          {/* CTA Buttons - Bottom for mobile (<640px), normal position for larger screens */}
+          <div className="max-sm:absolute max-sm:bottom-6 max-sm:left-4 max-sm:right-4 sm:relative sm:max-w-2xl">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button
                 size="sm"

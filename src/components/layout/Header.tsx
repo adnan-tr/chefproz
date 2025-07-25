@@ -59,7 +59,20 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-              <ChefHat className="h-8 w-8 text-white" />
+              {companyDetails.logo ? (
+                <img 
+                  src={`${companyDetails.logo}?t=${Date.now()}`} 
+                  alt={`${companyDetails.name} Logo`}
+                  className="h-8 w-8 object-contain"
+                  onError={(e) => {
+                    // Fallback to ChefHat icon if logo fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              ) : null}
+              <ChefHat className={`h-8 w-8 text-white ${companyDetails.logo ? 'hidden' : ''}`} />
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
