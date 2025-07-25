@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChefHat, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCompany } from '@/contexts/CompanyContext';
 
 const Footer: React.FC = () => {
   const { t } = useLanguage();
+  const { companyDetails } = useCompany();
 
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
@@ -27,43 +29,51 @@ const Footer: React.FC = () => {
                 </div>
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white tracking-tight">{t('header.company_name')}</h2>
+                <h2 className="text-3xl font-bold text-white tracking-tight">{companyDetails.name}</h2>
                 <p className="text-slate-300 font-medium">{t('header.company_tagline')}</p>
               </div>
             </Link>
             
             <p className="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
-              {t('company.description')}
+              {companyDetails.description}
             </p>
             
             {/* Social Media */}
             <div className="flex items-center space-x-4">
               <span className="text-slate-400 font-medium text-sm uppercase tracking-wider">Follow Us</span>
               <div className="flex space-x-3">
-                <a href="#" className="group relative">
-                  <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                    <Facebook className="h-5 w-5" />
-                  </div>
-                </a>
-                <a href="#" className="group relative">
-                  <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                    <Twitter className="h-5 w-5" />
-                  </div>
-                </a>
-                <a href="#" className="group relative">
-                  <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                    <Instagram className="h-5 w-5" />
-                  </div>
-                </a>
-                <a href="#" className="group relative">
-                  <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                    <Linkedin className="h-5 w-5" />
-                  </div>
-                </a>
+                {companyDetails.social_media.facebook && (
+                  <a href={companyDetails.social_media.facebook} target="_blank" rel="noopener noreferrer" className="group relative">
+                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
+                      <Facebook className="h-5 w-5" />
+                    </div>
+                  </a>
+                )}
+                {companyDetails.social_media.twitter && (
+                  <a href={companyDetails.social_media.twitter} target="_blank" rel="noopener noreferrer" className="group relative">
+                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
+                      <Twitter className="h-5 w-5" />
+                    </div>
+                  </a>
+                )}
+                {companyDetails.social_media.instagram && (
+                  <a href={companyDetails.social_media.instagram} target="_blank" rel="noopener noreferrer" className="group relative">
+                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
+                      <Instagram className="h-5 w-5" />
+                    </div>
+                  </a>
+                )}
+                {companyDetails.social_media.linkedin && (
+                  <a href={companyDetails.social_media.linkedin} target="_blank" rel="noopener noreferrer" className="group relative">
+                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
+                      <Linkedin className="h-5 w-5" />
+                    </div>
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -84,7 +94,7 @@ const Footer: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-semibold text-white mb-2">{t('footer.email')}</h4>
-                      <p className="text-slate-300">{t('footer.email_address', 'info@chefgear.com')}</p>
+                      <p className="text-slate-300">{companyDetails.email}</p>
                     </div>
                   </div>
                 </div>
@@ -99,7 +109,7 @@ const Footer: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-semibold text-white mb-2">{t('footer.phone')}</h4>
-                      <p className="text-slate-300">{t('footer.phone_number', '+90 (212) 555-1234')}</p>
+                      <p className="text-slate-300">{companyDetails.phone}</p>
                     </div>
                   </div>
                 </div>
@@ -115,7 +125,7 @@ const Footer: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-semibold text-white mb-2">{t('footer.address')}</h4>
                       <p className="text-slate-300">
-                        {t('footer.address_line1', 'Atatürk Mah. Ertuğrul Gazi Sok.')} {t('footer.address_line2', 'No: 25, Kat: 3')} {t('footer.address_line3', '34758 Ataşehir/İstanbul')}
+                        {companyDetails.address}
                       </p>
                     </div>
                   </div>

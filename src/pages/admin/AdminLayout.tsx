@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { 
   LayoutDashboard,
   MessageSquare,
@@ -19,10 +19,18 @@ import {
   BarChart3
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import CompanyDetailsPopup from '@/components/admin/CompanyDetailsPopup';
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/secure-mgmt-portal-x7f9q2/login" replace />;
+  }
 
   const navigation = [
     { name: 'Dashboard', href: '/secure-mgmt-portal-x7f9q2', icon: LayoutDashboard },
@@ -115,14 +123,30 @@ const AdminLayout: React.FC = () => {
           <div className="p-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200">
             <div className="flex items-start space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold text-sm">A</span>
+                <span className="text-white font-semibold text-sm">
+                  {user?.name?.charAt(0).toUpperCase() || 'A'}
+                </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">Portal User</p>
-                <p className="text-xs text-slate-500 truncate">portal@chefgear.com</p>
+                <p className="text-sm font-medium text-slate-900 truncate">
+                  {user?.name || 'Portal User'}
+                </p>
+                <p className="text-xs text-slate-500 truncate">
+                  {user?.email || 'portal@chefgear.com'}
+                </p>
+                <p className="text-xs text-blue-600 font-medium capitalize">
+                  {user?.role || 'viewer'}
+                </p>
               </div>
             </div>
           </div>
+          <button
+            onClick={logout}
+            className="group flex items-center px-4 py-3 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 rounded-xl transition-all duration-300 w-full"
+          >
+            <LogOut className="mr-3 h-5 w-5 text-slate-500 group-hover:text-red-500" />
+            Logout
+          </button>
           <Link
             to="/"
             className="group flex items-center px-4 py-3 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 rounded-xl transition-all duration-300"
@@ -148,15 +172,21 @@ const AdminLayout: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-xs">A</span>
+                  <span className="text-white font-semibold text-xs">
+                    {user?.name?.charAt(0).toUpperCase() || 'A'}
+                  </span>
                 </div>
                 <div className="text-sm text-slate-600">
-                  Welcome, Manager
+                  Welcome, {user?.name || 'Manager'}
                 </div>
               </div>
-              <button className="p-2 rounded-xl text-slate-400 hover:text-red-600 transition-colors">
-                <Settings className="h-5 w-5" />
-              </button>
+              <CompanyDetailsPopup 
+                trigger={
+                  <button className="p-2 rounded-xl text-slate-400 hover:text-red-600 transition-colors">
+                    <Settings className="h-5 w-5" />
+                  </button>
+                }
+              />
             </div>
           </div>
         </div>

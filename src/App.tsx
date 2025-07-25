@@ -2,8 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { PageConfigProvider } from './contexts/PageConfigContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { CompanyProvider } from './contexts/CompanyContext';
 import Layout from './components/layout/Layout';
 import AdminLayout from './pages/admin/AdminLayout';
+import AdminLogin from './pages/admin/AdminLogin';
 import OrderLayout from './components/layout/OrderLayout';
 import HomePage from './pages/HomePage';
 import PageWrapper from './components/PageWrapper';
@@ -61,6 +64,7 @@ const AppContent: React.FC = () => {
             </Route>
 
             {/* Admin Routes - Secure Path */}
+            <Route path="/secure-mgmt-portal-x7f9q2/login" element={<AdminLogin />} />
             <Route path="/secure-mgmt-portal-x7f9q2" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="requests" element={<ClientRequestsPage />} />
@@ -92,9 +96,13 @@ function App() {
     <ErrorBoundary>
       <PageConfigProvider>
         <LanguageProvider>
-          <Router>
-            <AppContent />
-          </Router>
+          <AuthProvider>
+            <CompanyProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </CompanyProvider>
+          </AuthProvider>
         </LanguageProvider>
       </PageConfigProvider>
     </ErrorBoundary>

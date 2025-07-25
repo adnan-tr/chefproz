@@ -46,6 +46,7 @@ interface OrderItem {
   unit_price: number;
   total_price: number;
   discount_percentage: number;
+  status?: 'original' | 'added' | 'removed';
 }
 
 interface Order {
@@ -97,6 +98,8 @@ const OrderEditPage: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [productSearchTerm, setProductSearchTerm] = useState('');
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
+  const [removedItems, setRemovedItems] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (orderId) {
@@ -214,26 +217,30 @@ const OrderEditPage: React.FC = () => {
     if (!order) return;
 
     try {
-      setSaving(true);
+      // Mark item as removed instead of deleting
+      setRemovedItems(prev => new Set([...prev, itemId]));
       
-      // Remove item from database using the correct method
-      await dbService.deleteOrderItem(itemId);
+      // Remove from added items if it was recently added
+      setAddedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(itemId);
+        return newSet;
+      });
       
-      // Recalculate order total
-      const remainingItems = order.items?.filter(item => item.id !== itemId) || [];
-      const newTotal = remainingItems.reduce((sum, item) => sum + item.total_price, 0);
-      await dbService.updateOrder(order.id, { final_amount: newTotal });
-      
-      // Refresh order data
-      await fetchOrder(order.id);
-      
-      alert(`Item removed successfully. Reason: ${reason}`);
+      alert(`Item marked as removed. Reason: ${reason}`);
     } catch (error) {
       console.error('Error removing order item:', error);
       alert('Failed to remove order item. Please try again.');
-    } finally {
-      setSaving(false);
     }
+  };
+
+  const handleRestoreItem = (itemId: string) => {
+    // Remove from removed items
+    setRemovedItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(itemId);
+      return newSet;
+    });
   };
 
   const handleSaveItemChanges = async () => {
@@ -280,12 +287,14 @@ const OrderEditPage: React.FC = () => {
 
   const calculateTotalAmount = () => {
     if (!order?.items) return 0;
-    return order.items.reduce((total, item) => {
-      const quantity = editingItems[item.id]?.quantity || item.quantity;
-      const unitPrice = editingItems[item.id]?.unit_price || item.unit_price;
-      const discount = editingItems[item.id]?.discount_percentage || item.discount_percentage;
-      return total + (quantity * unitPrice * (1 - discount / 100));
-    }, 0);
+    return order.items
+      .filter(item => !removedItems.has(item.id)) // Exclude removed items from total
+      .reduce((total, item) => {
+        const quantity = editingItems[item.id]?.quantity || item.quantity;
+        const unitPrice = editingItems[item.id]?.unit_price || item.unit_price;
+        const discount = editingItems[item.id]?.discount_percentage || item.discount_percentage;
+        return total + (quantity * unitPrice * (1 - discount / 100));
+      }, 0);
   };
 
   const loadProducts = async () => {
@@ -312,7 +321,12 @@ const OrderEditPage: React.FC = () => {
         discount_percentage: 0
       };
 
-      await dbService.addOrderItems([orderItem]);
+      const addedItems = await dbService.addOrderItems([orderItem]);
+      
+      // Mark this item as newly added
+      if (addedItems && addedItems.length > 0) {
+        setAddedItems(prev => new Set([...prev, addedItems[0].id]));
+      }
       
       // Reload order data to get updated items
       await fetchOrder(order!.id);
@@ -699,10 +713,22 @@ const OrderEditPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {order.items.map((item, index) => (
-                <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium">{item.product_name}</h4>
+              {order.items.map((item, index) => {
+                const isAdded = addedItems.has(item.id);
+                const isRemoved = removedItems.has(item.id);
+                const itemClasses = `flex justify-between items-center p-3 border rounded-lg ${
+                  isAdded ? 'bg-green-50 border-green-200' : 
+                  isRemoved ? 'bg-red-50 border-red-200 opacity-75' : ''
+                }`;
+                
+                return (
+                  <div key={index} className={itemClasses}>
+                    <div className="flex-1">
+                      <h4 className={`font-medium ${isRemoved ? 'line-through text-red-600' : ''}`}>
+                        {item.product_name}
+                        {isAdded && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">NEW</span>}
+                        {isRemoved && <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded">REMOVED</span>}
+                      </h4>
                     {isEditingItems ? (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
                         <div>
@@ -749,29 +775,41 @@ const OrderEditPage: React.FC = () => {
                       </p>
                     )}
                   </div>
-                  <div className="text-right flex items-center gap-2">
-                    <div>
-                      <p className="font-medium">
-                        €{(
-                          (editingItems[item.id]?.quantity || item.quantity) * 
-                          (editingItems[item.id]?.unit_price || item.unit_price) * 
-                          (1 - ((editingItems[item.id]?.discount_percentage || item.discount_percentage) / 100))
-                        ).toFixed(2)}
-                      </p>
+                    <div className="text-right flex items-center gap-2">
+                      <div>
+                        <p className={`font-medium ${isRemoved ? 'line-through text-red-600' : ''}`}>
+                          €{(
+                            (editingItems[item.id]?.quantity || item.quantity) * 
+                            (editingItems[item.id]?.unit_price || item.unit_price) * 
+                            (1 - ((editingItems[item.id]?.discount_percentage || item.discount_percentage) / 100))
+                          ).toFixed(2)}
+                          {isRemoved && <span className="ml-1 text-xs">(excluded)</span>}
+                        </p>
+                      </div>
+                      {isEditingItems && !isRemoved && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleRemoveItem(item.id, item.product_name)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {isEditingItems && isRemoved && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRestoreItem(item.id)}
+                          className="h-8 text-xs"
+                        >
+                          Restore
+                        </Button>
+                      )}
                     </div>
-                    {isEditingItems && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemoveItem(item.id, item.product_name)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
               <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between items-center font-medium">
                   <span>Total Amount:</span>

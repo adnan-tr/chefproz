@@ -14,11 +14,13 @@ import {
 
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCompany } from '@/contexts/CompanyContext';
 
 import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
   const { t } = useLanguage();
+  const { companyDetails } = useCompany();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -61,7 +63,7 @@ const Header: React.FC = () => {
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                {t('header.company_name')}
+                {companyDetails.name}
               </span>
               <p className="text-xs text-slate-500 -mt-1">{t('header.company_tagline')}</p>
             </div>

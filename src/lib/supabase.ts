@@ -841,5 +841,130 @@ export const dbService = {
       .eq('id', id);
     if (error) throw error;
     return true;
+  },
+
+  // Authentication functions
+  async verifyAdminLogin(email: string, password: string) {
+    const { data, error } = await supabase
+      .rpc('verify_admin_login', {
+        p_email: email,
+        p_password: password
+      });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async createAdminUserWithPassword(email: string, name: string, role: string, password: string, status: string = 'active') {
+    const { data, error } = await supabaseAdmin
+      .rpc('create_admin_user_with_password', {
+        p_email: email,
+        p_name: name,
+        p_role: role,
+        p_password: password,
+        p_status: status
+      });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getAdminCredentials() {
+    const { data, error } = await supabaseAdmin
+      .from('admin_credentials')
+      .select(`
+        id,
+        email,
+        last_login,
+        failed_login_attempts,
+        locked_until,
+        created_at,
+        admin_user:admin_users(*)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async resetAdminPassword(email: string, newPassword: string) {
+    // This would typically generate a reset token and send an email
+    // For now, we'll create a simple function to update the password
+    const { data, error } = await supabaseAdmin
+      .rpc('reset_admin_password', {
+        p_email: email,
+        p_new_password: newPassword
+      });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async unlockAdminAccount(email: string) {
+    const { data, error } = await supabaseAdmin
+      .from('admin_credentials')
+      .update({
+        failed_login_attempts: 0,
+        locked_until: null
+      })
+      .eq('email', email)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Company Details Management
+  async getCompanyDetails() {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('company_details')
+        .select('*')
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+        throw error;
+      }
+
+      return data || {
+        name: 'ChefGear Pro',
+        logo: '',
+        description: 'Professional kitchen equipment and solutions',
+        website: 'https://chefgear.com',
+        email: 'info@chefgear.com',
+        phone: '+90 (212) 555-1234',
+        address: 'Atatürk Mah. Ertuğrul Gazi Sok. No: 25, Kat: 3, 34758 Ataşehir/İstanbul',
+        social_media: {
+          facebook: 'https://facebook.com/chefgear',
+          twitter: 'https://twitter.com/chefgear',
+          instagram: 'https://instagram.com/chefgear',
+          linkedin: 'https://linkedin.com/company/chefgear'
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching company details:', error);
+      throw error;
+    }
+  },
+
+  async updateCompanyDetails(details: any) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('company_details')
+        .upsert({
+          id: 1, // Single row for company details
+          ...details,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating company details:', error);
+      throw error;
+    }
   }
 }
