@@ -81,75 +81,54 @@ const ContactPage: React.FC = () => {
     setSubmitError(null);
     
     try {
-  const messageData = {
-    name: formData.name,
-    company: formData.company,
-    email: formData.email,
-    phone: formData.phone,
-    message: formData.message,
-    request_type: formData.request_type,
-    sla_level: formData.sla_level,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-
-  await dbService.createContactMessage(messageData);
-
-  try {
-    await EmailService.sendContactFormNotification({
-      name: formData.name,
-      company: formData.company,
-      email: formData.email,
-      phone: formData.phone,
-      message: formData.message,
-      request_type: formData.request_type,
-      sla_level: formData.sla_level,
-      country: formData.country
-    });
-
-      await notifyN8N("contact-form", {
+      const messageData = {
         name: formData.name,
         company: formData.company,
         email: formData.email,
         phone: formData.phone,
-        country: formData.country,
-        sla_level: formData.sla_level,
-        request_type: formData.request_type,
         message: formData.message,
-        submitted_at: new Date().toISOString()
-      });
+        request_type: formData.request_type,
+        sla_level: formData.sla_level,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
-  } catch (emailError) {
-    console.error('Email notification failed:', emailError);
-  }
+      await dbService.createContactMessage(messageData);
 
-  // ✅ NEW: Notify n8n after successful storage & email
-  await notifyN8N('contact-form', {
-    name: formData.name,
-    company: formData.company,
-    email: formData.email,
-    phone: formData.phone,
-    country: formData.country,
-    sla_level: formData.sla_level,
-    request_type: formData.request_type,
-    message: formData.message,
-    submitted_at: new Date().toISOString()
-  });
+      try {
+        await EmailService.sendContactFormNotification({
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+          request_type: formData.request_type,
+          sla_level: formData.sla_level,
+          country: formData.country
+        });
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+      }
 
-  setSubmitSuccess(true);
-  setFormData({ ... }); // reset as before
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-} catch (error) {
-  console.error('Error submitting contact form:', error);
-  setSubmitError('There was an error submitting your request. Please try again.');
-} finally {
-  setIsSubmitting(false);
-}
+      // Notify n8n after successful storage & email
+      try {
+        await notifyN8N('contact-form', {
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          country: formData.country,
+          sla_level: formData.sla_level,
+          request_type: formData.request_type,
+          message: formData.message,
+          submitted_at: new Date().toISOString()
+        });
+      } catch (n8nError) {
+        console.error('N8N notification failed:', n8nError);
+      }
 
-      
       setSubmitSuccess(true);
-      
       setFormData({
         name: '',
         company: '',

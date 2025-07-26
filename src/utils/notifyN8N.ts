@@ -1,5 +1,4 @@
-
-export async function notifyN8N(workflowType, payload) {
+export async function notifyN8N(workflowType: string, payload: Record<string, any>): Promise<void> {
   try {
     const res = await fetch(`https://n8n-16nx.onrender.com/webhook/${workflowType}`, {
       method: "POST",
@@ -15,6 +14,6 @@ export async function notifyN8N(workflowType, payload) {
       console.log("n8n notified successfully.");
     }
   } catch (error) {
-    console.error("Error sending to n8n:", error.message);
+    console.error("Error sending to n8n:", error instanceof Error ? error.message : 'Unknown error');
   }
 }
