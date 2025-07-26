@@ -12,6 +12,7 @@ import { dbService } from '@/lib/supabase';
 import { EmailService } from '@/lib/emailService';
 import { AdvertisementService, type AdvertisementBrand } from '@/lib/advertisementService';
 import AdvertisementBar from '@/components/AdvertisementBar';
+import { notifyN8N } from '@/utils/notifyN8N';
 
 const ContactPage: React.FC = () => {
   const { t } = useLanguage();
@@ -80,35 +81,72 @@ const ContactPage: React.FC = () => {
     setSubmitError(null);
     
     try {
-      const messageData = {
+  const messageData = {
+    name: formData.name,
+    company: formData.company,
+    email: formData.email,
+    phone: formData.phone,
+    message: formData.message,
+    request_type: formData.request_type,
+    sla_level: formData.sla_level,
+    status: 'pending',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  await dbService.createContactMessage(messageData);
+
+  try {
+    await EmailService.sendContactFormNotification({
+      name: formData.name,
+      company: formData.company,
+      email: formData.email,
+      phone: formData.phone,
+      message: formData.message,
+      request_type: formData.request_type,
+      sla_level: formData.sla_level,
+      country: formData.country
+    });
+
+      await notifyN8N("contact-form", {
         name: formData.name,
         company: formData.company,
         email: formData.email,
         phone: formData.phone,
-        message: formData.message,
-        request_type: formData.request_type,
+        country: formData.country,
         sla_level: formData.sla_level,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      await dbService.createContactMessage(messageData);
-      
-      try {
-        await EmailService.sendContactFormNotification({
-          name: formData.name,
-          company: formData.company,
-          email: formData.email,
-          phone: formData.phone,
-          message: formData.message,
-          request_type: formData.request_type,
-          sla_level: formData.sla_level,
-          country: formData.country
-        });
-      } catch (emailError) {
-        console.error('Email notification failed:', emailError);
-      }
+        request_type: formData.request_type,
+        message: formData.message,
+        submitted_at: new Date().toISOString()
+      });
+
+  } catch (emailError) {
+    console.error('Email notification failed:', emailError);
+  }
+
+  // ✅ NEW: Notify n8n after successful storage & email
+  await notifyN8N('contact-form', {
+    name: formData.name,
+    company: formData.company,
+    email: formData.email,
+    phone: formData.phone,
+    country: formData.country,
+    sla_level: formData.sla_level,
+    request_type: formData.request_type,
+    message: formData.message,
+    submitted_at: new Date().toISOString()
+  });
+
+  setSubmitSuccess(true);
+  setFormData({ ... }); // reset as before
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+} catch (error) {
+  console.error('Error submitting contact form:', error);
+  setSubmitError('There was an error submitting your request. Please try again.');
+} finally {
+  setIsSubmitting(false);
+}
+
       
       setSubmitSuccess(true);
       
