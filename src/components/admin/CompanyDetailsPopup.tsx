@@ -24,7 +24,8 @@ import { useCompany } from '@/contexts/CompanyContext';
 
 interface CompanyDetails {
   name: string;
-  logo: string;
+  logo: string; // Base64 data for preview
+  logo_url: string; // Supabase storage URL
   description: string;
   website: string;
   email: string;
@@ -49,6 +50,7 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
   const [companyDetails, setCompanyDetails] = useState<CompanyDetails>({
     name: 'ChefGear Pro',
     logo: '',
+    logo_url: '',
     description: 'Professional kitchen equipment and solutions',
     website: 'https://chefgear.com',
     email: 'info@chefgear.com',
@@ -93,18 +95,40 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
     }));
   };
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
+      try {
+        // Show loading state
+        setLoading(true);
+        
+        // Read file for preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setCompanyDetails(prev => ({
+            ...prev,
+            logo: result
+          }));
+        };
+        reader.readAsDataURL(file);
+        
+        // Upload to Supabase storage
+        const logoUrl = await dbService.uploadLogoToStorage(file);
+        
+        // Update state with the URL
         setCompanyDetails(prev => ({
           ...prev,
-          logo: result
+          logo_url: logoUrl
         }));
-      };
-      reader.readAsDataURL(file);
+        
+        console.log('Logo uploaded successfully:', logoUrl);
+      } catch (error) {
+        console.error('Error uploading logo:', error);
+        alert('Failed to upload logo. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -214,16 +238,22 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                {companyDetails.logo ? (
+                {companyDetails.logo_url || companyDetails.logo ? (
                   <div className="space-y-4">
                     <img
-                      src={`${companyDetails.logo}?t=${Date.now()}`}
+                      src={companyDetails.logo_url || companyDetails.logo}
                       alt="Company Logo"
                       className="mx-auto max-h-32 object-contain"
                     />
                     <Button
                       variant="outline"
-                      onClick={() => handleInputChange('logo', '')}
+                      onClick={() => {
+                        setCompanyDetails(prev => ({
+                          ...prev,
+                          logo: '',
+                          logo_url: ''
+                        }));
+                      }}
                       size="sm"
                     >
                       Remove Logo

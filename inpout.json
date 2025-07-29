@@ -1,0 +1,345 @@
+{
+  "name": "Contact Form Handler Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-form",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "contact-form-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/contact_requests",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            },
+            {
+              "name": "Authorization", 
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "name": "company",
+              "value": "={{ $json.company }}"
+            },
+            {
+              "name": "country",
+              "value": "={{ $json.country }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "sla_level",
+              "value": "={{ $json.sla_level }}"
+            },
+            {
+              "name": "request_type",
+              "value": "={{ $json.request_type }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "file_attachment",
+              "value": "={{ $json.file_attachment }}"
+            },
+            {
+              "name": "status",
+              "value": "new"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "save-contact-request",
+      "name": "Save Contact Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/clients?email=eq.={{ $('Webhook Trigger').item.json.email }}&select=*",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "check-existing-client",
+      "name": "Check Existing Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "client-exists-condition",
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "client-exists-check",
+      "name": "Client Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/clients",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "company_name",
+              "value": "={{ $('Webhook Trigger').item.json.company || 'Individual' }}"
+            },
+            {
+              "name": "contact_person",
+              "value": "={{ $('Webhook Trigger').item.json.name }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $('Webhook Trigger').item.json.email }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $('Webhook Trigger').item.json.phone }}"
+            },
+            {
+              "name": "country",
+              "value": "={{ $('Webhook Trigger').item.json.country }}"
+            },
+            {
+              "name": "priority",
+              "value": "medium"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-new-client",
+      "name": "Create New Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7690348753:AAGmEIzr0vMjlv1NybXK3kbu-XMm3SXDGx0/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "5377982804"
+            },
+            {
+              "name": "text",
+              "value": "🆕 NEW CLIENT REQUEST\n\n👤 Name: {{ $('Webhook Trigger').item.json.name }}\n🏢 Company: {{ $('Webhook Trigger').item.json.company || 'Individual' }}\n📧 Email: {{ $('Webhook Trigger').item.json.email }}\n📱 Phone: {{ $('Webhook Trigger').item.json.phone }}\n🌍 Country: {{ $('Webhook Trigger').item.json.country }}\n📋 Request Type: {{ $('Webhook Trigger').item.json.request_type }}\n💬 Message: {{ $('Webhook Trigger').item.json.message }}\n\n✅ New client has been created in the database."
+            },
+            {
+              "name": "parse_mode",
+              "value": "HTML"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-new-client",
+      "name": "Telegram - New Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7690348753:AAGmEIzr0vMjlv1NybXK3kbu-XMm3SXDGx0/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "5377982804"
+            },
+            {
+              "name": "text",
+              "value": "🔄 EXISTING CLIENT REQUEST\n\n👤 Name: {{ $('Webhook Trigger').item.json.name }}\n🏢 Company: {{ $('Webhook Trigger').item.json.company || 'Individual' }}\n📧 Email: {{ $('Webhook Trigger').item.json.email }}\n📱 Phone: {{ $('Webhook Trigger').item.json.phone }}\n🌍 Country: {{ $('Webhook Trigger').item.json.country }}\n📋 Request Type: {{ $('Webhook Trigger').item.json.request_type }}\n💬 Message: {{ $('Webhook Trigger').item.json.message }}\n\n⚠️ This is a request from an existing client."
+            },
+            {
+              "name": "parse_mode",
+              "value": "HTML"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-existing-client",
+      "name": "Telegram - Existing Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 420]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Save Contact Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Contact Request": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Client": {
+      "main": [
+        [
+          {
+            "node": "Client Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Exists?": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Existing Client",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create New Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Client": {
+      "main": [
+        [
+          {
+            "node": "Telegram - New Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-26T10:00:00.000Z",
+  "versionId": "1"
+}

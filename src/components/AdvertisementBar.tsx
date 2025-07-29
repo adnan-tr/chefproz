@@ -35,8 +35,8 @@ const AdvertisementBar: React.FC<AdvertisementBarProps> = ({
     );
   }
 
-  // Duplicate brands to ensure continuous scrolling
-  const duplicatedBrands = [...brands, ...brands, ...brands];
+  // Duplicate brands multiple times to ensure continuous scrolling
+  const duplicatedBrands = [...brands, ...brands, ...brands, ...brands, ...brands];
 
   return (
     <div className="overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-sm">

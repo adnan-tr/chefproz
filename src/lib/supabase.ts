@@ -930,6 +930,7 @@ export const dbService = {
       return data || {
         name: 'ChefGear Pro',
         logo: '',
+        logo_url: 'https://whlkoratnodmqbmtmtqk.supabase.co/storage/v1/object/public/images//loho.png',
         description: 'Professional kitchen equipment and solutions',
         website: 'https://chefgear.com',
         email: 'info@chefgear.com',
@@ -948,6 +949,38 @@ export const dbService = {
     }
   },
 
+  async uploadLogoToStorage(file: File) {
+    try {
+      // Convert base64 to file if needed
+      let fileToUpload = file;
+      
+      // Generate a unique file name with timestamp
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo_${Date.now()}.${fileExt}`;
+      const filePath = `company/${fileName}`;
+      
+      // Upload to Supabase Storage
+      const { error } = await supabaseAdmin.storage
+        .from('images')
+        .upload(filePath, fileToUpload, {
+          cacheControl: '3600',
+          upsert: true
+        });
+      
+      if (error) throw error;
+      
+      // Get the public URL
+      const { data: { publicUrl } } = supabaseAdmin.storage
+        .from('images')
+        .getPublicUrl(filePath);
+      
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      throw error;
+    }
+  },
+  
   async updateCompanyDetails(details: any) {
     try {
       const { data, error } = await supabaseAdmin

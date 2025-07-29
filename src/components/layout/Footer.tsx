@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChefHat, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { ChefHat, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCompany } from '@/contexts/CompanyContext';
 
@@ -38,98 +38,58 @@ const Footer: React.FC = () => {
               {companyDetails.description}
             </p>
             
-            {/* Social Media */}
-            <div className="flex items-center space-x-4">
-              <span className="text-slate-400 font-medium text-sm uppercase tracking-wider">Follow Us</span>
-              <div className="flex space-x-3">
-                {companyDetails.social_media.facebook && (
-                  <a href={companyDetails.social_media.facebook} target="_blank" rel="noopener noreferrer" className="group relative">
-                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                      <Facebook className="h-5 w-5" />
-                    </div>
-                  </a>
-                )}
-                {companyDetails.social_media.twitter && (
-                  <a href={companyDetails.social_media.twitter} target="_blank" rel="noopener noreferrer" className="group relative">
-                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                      <Twitter className="h-5 w-5" />
-                    </div>
-                  </a>
-                )}
-                {companyDetails.social_media.instagram && (
-                  <a href={companyDetails.social_media.instagram} target="_blank" rel="noopener noreferrer" className="group relative">
-                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                      <Instagram className="h-5 w-5" />
-                    </div>
-                  </a>
-                )}
-                {companyDetails.social_media.linkedin && (
-                  <a href={companyDetails.social_media.linkedin} target="_blank" rel="noopener noreferrer" className="group relative">
-                    <div className="absolute inset-0 bg-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative p-3 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300">
-                      <Linkedin className="h-5 w-5" />
-                    </div>
-                  </a>
-                )}
-              </div>
-            </div>
+
           </div>
 
-          {/* Contact Information */}
+          {/* Social Media Section */}
           <div className="lg:col-span-7">
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50">
-              <h3 className="text-2xl font-bold text-white mb-8">{t('footer.contact_info')}</h3>
+              <h3 className="text-2xl font-bold text-white mb-8">Follow Us</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Email */}
-                <div className="group">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-xl border border-red-500/30 group-hover:border-red-400 transition-colors duration-300">
-                        <Mail className="h-6 w-6 text-red-400" />
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {companyDetails.social_media.facebook && (
+                  <div className="group">
+                    <a href={companyDetails.social_media.facebook} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center space-y-4">
+                      <div className="relative p-6 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300 group-hover:bg-red-600/20 border border-slate-600 group-hover:border-red-400">
+                        <Facebook className="h-10 w-10" />
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-white mb-2">{t('footer.email')}</h4>
-                      <p className="text-slate-300">{companyDetails.email}</p>
-                    </div>
+                      <span className="text-slate-300 font-medium">Facebook</span>
+                    </a>
                   </div>
-                </div>
-
-                {/* Phone */}
-                <div className="group">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-xl border border-red-500/30 group-hover:border-red-400 transition-colors duration-300">
-                        <Phone className="h-6 w-6 text-red-400" />
+                )}
+                
+                {companyDetails.social_media.twitter && (
+                  <div className="group">
+                    <a href={companyDetails.social_media.twitter} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center space-y-4">
+                      <div className="relative p-6 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300 group-hover:bg-red-600/20 border border-slate-600 group-hover:border-red-400">
+                        <Twitter className="h-10 w-10" />
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-white mb-2">{t('footer.phone')}</h4>
-                      <p className="text-slate-300">{companyDetails.phone}</p>
-                    </div>
+                      <span className="text-slate-300 font-medium">Twitter</span>
+                    </a>
                   </div>
-                </div>
-
-                {/* Address */}
-                <div className="md:col-span-2 group">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-xl border border-red-500/30 group-hover:border-red-400 transition-colors duration-300">
-                        <MapPin className="h-6 w-6 text-red-400" />
+                )}
+                
+                {companyDetails.social_media.instagram && (
+                  <div className="group">
+                    <a href={companyDetails.social_media.instagram} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center space-y-4">
+                      <div className="relative p-6 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300 group-hover:bg-red-600/20 border border-slate-600 group-hover:border-red-400">
+                        <Instagram className="h-10 w-10" />
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-white mb-2">{t('footer.address')}</h4>
-                      <p className="text-slate-300">
-                        {companyDetails.address}
-                      </p>
-                    </div>
+                      <span className="text-slate-300 font-medium">Instagram</span>
+                    </a>
                   </div>
-                </div>
+                )}
+                
+                {companyDetails.social_media.linkedin && (
+                  <div className="group">
+                    <a href={companyDetails.social_media.linkedin} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center space-y-4">
+                      <div className="relative p-6 bg-slate-700/50 rounded-xl text-slate-300 group-hover:text-white transition-colors duration-300 group-hover:bg-red-600/20 border border-slate-600 group-hover:border-red-400">
+                        <Linkedin className="h-10 w-10" />
+                      </div>
+                      <span className="text-slate-300 font-medium">LinkedIn</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

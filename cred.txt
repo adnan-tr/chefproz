@@ -1,0 +1,216 @@
+SELECT 
+  column_name, 
+  data_type, 
+  is_nullable, 
+  column_default 
+FROM 
+  information_schema.columns 
+WHERE 
+  table_schema = 'public' 
+  AND table_name = 'contact_requests';
+
+
+[
+  {
+    "column_name": "id",
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "column_name": "name",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "company",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "country",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "phone",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "email",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "sla_level",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "request_type",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "message",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "file_attachment",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "status",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp without time zone",
+    "is_nullable": "YES",
+    "column_default": "now()"
+  },
+  {
+    "column_name": "updated_at",
+    "data_type": "timestamp without time zone",
+    "is_nullable": "YES",
+    "column_default": "now()"
+  }
+]
+
+
+---------------------
+SELECT 
+  column_name, 
+  data_type, 
+  is_nullable, 
+  column_default 
+FROM 
+  information_schema.columns 
+WHERE 
+  table_schema = 'public' 
+  AND table_name = 'clients';
+
+
+[
+  {
+    "column_name": "id",
+    "data_type": "uuid",
+    "is_nullable": "NO",
+    "column_default": "gen_random_uuid()"
+  },
+  {
+    "column_name": "company_name",
+    "data_type": "text",
+    "is_nullable": "NO",
+    "column_default": null
+  },
+  {
+    "column_name": "contact_person",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "email",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "phone",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "country",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "city",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "address",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp without time zone",
+    "is_nullable": "YES",
+    "column_default": "now()"
+  },
+  {
+    "column_name": "usual_discount",
+    "data_type": "numeric",
+    "is_nullable": "YES",
+    "column_default": "0"
+  },
+  {
+    "column_name": "notes",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": null
+  },
+  {
+    "column_name": "priority",
+    "data_type": "text",
+    "is_nullable": "YES",
+    "column_default": "'medium'::text"
+  }
+]
+
+
+------
+supabase url: https://whlkoratnodmqbmtmtqk.supabase.co
+anonpublic: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwODc0MTMsImV4cCI6MjA2NjY2MzQxM30.adJwb6qCv6rSRDRnUXbh0tJZiEYuzbWfT4tuMtbkrSs
+
+service_rolesecret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobGtvcmF0bm9kbXFibXRtdHFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTA4NzQxMywiZXhwIjoyMDY2NjYzNDEzfQ.6XvS_T9myeCbKU3iiQh-iwrmApcP6WdiaWsfGmpJ5A8
+
+
+------
+curl 'https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/contact_requests?select=*' \
+-H "apikey: SUPABASE_CLIENT_ANON_KEY" \
+-H "Authorization: Bearer SUPABASE_CLIENT_ANON_KEY"
+
+
+
+
+curl 'https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/clients?select=*' \
+-H "apikey: SUPABASE_CLIENT_ANON_KEY" \
+-H "Authorization: Bearer SUPABASE_CLIENT_ANON_KEY"
+          
+
+
+
+
+curl -X POST 'https://whlkoratnodmqbmtmtqk.supabase.co/rest/v1/contact_requests' \
+-H "apikey: SUPABASE_CLIENT_ANON_KEY" \
+-H "Authorization: Bearer SUPABASE_CLIENT_ANON_KEY" \
+-H "Content-Type: application/json" \
+-H "Prefer: return=minimal" \
+-d '{ "some_column": "someValue", "other_column": "otherValue" }'
+
+----
+Telegram ıd
+7690348753:AAGmEIzr0vMjlv1NybXK3kbu-XMm3SXDGx0

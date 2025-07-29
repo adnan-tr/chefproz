@@ -4,6 +4,7 @@ import { dbService } from '@/lib/supabase';
 interface CompanyDetails {
   name: string;
   logo: string;
+  logo_url?: string;
   description: string;
   website: string;
   email: string;

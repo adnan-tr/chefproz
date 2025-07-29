@@ -17,16 +17,13 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { dbService } from '@/lib/supabase';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import AccordionSlider from '@/components/AccordionSlider';
+import '@/styles/accordion-slider.css';
 
 const HomePage: React.FC = () => {
   const { t } = useLanguage();
   const [transformationImages, setTransformationImages] = useState<any[]>([]);
-  const [productImages, setProductImages] = useState<any[]>([]);
+  const [accordionImages, setAccordionImages] = useState<{ url: string; title: string; category?: string; subcategory?: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
   // Removed Glide.js refs as we're using Swiper now
@@ -58,12 +55,125 @@ const HomePage: React.FC = () => {
     const fetchProductsWithImages = async () => {
       try {
         // Fetch limited products for better performance
-        const products = await dbService.getProducts(undefined, 0, 50);
+        const products = await dbService.getProducts(undefined, 0, 100);
         // Filter products that have image URLs and shuffle them
         const productsWithImages = products?.filter(product => 
           product.image_url && product.image_url.trim() !== ''
         ) || [];
-        setProductImages(shuffleArray(productsWithImages).slice(0, 8)); // Reduced to 8 products
+        
+        // Shuffle and set products for the main slider
+        const shuffledProducts = shuffleArray(productsWithImages);
+        
+        // Prepare images for accordion slider with category information
+        const categories = ['refrigeration', 'inoksan', 'kitchen_tools', 'hotel_equipment'];
+        const usedSubcategories = new Set();
+        
+        // First pass: try to get one product from each unique subcategory-category combination
+        // Group products by subcategory-category combination to avoid duplicates
+        const subcategoryGroups: Record<string, any[]> = {};
+        
+        shuffledProducts.forEach(product => {
+          // Skip products without subcategory, category, or image
+          if (!product.subcategory || !product.category || !product.image_url || 
+              product.subcategory.trim() === '' || product.category.trim() === '') return;
+          
+          // Create a unique key combining category and subcategory
+          const groupKey = `${product.category.toLowerCase()}-${product.subcategory.toLowerCase()}`;
+          
+          // Create a group for this combination if it doesn't exist
+          if (!subcategoryGroups[groupKey]) {
+            subcategoryGroups[groupKey] = [];
+          }
+          
+          // Add this product to its group
+          subcategoryGroups[groupKey].push(product);
+        });
+        
+        // Take one product from each unique category-subcategory combination
+        let accordionSlides: Array<{
+          url: string;
+          title: string;
+          category?: string;
+          subcategory?: string;
+          productId?: string;
+          slug?: string;
+        }> = [];
+        
+        Object.keys(subcategoryGroups).forEach(groupKey => {
+          // Skip if we already have 9 slides
+          if (accordionSlides.length >= 9) return;
+          
+          const product = subcategoryGroups[groupKey][0];
+          
+          // Add this product to our slides
+          accordionSlides.push({
+            url: product.image_url,
+            title: product.name || t('products.item', 'Product'),
+            category: product.category || 'default',
+            subcategory: product.subcategory,
+            productId: product.id,
+            slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+          });
+          
+          // Mark this subcategory as used
+          usedSubcategories.add(product.subcategory);
+        });
+        
+        // If we don't have 9 products yet, try to get one from each category
+        if (accordionSlides.length < 9) {
+          categories.forEach(category => {
+            // Skip if we already have 9 slides
+            if (accordionSlides.length >= 9) return;
+            
+            // Find products from this category that we haven't used yet
+            const productsFromCategory = shuffledProducts.filter(p => 
+              (p.category?.toLowerCase().includes(category) || 
+              p.page_reference?.toLowerCase().includes(category)) &&
+              !accordionSlides.some(slide => slide.url === p.image_url) &&
+              (!p.subcategory || !usedSubcategories.has(p.subcategory))
+            );
+            
+            // Take one product from this category if available
+            if (productsFromCategory.length > 0) {
+              const product = productsFromCategory[0];
+              accordionSlides.push({
+                url: product.image_url,
+                title: product.name || t('products.item', 'Product'),
+                category: category,
+                subcategory: product.subcategory,
+                productId: product.id,
+                slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+              });
+              
+              // Mark this subcategory as used if it exists
+              if (product.subcategory) {
+                usedSubcategories.add(product.subcategory);
+              }
+            }
+          });
+        }
+        
+        // If we still don't have 9 products, fill with random ones
+        if (accordionSlides.length < 9) {
+          const remainingProducts = shuffledProducts
+            .filter(p => !accordionSlides.some(slide => slide.url === p.image_url))
+            .slice(0, 9 - accordionSlides.length);
+            
+          remainingProducts.forEach(product => {
+            accordionSlides.push({
+              url: product.image_url,
+              title: product.name || t('products.item', 'Product'),
+              category: product.category || 'default',
+              subcategory: product.subcategory,
+              productId: product.id,
+              slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+            });
+          });
+        }
+        
+        // Limit to 9 slides
+        accordionSlides = accordionSlides.slice(0, 9);
+        setAccordionImages(accordionSlides);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -267,93 +377,28 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Product Slideshow - Glide.js Carousel */}
+      {/* Accordion Slider Section - Featured Products */}
       <section className="py-16 bg-white">
-        <div className="relative">
-          <div className="absolute inset-0 bg-white"></div>
-          <div className="px-4 sm:px-6 lg:px-8 relative">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                {t('products.featured', 'Featured Products')}
-              </h2>
-              <div className="w-20 h-1 bg-red-500 mx-auto"></div>
-            </div>
-            
-            {productsLoading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-                <p className="mt-4 text-slate-600">{t('products.loading', 'Loading products...')}</p>
-              </div>
-            ) : productImages.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-slate-600">{t('products.no_images', 'No product images available.')}</p>
-              </div>
-            ) : (
-              <div>
-                <Swiper
-                  modules={[Navigation, Pagination, Autoplay]}
-                  spaceBetween={20}
-                  slidesPerView={2}
-                  breakpoints={{
-                    320: {
-                      slidesPerView: 1,
-                      spaceBetween: 10,
-                    },
-                    768: {
-                      slidesPerView: 2,
-                      spaceBetween: 20,
-                    },
-                  }}
-                  navigation={{
-                    nextEl: '.swiper-button-next-custom',
-                    prevEl: '.swiper-button-prev-custom',
-                  }}
-                  pagination={{
-                    clickable: true,
-                    bulletClass: 'swiper-pagination-bullet-custom',
-                    bulletActiveClass: 'swiper-pagination-bullet-active-custom',
-                  }}
-                  autoplay={{
-                    delay: 5000,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                  }}
-                  loop={true}
-                  className="featured-products-swiper"
-                >
-                  {productImages.map((product) => (
-                    <SwiperSlide key={product.id}>
-                      <div className="relative overflow-hidden rounded-xl shadow-lg h-[300px] group">
-                        <img 
-                          src={product.image_url} 
-                          alt={product.name} 
-                          className="w-full h-full object-contain bg-white transition-transform duration-500 ease-in-out group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end">
-                          <div className="p-4 text-white w-full transform transition-transform duration-500 ease-out">
-                            <h3 className="text-lg font-bold mb-1">{product.name}</h3>
-                            <p className="text-xs opacity-90 line-clamp-2">{product.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                
-                {/* Custom Navigation Buttons */}
-                <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all duration-300 z-10">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all duration-300 z-10">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            )}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">
+              {t('products.featured', 'Featured Products')}
+            </h2>
+            <div className="w-20 h-1 bg-red-500 mx-auto"></div>
           </div>
+          
+          {productsLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+              <p className="mt-4 text-slate-600">{t('products.loading', 'Loading products...')}</p>
+            </div>
+          ) : accordionImages.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-slate-600">{t('products.no_images', 'No product images available.')}</p>
+            </div>
+          ) : (
+            <AccordionSlider images={accordionImages} />
+          )}
         </div>
       </section>
 
@@ -436,8 +481,10 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+
+
       {/* Product Range */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+      <section className="py-20 bg-slate-50">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-800 mb-6">
