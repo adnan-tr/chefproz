@@ -49,15 +49,6 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
   };
 
   // Filter out images without URLs and duplicate categories/subcategories
-  // Shuffle the images array to randomize on each refresh
-  const shuffleArray = (array: any[]) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
 
   // Filter out images without URLs but keep all products passed from HomePage
   // Don't slice to 7 as HomePage already handles this
@@ -251,11 +242,11 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
                       {/* Dynamic icon based on category */}
                       {getCategoryIcon(image.category || 'default')}
                       <h3 className="aviaccordion-title text-xs sm:text-sm font-bold">
-                        {image.category?.charAt(0).toUpperCase() + image.category?.slice(1).toLowerCase()}
+                        {image.category ? (image.category.charAt(0).toUpperCase() + image.category.slice(1).toLowerCase()) : 'Product'}
                       </h3>
                       {image.subcategory && (
                         <p className="aviaccordion-title text-xs font-medium">
-                          {image.subcategory.charAt(0).toUpperCase() + image.subcategory.slice(1).toLowerCase()}
+                          {image.subcategory ? (image.subcategory.charAt(0).toUpperCase() + image.subcategory.slice(1).toLowerCase()) : ''}
                         </p>
                       )}
                     </div>

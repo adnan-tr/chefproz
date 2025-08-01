@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, AlertCircle, Upload, X, Send } from 'lucide-react';
+import { CheckCircle, AlertCircle, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -117,7 +117,7 @@ const ContactPage: React.FC = () => {
         request_type: formData.request_type,
         sla_level: formData.sla_level,
         country: formData.country,
-        file_attachment: attachmentUrl,
+        file_attachment: attachmentUrl || undefined,
         status: 'pending',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -135,8 +135,8 @@ const ContactPage: React.FC = () => {
           request_type: formData.request_type,
           sla_level: formData.sla_level,
           country: formData.country,
-          file_attachment: attachmentUrl,
-          attachment_url: attachmentUrl
+          file_attachment: attachmentUrl || undefined,
+          attachment_url: attachmentUrl || undefined
         });
         
         if (!emailResult.success) {

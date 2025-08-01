@@ -14,7 +14,6 @@ import {
   Building2,
   Trophy,
   Target,
-  Zap,
   Award
 } from 'lucide-react';
 import { useEffect, useState } from 'react';

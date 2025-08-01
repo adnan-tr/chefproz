@@ -53,7 +53,7 @@ export default async function handler(req: any, res: any) {
     console.error('Error sending emails:', error);
     res.status(500).json({ 
       success: false, 
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     });
   }
 }

@@ -96,7 +96,7 @@ export class EmailService {
       console.error('Error details:', JSON.stringify(error, null, 2));
       
       // If it's a CORS error, provide helpful information
-      if (error.message && error.message.includes('CORS')) {
+      if (error instanceof Error && error.message && error.message.includes('CORS')) {
         console.error('CORS Error: Email API calls should be made from backend, not frontend.');
         console.error('Please deploy the backend API endpoint or use a serverless function.');
       }
