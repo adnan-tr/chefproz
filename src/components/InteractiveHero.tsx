@@ -176,34 +176,16 @@ const InteractiveHero: React.FC = () => {
                 alt={`Hero ${index + 1}`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/60"></div>
+              <div className="absolute inset-0 bg-black/30"></div>
             </div>
           ))}
         </div>
 
         {/* Mobile Content */}
-        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-4 leading-tight">
-              Professional Kitchen
-              <span className="block text-red-500">Solutions</span>
-            </h1>
-            <p className="text-lg text-gray-200 mb-6">
-              Transform your culinary space with our premium industrial kitchen equipment
-            </p>
-            <div className="flex flex-col gap-3">
-              <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                Get Quote
-              </button>
-              <button className="border-2 border-white text-white hover:bg-white hover:text-slate-900 px-6 py-3 rounded-lg font-semibold transition-colors">
-                View Portfolio
-              </button>
-            </div>
-          </div>
-
+        <div className="relative z-10 h-full flex flex-col justify-end items-center px-4 pb-8">
           {/* Mobile Service Cards */}
           <div className="w-full max-w-sm">
-            <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4 mb-4">
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-3">
               {panes.map((pane, index) => {
                 const Icon = pane.icon;
                 const isActive = index === activePane;
@@ -211,23 +193,23 @@ const InteractiveHero: React.FC = () => {
                 return (
                   <div
                     key={index}
-                    className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300 mb-2 last:mb-0 ${
+                    className={`flex items-center p-2 rounded-lg cursor-pointer transition-all duration-300 mb-1 last:mb-0 ${
                       isActive ? 'bg-white/20' : 'hover:bg-white/10'
                     }`}
                     onClick={() => setActivePane(index)}
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${
                       pane.color.includes('red') ? 'bg-red-500' : 
                       pane.color.includes('blue') ? 'bg-blue-500' : 
                       pane.color.includes('green') ? 'bg-green-500' : 
                       pane.color.includes('yellow') ? 'bg-yellow-500' : 'bg-purple-500'
                     }`}>
-                      <Icon className="h-5 w-5 text-white" />
+                      <Icon className="h-4 w-4 text-white" />
                     </div>
                     <div className="flex-1 text-left">
-                      <h3 className="text-white font-semibold text-sm">{pane.title}</h3>
+                      <h3 className="text-white font-semibold text-xs">{pane.title}</h3>
                       {isActive && (
-                        <p className="text-gray-300 text-xs mt-1">{pane.description}</p>
+                        <p className="text-gray-300 text-xs mt-1 leading-tight">{pane.description}</p>
                       )}
                     </div>
                   </div>

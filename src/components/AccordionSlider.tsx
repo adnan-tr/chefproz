@@ -158,7 +158,14 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
   const handleSectionClick = (e: React.MouseEvent, image: any) => {
     e.preventDefault();
     
-    // Create a slug from category or subcategory
+    // On mobile, just show the image modal instead of navigating
+    if (window.innerWidth < 640) {
+      setSelectedImage(image.url);
+      setIsModalOpen(true);
+      return;
+    }
+    
+    // On desktop, navigate to the product category page
     const categoryName = image.subcategory || image.category || image.title;
     const slug = categoryName.toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
@@ -166,7 +173,6 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .trim();
     
-    // Navigate to the product category page
     navigate(`/products/${slug}`);
   };
 
@@ -220,8 +226,9 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
                         </h3>
                       </div>
                       
+                      {/* Hide category/subcategory on mobile devices */}
                       {image.category && image.subcategory && (
-                        <div className="flex items-center justify-center space-x-2 text-sm opacity-90">
+                        <div className="hidden sm:flex items-center justify-center space-x-2 text-sm opacity-90">
                           <Tag className="h-4 w-4" />
                           <span className="bg-red-600/20 px-2 py-1 rounded">{image.category}</span>
                           <span>•</span>
