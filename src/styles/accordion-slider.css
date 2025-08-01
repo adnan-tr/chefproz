@@ -118,6 +118,17 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+  .aviaccordion-container {
+    height: 350px;
+    border-radius: 18px;
+  }
+  
+  .aviaccordion-title {
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .aviaccordion-container {
     height: 300px;
@@ -126,21 +137,23 @@
   
   .aviaccordion-title {
     font-size: 14px;
+    letter-spacing: 0.5px;
   }
   
   .aviaccordion-preview {
-    padding: 15px;
+    padding: 12px;
   }
 }
 
 @media (max-width: 640px) {
   .aviaccordion-container {
-    height: 250px;
-    border-radius: 12px;
+    height: 280px;
+    border-radius: 14px;
   }
   
   .aviaccordion-title {
-    font-size: 12px;
+    font-size: 13px;
+    letter-spacing: 0.3px;
   }
   
   .aviaccordion-preview {
@@ -150,15 +163,41 @@
 
 @media (max-width: 480px) {
   .aviaccordion-container {
-    height: 200px;
+    height: 250px;
+    border-radius: 12px;
+  }
+  
+  .aviaccordion-title {
+    font-size: 11px;
+    letter-spacing: 0.2px;
+    line-height: 1.1;
+  }
+  
+  .aviaccordion-preview {
+    padding: 8px;
+  }
+  
+  .aviaccordion-preview-title-pos {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 375px) {
+  .aviaccordion-container {
+    height: 220px;
     border-radius: 10px;
   }
   
   .aviaccordion-title {
     font-size: 10px;
+    letter-spacing: 0.1px;
   }
   
   .aviaccordion-preview {
-    padding: 8px;
+    padding: 6px;
+  }
+  
+  .aviaccordion-preview-title-pos {
+    padding: 6px;
   }
 }

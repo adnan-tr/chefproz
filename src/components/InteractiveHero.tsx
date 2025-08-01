@@ -86,8 +86,9 @@ const InteractiveHero: React.FC = () => {
   }, [panes.length]);
 
   return (
-    <section className="relative h-[70vh] min-h-[500px] max-h-[700px] overflow-hidden bg-gradient-to-b from-black to-[#0f1011]">
-      <div className="flex h-full p-1 sm:p-2">
+    <section className="relative h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Desktop/Tablet Layout */}
+      <div className="hidden sm:flex h-full p-1 sm:p-2">
         {panes.map((pane, index) => {
           const Icon = pane.icon;
           const isActive = index === activePane;
@@ -102,7 +103,7 @@ const InteractiveHero: React.FC = () => {
               onClick={() => setActivePane(index)}
               onMouseEnter={() => setActivePane(index)}
             >
-              {/* Background with image - no zoom effect */}
+              {/* Background with image */}
               {backgroundImage ? (
                 <img 
                   src={backgroundImage}
@@ -158,9 +159,87 @@ const InteractiveHero: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Mobile Layout */}
+      <div className="sm:hidden h-full relative">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          {heroImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === activePane ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={image}
+                alt={`Hero ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/60"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile Content */}
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4 leading-tight">
+              Professional Kitchen
+              <span className="block text-red-500">Solutions</span>
+            </h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Transform your culinary space with our premium industrial kitchen equipment
+            </p>
+            <div className="flex flex-col gap-3">
+              <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                Get Quote
+              </button>
+              <button className="border-2 border-white text-white hover:bg-white hover:text-slate-900 px-6 py-3 rounded-lg font-semibold transition-colors">
+                View Portfolio
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Service Cards */}
+          <div className="w-full max-w-sm">
+            <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4 mb-4">
+              {panes.map((pane, index) => {
+                const Icon = pane.icon;
+                const isActive = index === activePane;
+                
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300 mb-2 last:mb-0 ${
+                      isActive ? 'bg-white/20' : 'hover:bg-white/10'
+                    }`}
+                    onClick={() => setActivePane(index)}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
+                      pane.color.includes('red') ? 'bg-red-500' : 
+                      pane.color.includes('blue') ? 'bg-blue-500' : 
+                      pane.color.includes('green') ? 'bg-green-500' : 
+                      pane.color.includes('yellow') ? 'bg-yellow-500' : 'bg-purple-500'
+                    }`}>
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="text-white font-semibold text-sm">{pane.title}</h3>
+                      {isActive && (
+                        <p className="text-gray-300 text-xs mt-1">{pane.description}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
       
-      {/* Indicators - Hidden as requested */}
-      <div className="hidden absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-40">
+      {/* Indicators for Desktop */}
+      <div className="hidden sm:block absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-40">
         {panes.map((_, index) => (
           <button
             key={index}

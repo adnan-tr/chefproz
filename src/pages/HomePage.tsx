@@ -41,6 +41,8 @@ const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('HomePage useEffect running');
+    
     // Fetch transformation images from Supabase storage
     const fetchTransformationImages = async () => {
       try {
@@ -394,6 +396,203 @@ const HomePage: React.FC = () => {
     },
   ];
 
+  // Debug function to force refresh of products
+  const forceRefreshProducts = () => {
+    console.log('Force refreshing products');
+    // Fetch products again
+    const fetchProductsAgain = async () => {
+      try {
+        setProductsLoading(true);
+        // Fetch more products to ensure we have enough after filtering
+        const products = await dbService.getProducts(undefined, 0, 500);
+        console.log('Total products fetched:', products?.length || 0);
+        
+        // Filter products that have image URLs
+        const productsWithImages = products?.filter(product => 
+          product.image_url && product.image_url.trim() !== ''
+        ) || [];
+        console.log('Products with images:', productsWithImages.length);
+        
+        // Shuffle and set products for the main slider
+        const shuffledProducts = shuffleArray(productsWithImages);
+        
+        // Prepare images for accordion slider with category information
+        const categories = ['refrigeration', 'inoksan', 'kitchen_tools', 'hotel_equipment'];
+        const usedCategories = new Set();
+        const usedSubcategories = new Set();
+        
+        // First pass: try to get one product from each unique subcategory-category combination
+        // Group products by subcategory-category combination to avoid duplicates
+        const subcategoryGroups: Record<string, any[]> = {};
+        
+        shuffledProducts.forEach(product => {
+          // Skip products without subcategory, category, or image
+          if (!product.subcategory || !product.category || !product.image_url || 
+              product.subcategory.trim() === '' || product.category.trim() === '') return;
+          
+          // Create a unique key combining category and subcategory
+          const groupKey = `${product.category.toLowerCase()}-${product.subcategory.toLowerCase()}`;
+          
+          // Create a group for this combination if it doesn't exist
+          if (!subcategoryGroups[groupKey]) {
+            subcategoryGroups[groupKey] = [];
+          }
+          
+          // Add this product to its group
+          subcategoryGroups[groupKey].push(product);
+        });
+        
+        // Take one product from each unique category-subcategory combination
+        let accordionSlides: Array<{
+          url: string;
+          title: string;
+          category?: string;
+          subcategory?: string;
+          productId?: string;
+          slug?: string;
+        }> = [];
+        
+        // Randomize the order of category-subcategory groups
+        const shuffledGroupKeys = shuffleArray(Object.keys(subcategoryGroups));
+        
+        shuffledGroupKeys.forEach(groupKey => {
+          // Skip if we already have 7 slides
+          if (accordionSlides.length >= 7) return;
+          
+          // Skip if we already used this category
+          const [category] = groupKey.split('-');
+          if (usedCategories.has(category)) return;
+          
+          const product = subcategoryGroups[groupKey][0];
+          
+          // Add this product to our slides
+          accordionSlides.push({
+            url: product.image_url,
+            title: product.name || t('products.item', 'Product'),
+            category: product.category || 'default',
+            subcategory: product.subcategory,
+            productId: product.id,
+            slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+          });
+          
+          // Mark this category and subcategory as used
+          usedCategories.add(category);
+          usedSubcategories.add(product.subcategory);
+        });
+        
+        // If we don't have 7 products yet, try to get one from each category
+        if (accordionSlides.length < 7) {
+          // Shuffle categories to randomize selection
+          const shuffledCategories = shuffleArray([...categories]);
+          
+          shuffledCategories.forEach(category => {
+            // Skip if we already have 7 slides
+            if (accordionSlides.length >= 7) return;
+            
+            // Skip if we already used this category
+            if (usedCategories.has(category)) return;
+            
+            // Find products from this category that we haven't used yet
+            const productsFromCategory = shuffledProducts.filter(p => 
+              (p.category?.toLowerCase().includes(category) || 
+              p.page_reference?.toLowerCase().includes(category)) &&
+              !accordionSlides.some(slide => slide.url === p.image_url) &&
+              p.image_url && p.image_url.trim() !== '' &&
+              (!p.subcategory || !usedSubcategories.has(p.subcategory))
+            );
+            
+            // Take one product from this category if available
+            if (productsFromCategory.length > 0) {
+              const product = productsFromCategory[0];
+              accordionSlides.push({
+                url: product.image_url,
+                title: product.name || t('products.item', 'Product'),
+                category: category,
+                subcategory: product.subcategory,
+                productId: product.id,
+                slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+              });
+              
+              // Mark this category as used
+              usedCategories.add(category);
+              
+              // Mark this subcategory as used if it exists
+              if (product.subcategory) {
+                usedSubcategories.add(product.subcategory);
+              }
+            }
+          });
+        }
+        
+        // If we still don't have enough products, add more with less strict filtering
+        if (accordionSlides.length < 7) {
+          console.log('Not enough products yet, adding more with less strict filtering');
+          
+          // First try with some filtering
+          const remainingProducts = shuffledProducts
+            .filter(p => 
+              // Must have an image
+              p.image_url && p.image_url.trim() !== '' &&
+              // Must not be already used
+              !accordionSlides.some(slide => slide.url === p.image_url)
+              // Removed category/subcategory restrictions to get more products
+            )
+            .slice(0, 7 - accordionSlides.length);
+          
+          console.log('Found additional products:', remainingProducts.length);
+            
+          remainingProducts.forEach(product => {
+            accordionSlides.push({
+              url: product.image_url,
+              title: product.name || t('products.item', 'Product'),
+              category: product.category || 'default',
+              subcategory: product.subcategory || '',
+              productId: product.id,
+              slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+            });
+          });
+        }
+        
+        // If we STILL don't have 7 products, add duplicates if necessary
+        if (accordionSlides.length < 7 && productsWithImages.length > 0) {
+          console.log('Still need more products, adding duplicates if necessary');
+          
+          // Keep adding products until we reach 7, even if they're duplicates
+          while (accordionSlides.length < 7 && productsWithImages.length > 0) {
+            // Get a random product from the available ones
+            const randomIndex = Math.floor(Math.random() * productsWithImages.length);
+            const product = productsWithImages[randomIndex];
+            
+            accordionSlides.push({
+              url: product.image_url,
+              title: product.name || t('products.item', 'Product'),
+              category: product.category || 'default',
+              subcategory: product.subcategory || '',
+              productId: product.id,
+              slug: product.name?.toLowerCase().replace(/\s+/g, '-')
+            });
+          }
+        }
+        
+        // Limit to 7 slides and shuffle again to randomize the order
+        accordionSlides = shuffleArray(accordionSlides.slice(0, 7));
+        console.log('HomePage setting accordionSlides:', accordionSlides.length);
+        console.log('HomePage accordionSlides details:', accordionSlides.map(slide => ({
+          title: slide.title,
+          category: slide.category,
+          subcategory: slide.subcategory
+        })));
+        setAccordionImages(accordionSlides);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    
+    fetchProductsAgain();
+  };
+
   return (
     <div className="min-h-screen">
       {/* Interactive Hero Section */}
@@ -411,7 +610,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -445,7 +644,13 @@ const HomePage: React.FC = () => {
             <h2 className="text-3xl font-bold text-slate-800 mb-4">
               {t('products.featured', 'Featured Products')}
             </h2>
-            <div className="w-20 h-1 bg-red-500 mx-auto"></div>
+            <div className="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
+            <button 
+              onClick={forceRefreshProducts}
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+            >
+              Refresh Products
+            </button>
           </div>
           
           {productsLoading ? (
@@ -469,55 +674,55 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Achievements Section - Enhanced for Trust Building */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-gray-100">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">
+      <section className="py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div className="px-2 sm:px-4 lg:px-8">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-4 sm:mb-6">
               {t('achievements.title', 'Why Choose Hublinq')}
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-4">
                 {t('achievements.subtitle', 'Excellence recognized by industry leaders and satisfied clients worldwide. Your trusted partner for professional kitchen solutions. We speak many native languages to serve our diverse clientele.')}
               </p>
-            <div className="flex justify-center items-center mt-8 space-x-8">
+            <div className="flex flex-col sm:flex-row justify-center items-center mt-6 sm:mt-8 space-y-4 sm:space-y-0 sm:space-x-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-red-600">500+</div>
-                <div className="text-sm text-slate-600">Projects Completed</div>
+                <div className="text-2xl sm:text-3xl font-bold text-red-600">500+</div>
+                <div className="text-xs sm:text-sm text-slate-600">Projects Completed</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-red-600">15+</div>
-                <div className="text-sm text-slate-600">Years Experience</div>
+                <div className="text-2xl sm:text-3xl font-bold text-red-600">15+</div>
+                <div className="text-xs sm:text-sm text-slate-600">Years Experience</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-red-600">98%</div>
-                <div className="text-sm text-slate-600">Client Satisfaction</div>
+                <div className="text-2xl sm:text-3xl font-bold text-red-600">98%</div>
+                <div className="text-xs sm:text-sm text-slate-600">Client Satisfaction</div>
               </div>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4">
             {achievements.map((achievement, index) => {
               const Icon = achievement.icon;
               return (
-                <Card key={index} className="elegant-card group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white border-0 shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="flex items-start space-x-6">
-                      <div className={`flex-shrink-0 w-16 h-16 bg-gradient-to-br ${achievement.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
-                        <Icon className="h-8 w-8 text-white" />
+                <Card key={index} className="elegant-card group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border-0 shadow-lg">
+                  <CardContent className="p-3 sm:p-4 lg:p-6">
+                    <div className="flex items-start space-x-3 sm:space-x-4 lg:space-x-6">
+                      <div className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br ${achievement.color} rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-red-600 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-800 mb-2 sm:mb-3 group-hover:text-red-600 transition-colors">
                           {achievement.title}
                         </h3>
-                        <p className="text-slate-600 leading-relaxed mb-4">
+                        <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-3 sm:mb-4">
                           {achievement.description}
                         </p>
                         <div className="flex items-center space-x-1">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                            <Star key={i} className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
                           ))}
-                          <span className="ml-2 text-sm text-slate-500">{t('achievements.rating', 'Quality Promise')}</span>
+                          <span className="ml-2 text-xs sm:text-sm text-slate-500">{t('achievements.rating', 'Quality Promise')}</span>
                         </div>
-                        <div className="mt-3 text-xs text-red-600 font-semibold">
+                        <div className="mt-2 sm:mt-3 text-xs text-red-600 font-semibold">
                           ✓ Passion-Driven & Heart-Crafted
                         </div>
                       </div>
