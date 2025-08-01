@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Package, Tag, Info, Star } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { dbService } from '@/lib/supabase';
 
 interface Product {
@@ -22,7 +21,6 @@ interface Product {
 const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
-  const { t } = useLanguage();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
