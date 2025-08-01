@@ -174,7 +174,13 @@ const InteractiveHero: React.FC = () => {
               <img
                 src={image}
                 alt={`Hero ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
+                style={{ 
+                  objectFit: 'cover', 
+                  objectPosition: 'center center',
+                  minHeight: '100vh',
+                  imageRendering: 'high-quality'
+                }}
               />
               <div className="absolute inset-0 bg-black/30"></div>
             </div>

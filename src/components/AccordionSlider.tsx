@@ -149,6 +149,14 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
     }, 3000);
   };
 
+  const handleTouchStart = (index: number) => {
+    // For mobile devices, trigger on touch
+    if (autoTriggerRef.current) {
+      clearInterval(autoTriggerRef.current);
+    }
+    setCurrentSlide(index);
+  };
+
   const handleImageClick = (e: React.MouseEvent, imageUrl: string) => {
     e.preventDefault();
     setSelectedImage(imageUrl);
@@ -196,6 +204,7 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
               }}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={() => handleTouchStart(index)}
             >
               <div 
                 className="aviaccordion-slide-link cursor-pointer relative" 
@@ -239,20 +248,22 @@ const AccordionSlider: React.FC<AccordionSliderProps> = ({ images }) => {
                   </div>
                 )}
                 
-                {/* Preview text - show when not active */}
+                {/* Preview text - show when not active, smaller text and always at bottom */}
                 <div 
                   className={`aviaccordion-preview ${index === currentSlide ? 'opacity-0' : 'opacity-100'}`}
                   style={{ width: `${previewWidth}px` }}
                 >
                   <div className="aviaccordion-preview-title-pos">
-                    <div className="text-center flex flex-col items-center justify-end h-full space-y-1 pb-4">
-                      {/* Dynamic icon based on category */}
-                      {getCategoryIcon(image.category || 'default')}
-                      <h3 className="aviaccordion-title text-xs sm:text-sm font-bold">
+                    <div className="text-center flex flex-col items-center justify-end h-full space-y-1 pb-2">
+                      {/* Dynamic icon based on category - smaller on mobile */}
+                      <div className="text-white mb-1">
+                        {getCategoryIcon(image.category || 'default')}
+                      </div>
+                      <h3 className="aviaccordion-title text-xs font-bold text-white leading-tight">
                         {image.category ? (image.category.charAt(0).toUpperCase() + image.category.slice(1).toLowerCase()) : 'Product'}
                       </h3>
                       {image.subcategory && (
-                        <p className="aviaccordion-title text-xs font-medium">
+                        <p className="aviaccordion-title text-xs font-medium text-white/80 leading-tight">
                           {image.subcategory ? (image.subcategory.charAt(0).toUpperCase() + image.subcategory.slice(1).toLowerCase()) : ''}
                         </p>
                       )}

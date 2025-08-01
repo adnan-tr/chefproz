@@ -1,6 +1,6 @@
 import { Language } from '@/types';
 
-// 🌐 Language List
+// 🌐 Language List - First line: en, ar, tr | Second line: ru, es
 export const languages: Language[] = [
   {
     code: 'en',
@@ -30,20 +30,20 @@ export const languages: Language[] = [
     active: true,
   },
   {
-    code: 'es',
-    name: 'Spanish',
-    nativeName: 'Español',
-    country: 'Spain',
-    flagUrl: 'https://flagcdn.com/es.svg',
-    dir: 'ltr',
-    active: true,
-  },
-  {
     code: 'ru',
     name: 'Russian',
     nativeName: 'Русский',
     country: 'Russia',
     flagUrl: 'https://flagcdn.com/ru.svg',
+    dir: 'ltr',
+    active: true,
+  },
+  {
+    code: 'es',
+    name: 'Spanish',
+    nativeName: 'Español',
+    country: 'Spain',
+    flagUrl: 'https://flagcdn.com/es.svg',
     dir: 'ltr',
     active: true,
   },

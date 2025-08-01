@@ -15,10 +15,30 @@ export const LanguageBar: React.FC = () => {
       </div>
       
       <div className="relative px-2 sm:px-4 lg:px-6">
-        <div className="flex items-center justify-center flex-wrap gap-1 sm:gap-2">
-          <span className="font-semibold text-white flex-shrink-0 text-xs sm:text-sm tracking-tight mb-1 sm:mb-0">{t('language.select')}:</span>
-          <div className="flex items-center flex-wrap gap-1 sm:gap-2 justify-center">
-            {languages.map((language) => (
+        <div className="flex flex-col items-center justify-center gap-2">
+          <span className="font-semibold text-white flex-shrink-0 text-xs sm:text-sm tracking-tight">{t('language.select')}:</span>
+          
+          {/* First row: en, ar, tr */}
+          <div className="flex items-center gap-1 sm:gap-2 justify-center">
+            {languages.slice(0, 3).map((language) => (
+              <button
+                key={language.code}
+                onClick={() => setCurrentLanguage(language.code)}
+                className={`group relative flex items-center space-x-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm ${
+                  currentLanguage === language.code
+                    ? 'bg-red-600 text-white font-semibold shadow-lg'
+                    : 'bg-slate-700/50 text-slate-300 hover:bg-red-600/80 hover:text-white border border-slate-600/50 hover:border-red-500/50'
+                }`}
+              >
+                <img src={language.flagUrl} alt={language.country} className="w-4 h-3 object-cover rounded-sm" />
+                <span className="text-xs sm:text-sm font-medium">{language.name}</span>
+              </button>
+            ))}
+          </div>
+          
+          {/* Second row: ru, es */}
+          <div className="flex items-center gap-1 sm:gap-2 justify-center">
+            {languages.slice(3, 5).map((language) => (
               <button
                 key={language.code}
                 onClick={() => setCurrentLanguage(language.code)}

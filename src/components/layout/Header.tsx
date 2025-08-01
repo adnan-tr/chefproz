@@ -56,17 +56,29 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             {companyDetails.logo_url || companyDetails.logo ? (
-              <img 
-                src={companyDetails.logo_url || companyDetails.logo} 
-                alt={`${companyDetails.name} Logo`}
-                className="h-12 w-auto object-contain"
-              />
+              <div className="flex items-center space-x-3">
+                <img 
+                  src={companyDetails.logo_url || companyDetails.logo} 
+                  alt={`${companyDetails.name} Logo`}
+                  className="h-12 w-auto object-contain"
+                />
+                <div className="hidden sm:block">
+                  <p className="text-sm font-light text-slate-600 italic tracking-wide" 
+                     style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
+                    Skip the trip. Trust the Link
+                  </p>
+                </div>
+              </div>
             ) : (
               <div>
                 <span className="text-2xl font-bold text-slate-800">
                   {companyDetails.name}
                 </span>
                 <p className="text-xs text-slate-500 -mt-1">{t('header.company_tagline')}</p>
+                <p className="text-sm font-light text-slate-600 italic tracking-wide" 
+                   style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
+                  Skip the trip. Trust the Link
+                </p>
               </div>
             )}
           </Link>
