@@ -376,7 +376,7 @@ const QuotationBuilderPage: React.FC = () => {
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(28);
       doc.setFont('helvetica', 'bold');
-      doc.text('ChefPro Equipment', 45, 28);
+      doc.text('Hublinq Equipment', 45, 28);
       
       doc.setFontSize(14);
       doc.setFont('helvetica', 'normal');
@@ -385,8 +385,8 @@ const QuotationBuilderPage: React.FC = () => {
       // Contact Info in header with better layout
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.text('www.chefpro.com', pageWidth - 20, 18, { align: 'right' });
-      doc.text('info@chefpro.com', pageWidth - 20, 26, { align: 'right' });
+      doc.text('www.hublinq.com', pageWidth - 20, 18, { align: 'right' });
+      doc.text('info@hublinq.com', pageWidth - 20, 26, { align: 'right' });
       doc.text('+1 (555) 123-4567', pageWidth - 20, 34, { align: 'right' });
       doc.text('123 Kitchen Street, Culinary City, CC 12345', pageWidth - 20, 42, { align: 'right' });
       
@@ -448,7 +448,7 @@ const QuotationBuilderPage: React.FC = () => {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(100, 100, 100);
-      doc.text('www.chefpro.com', leftColumnX, 125);
+      doc.text('www.hublinq.com', leftColumnX, 125);
       
       // Quotation Title with enhanced styling
       if (quotation.title) {
@@ -638,11 +638,11 @@ const QuotationBuilderPage: React.FC = () => {
       doc.setFontSize(10);
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.text('Thank you for choosing ChefPro Equipment!', pageWidth / 2, currentPageHeight - 15, { align: 'center' });
+      doc.text('Thank you for choosing Hublinq Equipment!', pageWidth / 2, currentPageHeight - 15, { align: 'center' });
       
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
-      doc.text('Professional Kitchen Solutions | www.chefpro.com | info@chefpro.com', pageWidth / 2, currentPageHeight - 8, { align: 'center' });
+      doc.text('Professional Kitchen Solutions | www.hublinq.com | info@hublinq.com', pageWidth / 2, currentPageHeight - 8, { align: 'center' });
       
       // Save the PDF
       doc.save(`quotation-${quotation.quotation_number}.pdf`);
@@ -2315,12 +2315,12 @@ const QuotationBuilderPage: React.FC = () => {
                 <div className="bg-red-600 text-white p-4 sm:p-6 rounded-t-lg">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                     <div>
-                      <h1 className="text-xl sm:text-2xl font-bold">ChefPro Equipment</h1>
+                      <h1 className="text-xl sm:text-2xl font-bold">Hublinq Equipment</h1>
                       <p className="text-red-100 text-sm sm:text-base">Professional Kitchen Solutions</p>
                     </div>
                     <div className="text-left sm:text-right text-sm">
-                      <p>www.chefpro.com</p>
-                      <p>info@chefpro.com</p>
+                      <p>www.hublinq.com</p>
+                      <p>info@hublinq.com</p>
                       <p>+1 (555) 123-4567</p>
                     </div>
                   </div>
@@ -2465,7 +2465,7 @@ const QuotationBuilderPage: React.FC = () => {
                 {/* Footer */}
                 <div className="p-6 text-center text-gray-500 text-sm bg-gray-50 rounded-b-lg">
                   <p className="font-semibold">Thank you for your business!</p>
-                  <p className="mt-1">ChefPro Equipment - Professional Kitchen Solutions</p>
+                  <p className="mt-1">Hublinq Equipment - Professional Kitchen Solutions</p>
                 </div>
               </div>
 

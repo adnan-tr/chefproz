@@ -1,0 +1,10 @@
+const panes = document.querySelectorAll('.pane');
+let activePaneIndex = 0;
+
+panes.forEach((pane, index) => {
+	pane.addEventListener('click', () => {
+		panes[activePaneIndex].classList.remove('active');
+		activePaneIndex = index;
+		panes[activePaneIndex].classList.add('active');
+	});
+});

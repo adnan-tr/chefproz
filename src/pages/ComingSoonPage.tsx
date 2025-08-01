@@ -58,7 +58,7 @@ const ComingSoonPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <div className="flex items-center gap-2 text-slate-600">
                   <Mail className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">info@chefpro.com</span>
+                  <span className="text-sm">info@hublinq.com</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-600">
                   <Phone className="h-4 w-4 text-blue-600" />

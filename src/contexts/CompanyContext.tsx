@@ -25,18 +25,18 @@ interface CompanyContextType {
 }
 
 const defaultCompanyDetails: CompanyDetails = {
-  name: 'ChefGear Pro',
+  name: 'Hublinq',
   logo: '',
-  description: 'Professional kitchen equipment and solutions',
-  website: 'https://chefgear.com',
-  email: 'info@chefgear.com',
+  description: 'Professional kitchen equipment and solutions - We speak many native languages to serve our diverse clientele',
+  website: 'https://hublinq.com',
+  email: 'info@hublinq.com',
   phone: '+90 (212) 555-1234',
   address: 'Atatürk Mah. Ertuğrul Gazi Sok. No: 25, Kat: 3, 34758 Ataşehir/İstanbul',
   social_media: {
-    facebook: 'https://facebook.com/chefgear',
-    twitter: 'https://twitter.com/chefgear',
-    instagram: 'https://instagram.com/chefgear',
-    linkedin: 'https://linkedin.com/company/chefgear'
+    facebook: 'https://facebook.com/hublinq',
+    twitter: 'https://twitter.com/hublinq',
+    instagram: 'https://instagram.com/hublinq',
+    linkedin: 'https://linkedin.com/company/hublinq'
   }
 };
 

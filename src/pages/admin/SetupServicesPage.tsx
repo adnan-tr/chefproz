@@ -277,7 +277,7 @@ export default function SetupServicesPage() {
   return (
     <>
       <Helmet>
-        <title>Setup Services | ChefPro Secure Portal</title>
+        <title>Setup Services | Hublinq Secure Portal</title>
       </Helmet>
       <div className="container mx-auto py-8">
           <Card className="max-w-3xl mx-auto">

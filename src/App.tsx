@@ -9,6 +9,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
 import OrderLayout from './components/layout/OrderLayout';
 import HomePage from './pages/HomePage';
+import ProductPage from './pages/ProductPage';
 import PageWrapper from './components/PageWrapper';
 
 import InoksanPage from './pages/InoksanPage';
@@ -55,6 +56,7 @@ const AppContent: React.FC = () => {
             {/* Public Routes */}
             <Route path="/" element={<Layout />}>
               <Route index element={<PageWrapper pageId="home"><HomePage /></PageWrapper>} />
+              <Route path="product/:productId" element={<ProductPage />} />
               <Route path="inoksan" element={<PageWrapper pageId="inoksan"><InoksanPage /></PageWrapper>} />
               <Route path="refrigeration" element={<PageWrapper pageId="refrigeration"><RefrigerationPage /></PageWrapper>} />
               <Route path="kitchen-tools" element={<PageWrapper pageId="kitchen-tools"><KitchenToolsPage /></PageWrapper>} />

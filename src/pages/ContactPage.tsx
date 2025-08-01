@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { CheckCircle, AlertCircle, Upload, X, Send } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Send, CheckCircle, AlertCircle } from 'lucide-react';
-import { dbService } from '@/lib/supabase';
+import { dbService, supabase } from '@/lib/supabase';
 import { EmailService } from '@/lib/emailService';
-import { AdvertisementService, type AdvertisementBrand } from '@/lib/advertisementService';
-import AdvertisementBar from '@/components/AdvertisementBar';
-import { notifyN8N } from '@/utils/notifyN8N';
+
+import { AdvertisementBar } from '@/components/AdvertisementBar';
+import { advertisementService, AdvertisementBrand } from '@/lib/advertisementService';
 
 const ContactPage: React.FC = () => {
   const { t } = useLanguage();
@@ -39,7 +39,7 @@ const ContactPage: React.FC = () => {
     const loadBrands = async () => {
       try {
         setBrandsLoading(true);
-        const brands = await AdvertisementService.getActiveBrands();
+        const brands = await advertisementService.getActiveBrands();
         setAdvertisementBrands(brands);
       } catch (error) {
         console.error('Error loading advertisement brands:', error);
@@ -81,6 +81,33 @@ const ContactPage: React.FC = () => {
     setSubmitError(null);
     
     try {
+      let attachmentUrl = null;
+      
+      // Handle file upload if a file is selected
+      if (formData.file) {
+        try {
+          const fileName = `contact-attachments/${Date.now()}-${formData.file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('images')
+            .upload(fileName, formData.file);
+          
+          if (uploadError) {
+            throw uploadError;
+          }
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('images')
+            .getPublicUrl(fileName);
+          
+          attachmentUrl = publicUrl;
+        } catch (uploadError) {
+          console.error('File upload failed:', uploadError);
+          setSubmitError('Failed to upload attachment. Please try again.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const messageData = {
         name: formData.name,
         company: formData.company,
@@ -89,6 +116,8 @@ const ContactPage: React.FC = () => {
         message: formData.message,
         request_type: formData.request_type,
         sla_level: formData.sla_level,
+        country: formData.country,
+        file_attachment: attachmentUrl,
         status: 'pending',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -97,7 +126,7 @@ const ContactPage: React.FC = () => {
       await dbService.createContactMessage(messageData);
 
       try {
-        await EmailService.sendContactFormNotification({
+        const emailResult = await EmailService.sendContactFormNotification({
           name: formData.name,
           company: formData.company,
           email: formData.email,
@@ -105,27 +134,22 @@ const ContactPage: React.FC = () => {
           message: formData.message,
           request_type: formData.request_type,
           sla_level: formData.sla_level,
-          country: formData.country
+          country: formData.country,
+          file_attachment: attachmentUrl,
+          attachment_url: attachmentUrl
         });
+        
+        if (!emailResult.success) {
+          console.error('Email notification failed:', emailResult.error);
+          // Still show success to user since the form was saved to database
+          console.warn('Form was saved but email notification failed');
+        } else {
+          console.log('Email notifications sent successfully');
+        }
       } catch (emailError) {
         console.error('Email notification failed:', emailError);
-      }
-
-      // Notify n8n after successful storage & email
-      try {
-        await notifyN8N('contact-form', {
-          name: formData.name,
-          company: formData.company,
-          email: formData.email,
-          phone: formData.phone,
-          country: formData.country,
-          sla_level: formData.sla_level,
-          request_type: formData.request_type,
-          message: formData.message,
-          submitted_at: new Date().toISOString()
-        });
-      } catch (n8nError) {
-        console.error('N8N notification failed:', n8nError);
+        // Still show success to user since the form was saved to database
+        console.warn('Form was saved but email notification failed');
       }
 
       setSubmitSuccess(true);

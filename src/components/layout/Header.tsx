@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
- 
   Phone, 
   Factory, 
   Snowflake, 
-  ChefHat, 
   Hotel,
   FileText,
   Menu,
-  X,
-
+  X
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCompany } from '@/contexts/CompanyContext';
@@ -28,7 +25,7 @@ const Header: React.FC = () => {
     { name: t('nav.home'), href: '/', icon: Home },
     { name: t('nav.inoksan'), href: '/inoksan', icon: Factory },
     { name: t('nav.refrigeration'), href: '/refrigeration', icon: Snowflake },
-    { name: 'PrepLinq', href: '/kitchen-tools', icon: ChefHat },
+    { name: 'PrepLinq', href: '/kitchen-tools', icon: FileText },
     { name: 'Hotel Hub', href: '/hotel-equipment', icon: Hotel },
     { name: t('nav.special_request'), href: '/special-request', icon: FileText },
     { name: t('nav.contact'), href: '/contact', icon: Phone },
@@ -58,28 +55,20 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-              {companyDetails.logo_url || companyDetails.logo ? (
-                <img 
-                  src={companyDetails.logo_url || companyDetails.logo} 
-                  alt={`${companyDetails.name} Logo`}
-                  className="h-8 w-8 object-contain"
-                  onError={(e) => {
-                    // Fallback to ChefHat icon if logo fails to load
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-              ) : null}
-              <ChefHat className={`h-8 w-8 text-white ${companyDetails.logo_url || companyDetails.logo ? 'hidden' : ''}`} />
-            </div>
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                {companyDetails.name}
-              </span>
-              <p className="text-xs text-slate-500 -mt-1">{t('header.company_tagline')}</p>
-            </div>
+            {companyDetails.logo_url || companyDetails.logo ? (
+              <img 
+                src={companyDetails.logo_url || companyDetails.logo} 
+                alt={`${companyDetails.name} Logo`}
+                className="h-12 w-auto object-contain"
+              />
+            ) : (
+              <div>
+                <span className="text-2xl font-bold text-slate-800">
+                  {companyDetails.name}
+                </span>
+                <p className="text-xs text-slate-500 -mt-1">{t('header.company_tagline')}</p>
+              </div>
+            )}
           </Link>
 
           {/* Desktop Navigation */}

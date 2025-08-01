@@ -1,18 +1,25 @@
 export interface Product {
   id: string;
   name: string;
-  code: string;
+  code?: string;
   supplier_code?: string;
   price: number;
   category: string;
   subcategory?: string;
-  description: string;
+  description?: string;
   image_url: string;
-  page_reference: string;
+  page_reference?: string;
   brand?: string;
   discount?: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
+  supplier?: string;
+  // New technical specification fields
+  hz?: number;
+  voltage?: number;
+  power?: number;
+  litre?: number;
+  kg?: number;
 }
 
 export interface ProductTranslation {

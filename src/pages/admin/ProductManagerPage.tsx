@@ -29,6 +29,17 @@ const ProductManagerPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [pageFilter, setPageFilter] = useState('all');
+  const [subcategoryFilter, setSubcategoryFilter] = useState('all');
+  const [supplierFilter, setSupplierFilter] = useState('all');
+  const [priceRangeFilter, setPriceRangeFilter] = useState('all');
+  const [codeFilter, setCodeFilter] = useState('');
+  const [supplierCodeFilter, setSupplierCodeFilter] = useState('');
+  // Technical specification filters
+  const [frequencyFilter, setFrequencyFilter] = useState('');
+  const [voltageFilter, setVoltageFilter] = useState('');
+  const [powerFilter, setPowerFilter] = useState('');
+  const [capacityFilter, setCapacityFilter] = useState('');
+  const [weightFilter, setWeightFilter] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [viewingProduct, setViewingProduct] = useState<any>(null);
@@ -47,7 +58,13 @@ const ProductManagerPage: React.FC = () => {
     image_url: '',
     page_reference: '',
     supplier_cost: '',
-    supplier: ''
+    supplier: '',
+    // Technical specifications
+    hz: '',
+    voltage: '',
+    power: '',
+    litre: '',
+    kg: ''
   });
 
   useEffect(() => {
@@ -63,17 +80,69 @@ const ProductManagerPage: React.FC = () => {
       
       const pageRef = pageFilter === 'all' ? undefined : pageFilter;
       const category = categoryFilter === 'all' ? undefined : categoryFilter;
+      const subcategory = subcategoryFilter === 'all' ? undefined : subcategoryFilter;
+      const supplier = supplierFilter === 'all' ? undefined : supplierFilter;
       const search = searchTerm.trim() || undefined;
+      const code = codeFilter.trim() || undefined;
+      const supplierCode = supplierCodeFilter.trim() || undefined;
       
-      const [data, count] = await Promise.all([
-        dbService.getProducts(pageRef, 0, ITEMS_PER_PAGE, search, category),
-        dbService.getProductsCount(pageRef, search, category)
-      ]);
+      // Apply client-side filtering for comprehensive search
+      let filteredData = await dbService.getProducts(pageRef, 0, ITEMS_PER_PAGE * 10, search, category);
       
-      setProducts(data || []);
-      setTotalCount(count);
-      setHasMore((data?.length || 0) >= ITEMS_PER_PAGE);
-      setCurrentPage(0);
+      if (filteredData) {
+        // Apply additional filters
+        filteredData = filteredData.filter(product => {
+          // Subcategory filter
+          if (subcategory && product.subcategory !== subcategory) return false;
+          
+          // Supplier filter
+          if (supplier && product.supplier !== supplier) return false;
+          
+          // Code filter
+          if (code && !product.code?.toLowerCase().includes(code.toLowerCase())) return false;
+          
+          // Supplier code filter
+          if (supplierCode && !product.supplier_code?.toLowerCase().includes(supplierCode.toLowerCase())) return false;
+          
+          // Technical specification filters
+          if (frequencyFilter && (!product.hz || !product.hz.toString().includes(frequencyFilter))) return false;
+          if (voltageFilter && (!product.voltage || !product.voltage.toString().includes(voltageFilter))) return false;
+          if (powerFilter && (!product.power || !product.power.toString().includes(powerFilter))) return false;
+          if (capacityFilter && (!product.litre || !product.litre.toString().includes(capacityFilter))) return false;
+          if (weightFilter && (!product.kg || !product.kg.toString().includes(weightFilter))) return false;
+          
+          // Price range filter
+          if (priceRangeFilter !== 'all') {
+            const price = product.price || 0;
+            switch (priceRangeFilter) {
+              case 'under-100':
+                if (price >= 100) return false;
+                break;
+              case '100-500':
+                if (price < 100 || price >= 500) return false;
+                break;
+              case '500-1000':
+                if (price < 500 || price >= 1000) return false;
+                break;
+              case 'over-1000':
+                if (price < 1000) return false;
+                break;
+            }
+          }
+          
+          return true;
+        });
+        
+        // Paginate the filtered results
+        const startIndex = 0;
+        const endIndex = ITEMS_PER_PAGE;
+        const paginatedData = filteredData.slice(startIndex, endIndex);
+        
+        setProducts(paginatedData || []);
+        setTotalCount(filteredData.length);
+        setHasMore(filteredData.length > ITEMS_PER_PAGE);
+        setCurrentPage(0);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -114,6 +183,12 @@ const ProductManagerPage: React.FC = () => {
         ...formData,
         price: parseFloat(formData.price) || 0,
         supplier_cost: parseFloat(formData.supplier_cost) || 0,
+        // Technical specifications - convert to numbers if provided
+        hz: formData.hz ? parseFloat(formData.hz) : undefined,
+        voltage: formData.voltage ? parseFloat(formData.voltage) : undefined,
+        power: formData.power ? parseFloat(formData.power) : undefined,
+        litre: formData.litre ? parseFloat(formData.litre) : undefined,
+        kg: formData.kg ? parseFloat(formData.kg) : undefined,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
@@ -147,6 +222,12 @@ const ProductManagerPage: React.FC = () => {
         ...formData,
         price: parseFloat(formData.price) || 0,
         supplier_cost: parseFloat(formData.supplier_cost) || 0,
+        // Technical specifications - convert to numbers if provided
+        hz: formData.hz ? parseFloat(formData.hz) : undefined,
+        voltage: formData.voltage ? parseFloat(formData.voltage) : undefined,
+        power: formData.power ? parseFloat(formData.power) : undefined,
+        litre: formData.litre ? parseFloat(formData.litre) : undefined,
+        kg: formData.kg ? parseFloat(formData.kg) : undefined,
         updated_at: new Date().toISOString()
       };
 
@@ -197,7 +278,13 @@ const ProductManagerPage: React.FC = () => {
       image_url: '',
       page_reference: '',
       supplier_cost: '',
-      supplier: ''
+      supplier: '',
+      // Technical specifications
+      hz: '',
+      voltage: '',
+      power: '',
+      litre: '',
+      kg: ''
     });
   };
 
@@ -214,7 +301,13 @@ const ProductManagerPage: React.FC = () => {
       image_url: product.image_url || '',
       page_reference: product.page_reference || '',
       supplier_cost: product.supplier_cost?.toString() || '',
-      supplier: product.supplier || ''
+      supplier: product.supplier || '',
+      // Technical specifications
+      hz: product.hz?.toString() || '',
+      voltage: product.voltage?.toString() || '',
+      power: product.power?.toString() || '',
+      litre: product.litre?.toString() || '',
+      kg: product.kg?.toString() || ''
     });
   };
 
@@ -225,11 +318,13 @@ const ProductManagerPage: React.FC = () => {
     }, 500); // Increased debounce time for better performance
     
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, categoryFilter, pageFilter]);
+  }, [searchTerm, categoryFilter, pageFilter, subcategoryFilter, supplierFilter, priceRangeFilter, codeFilter, supplierCodeFilter, frequencyFilter, voltageFilter, powerFilter, capacityFilter, weightFilter]);
 
   // Optimized filter options fetching
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [allPages, setAllPages] = useState<string[]>([]);
+  const [allSubcategories, setAllSubcategories] = useState<string[]>([]);
+  const [allSuppliers, setAllSuppliers] = useState<string[]>([]);
   const [filterOptionsLoaded, setFilterOptionsLoaded] = useState(false);
   
   useEffect(() => {
@@ -243,8 +338,15 @@ const ProductManagerPage: React.FC = () => {
           dbService.getProductPageReferences()
         ]);
         
+        // Get all products to extract subcategories and suppliers
+        const allProducts = await dbService.getProducts(undefined, 0, 1000);
+        const subcategories = [...new Set(allProducts?.map(p => p.subcategory).filter(Boolean))].sort();
+        const suppliers = [...new Set(allProducts?.map(p => p.supplier).filter(Boolean))].sort();
+        
         setAllCategories(categories);
         setAllPages(pages);
+        setAllSubcategories(subcategories);
+        setAllSuppliers(suppliers);
         setFilterOptionsLoaded(true);
       } catch (error) {
         console.error('Error fetching filter options:', error);
@@ -269,6 +371,47 @@ const ProductManagerPage: React.FC = () => {
   
   const handlePageChange = useCallback((value: string) => {
     setPageFilter(value);
+  }, []);
+  
+  const handleSubcategoryChange = useCallback((value: string) => {
+    setSubcategoryFilter(value);
+  }, []);
+  
+  const handleSupplierChange = useCallback((value: string) => {
+    setSupplierFilter(value);
+  }, []);
+  
+  const handlePriceRangeChange = useCallback((value: string) => {
+    setPriceRangeFilter(value);
+  }, []);
+  
+  const handleCodeChange = useCallback((value: string) => {
+    setCodeFilter(value);
+  }, []);
+  
+  const handleSupplierCodeChange = useCallback((value: string) => {
+    setSupplierCodeFilter(value);
+  }, []);
+
+  // Technical specification filter handlers
+  const handleFrequencyChange = useCallback((value: string) => {
+    setFrequencyFilter(value);
+  }, []);
+
+  const handleVoltageChange = useCallback((value: string) => {
+    setVoltageFilter(value);
+  }, []);
+
+  const handlePowerChange = useCallback((value: string) => {
+    setPowerFilter(value);
+  }, []);
+
+  const handleCapacityChange = useCallback((value: string) => {
+    setCapacityFilter(value);
+  }, []);
+
+  const handleWeightChange = useCallback((value: string) => {
+    setWeightFilter(value);
   }, []);
 
   const getPageBadge = (page: string) => {
@@ -415,6 +558,63 @@ const ProductManagerPage: React.FC = () => {
                   onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                 />
               </div>
+              
+              {/* Technical Specifications */}
+              <div className="col-span-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Technical Specifications (Optional)</h3>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div>
+                    <Label htmlFor="hz">Frequency (Hz)</Label>
+                    <Input
+                      id="hz"
+                      type="number"
+                      placeholder="50/60"
+                      value={formData.hz}
+                      onChange={(e) => setFormData({...formData, hz: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="voltage">Voltage (V)</Label>
+                    <Input
+                      id="voltage"
+                      type="number"
+                      placeholder="220/380"
+                      value={formData.voltage}
+                      onChange={(e) => setFormData({...formData, voltage: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="power">Power (W)</Label>
+                    <Input
+                      id="power"
+                      type="number"
+                      placeholder="1500"
+                      value={formData.power}
+                      onChange={(e) => setFormData({...formData, power: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="litre">Capacity (L)</Label>
+                    <Input
+                      id="litre"
+                      type="number"
+                      placeholder="50"
+                      value={formData.litre}
+                      onChange={(e) => setFormData({...formData, litre: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="kg">Weight (kg)</Label>
+                    <Input
+                      id="kg"
+                      type="number"
+                      placeholder="25"
+                      value={formData.kg}
+                      onChange={(e) => setFormData({...formData, kg: e.target.value})}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex justify-end space-x-2 mt-4">
               <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
@@ -483,44 +683,202 @@ const ProductManagerPage: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10"
-                />
+          <div className="space-y-4">
+            {/* Search and Primary Filters */}
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search products by name..."
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <Select value={categoryFilter} onValueChange={handleCategoryChange}>
+                <SelectTrigger className="w-full lg:w-48">
+                  <SelectValue placeholder="Filter by Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {allCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={pageFilter} onValueChange={handlePageChange}>
+                <SelectTrigger className="w-full lg:w-48">
+                  <SelectValue placeholder="Filter by Page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Pages</SelectItem>
+                  {allPages.map((page) => (
+                    <SelectItem key={page} value={page}>
+                      {page?.replace('-', ' ').toUpperCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Additional Filters */}
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+               <div>
+                 <Label className="text-sm font-medium text-gray-700">Subcategory</Label>
+                 <Select value={subcategoryFilter} onValueChange={handleSubcategoryChange}>
+                   <SelectTrigger className="w-full">
+                     <SelectValue placeholder="All Subcategories" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="all">All Subcategories</SelectItem>
+                     {allSubcategories.map((subcategory) => (
+                       <SelectItem key={subcategory} value={subcategory}>
+                         {subcategory}
+                       </SelectItem>
+                     ))}
+                   </SelectContent>
+                 </Select>
+               </div>
+               
+               <div>
+                 <Label className="text-sm font-medium text-gray-700">Supplier</Label>
+                 <Select value={supplierFilter} onValueChange={handleSupplierChange}>
+                   <SelectTrigger className="w-full">
+                     <SelectValue placeholder="All Suppliers" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="all">All Suppliers</SelectItem>
+                     {allSuppliers.map((supplier) => (
+                       <SelectItem key={supplier} value={supplier}>
+                         {supplier}
+                       </SelectItem>
+                     ))}
+                   </SelectContent>
+                 </Select>
+               </div>
+               
+               <div>
+                 <Label className="text-sm font-medium text-gray-700">Price Range</Label>
+                 <Select value={priceRangeFilter} onValueChange={handlePriceRangeChange}>
+                   <SelectTrigger className="w-full">
+                     <SelectValue placeholder="All Prices" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="all">All Prices</SelectItem>
+                     <SelectItem value="under-100">Under €100</SelectItem>
+                     <SelectItem value="100-500">€100 - €500</SelectItem>
+                     <SelectItem value="500-1000">€500 - €1,000</SelectItem>
+                     <SelectItem value="over-1000">Over €1,000</SelectItem>
+                   </SelectContent>
+                 </Select>
+               </div>
+               
+               <div>
+                 <Label className="text-sm font-medium text-gray-700">Product Code</Label>
+                 <Input
+                   placeholder="Search by code..."
+                   value={codeFilter}
+                   onChange={(e) => handleCodeChange(e.target.value)}
+                 />
+               </div>
+             </div>
+             
+             {/* Supplier Code Filter */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                 <Label className="text-sm font-medium text-gray-700">Supplier Code</Label>
+                 <Input
+                   placeholder="Search by supplier code..."
+                   value={supplierCodeFilter}
+                   onChange={(e) => handleSupplierCodeChange(e.target.value)}
+                 />
+               </div>
+              
+              {/* Clear Filters Button */}
+              <div className="flex items-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCategoryFilter('all');
+                    setPageFilter('all');
+                    setSubcategoryFilter('all');
+                    setSupplierFilter('all');
+                    setPriceRangeFilter('all');
+                    setCodeFilter('');
+                    setSupplierCodeFilter('');
+                    setFrequencyFilter('');
+                    setVoltageFilter('');
+                    setPowerFilter('');
+                    setCapacityFilter('');
+                    setWeightFilter('');
+                  }}
+                  className="w-full"
+                >
+                  Clear All Filters
+                </Button>
               </div>
             </div>
-            <Select value={categoryFilter} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Filter by Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {allCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={pageFilter} onValueChange={handlePageChange}>
-              <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Filter by Page" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Pages</SelectItem>
-                {allPages.map((page) => (
-                  <SelectItem key={page} value={page}>
-                    {page?.replace('-', ' ').toUpperCase()}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+            {/* Technical Specification Filters */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium text-gray-700 mb-3 block">Technical Specifications</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">Frequency (Hz)</Label>
+                  <Input
+                    placeholder="e.g. 50, 60..."
+                    value={frequencyFilter}
+                    onChange={(e) => handleFrequencyChange(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">Voltage (V)</Label>
+                  <Input
+                    placeholder="e.g. 220, 380..."
+                    value={voltageFilter}
+                    onChange={(e) => handleVoltageChange(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">Power (W)</Label>
+                  <Input
+                    placeholder="e.g. 1000, 2500..."
+                    value={powerFilter}
+                    onChange={(e) => handlePowerChange(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">Capacity (L)</Label>
+                  <Input
+                    placeholder="e.g. 50, 100..."
+                    value={capacityFilter}
+                    onChange={(e) => handleCapacityChange(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">Weight (kg)</Label>
+                  <Input
+                    placeholder="e.g. 25, 50..."
+                    value={weightFilter}
+                    onChange={(e) => handleWeightChange(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -552,6 +910,11 @@ const ProductManagerPage: React.FC = () => {
                       </div>
                       <div className="flex items-center space-x-2 flex-shrink-0">
                         {getPageBadge(product.page_reference)}
+                        {product.supplier && (
+                          <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-300">
+                            {product.supplier}
+                          </Badge>
+                        )}
                         <span className="text-base lg:text-lg font-bold text-green-600">
                           €{product.price?.toLocaleString() || 0}
                         </span>
@@ -569,6 +932,31 @@ const ProductManagerPage: React.FC = () => {
                       <div className="truncate">
                         <span className="font-medium">Created:</span> {new Date(product.created_at).toLocaleDateString()}
                       </div>
+                      {product.hz && (
+                        <div className="truncate">
+                          <span className="font-medium">Frequency:</span> {product.hz} Hz
+                        </div>
+                      )}
+                      {product.voltage && (
+                        <div className="truncate">
+                          <span className="font-medium">Voltage:</span> {product.voltage} V
+                        </div>
+                      )}
+                      {product.power && (
+                        <div className="truncate">
+                          <span className="font-medium">Power:</span> {product.power} W
+                        </div>
+                      )}
+                      {product.litre && (
+                        <div className="truncate">
+                          <span className="font-medium">Capacity:</span> {product.litre} L
+                        </div>
+                      )}
+                      {product.kg && (
+                        <div className="truncate">
+                          <span className="font-medium">Weight:</span> {product.kg} kg
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" variant="outline" onClick={() => setViewingProduct(product)}>
@@ -692,6 +1080,46 @@ const ProductManagerPage: React.FC = () => {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Technical Specifications Section */}
+                  {(viewingProduct.hz || viewingProduct.voltage || viewingProduct.power || viewingProduct.litre || viewingProduct.kg) && (
+                    <div>
+                      <h4 className="font-medium text-gray-600 mb-2">Technical Specifications:</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {viewingProduct.hz && (
+                          <div>
+                            <span className="font-medium text-gray-600">Frequency:</span>
+                            <p>{viewingProduct.hz} Hz</p>
+                          </div>
+                        )}
+                        {viewingProduct.voltage && (
+                          <div>
+                            <span className="font-medium text-gray-600">Voltage:</span>
+                            <p>{viewingProduct.voltage} V</p>
+                          </div>
+                        )}
+                        {viewingProduct.power && (
+                          <div>
+                            <span className="font-medium text-gray-600">Power:</span>
+                            <p>{viewingProduct.power} W</p>
+                          </div>
+                        )}
+                        {viewingProduct.litre && (
+                          <div>
+                            <span className="font-medium text-gray-600">Capacity:</span>
+                            <p>{viewingProduct.litre} L</p>
+                          </div>
+                        )}
+                        {viewingProduct.kg && (
+                          <div>
+                            <span className="font-medium text-gray-600">Weight:</span>
+                            <p>{viewingProduct.kg} kg</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   {viewingProduct.description && (
                     <div>
                       <span className="font-medium text-gray-600">Description:</span>
@@ -825,6 +1253,63 @@ const ProductManagerPage: React.FC = () => {
                   placeholder="Product description"
                   rows={4}
                 />
+              </div>
+              
+              {/* Technical Specifications */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Technical Specifications (Optional)</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-hz">Frequency (Hz)</Label>
+                    <Input
+                      id="edit-hz"
+                      type="number"
+                      placeholder="50/60"
+                      value={formData.hz}
+                      onChange={(e) => setFormData({...formData, hz: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-voltage">Voltage (V)</Label>
+                    <Input
+                      id="edit-voltage"
+                      type="number"
+                      placeholder="220/380"
+                      value={formData.voltage}
+                      onChange={(e) => setFormData({...formData, voltage: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-power">Power (W)</Label>
+                    <Input
+                      id="edit-power"
+                      type="number"
+                      placeholder="1500"
+                      value={formData.power}
+                      onChange={(e) => setFormData({...formData, power: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-litre">Capacity (L)</Label>
+                    <Input
+                      id="edit-litre"
+                      type="number"
+                      placeholder="50"
+                      value={formData.litre}
+                      onChange={(e) => setFormData({...formData, litre: e.target.value})}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="edit-kg">Weight (kg)</Label>
+                    <Input
+                      id="edit-kg"
+                      type="number"
+                      placeholder="25"
+                      value={formData.kg}
+                      onChange={(e) => setFormData({...formData, kg: e.target.value})}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

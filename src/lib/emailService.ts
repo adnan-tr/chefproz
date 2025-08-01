@@ -23,41 +23,84 @@ export interface ContactFormData {
   request_type: string;
   sla_level: string;
   country?: string;
+  attachment_url?: string;
+  file_attachment?: string;
 }
 
 export class EmailService {
   private static readonly FROM_EMAIL = 'noreply@chefgear.com';
   private static readonly ADMIN_EMAIL = 'info@chefgear.com';
+  private static readonly BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
   static async sendContactFormNotification(formData: ContactFormData): Promise<{ success: boolean; error?: any }> {
-    // If no valid API key, return mock success to prevent app crashes
-    if (!hasValidApiKey) {
-      console.warn('Email service: No valid API key provided. Email functionality is disabled.');
-      return { success: true };
-    }
+    console.log('Attempting to send email notifications...');
+    console.log('Form data:', { ...formData, email: '[REDACTED]' });
 
     try {
+      // Try to send via backend API first
+      try {
+        console.log('Sending via backend API...');
+        const response = await fetch(`${this.BACKEND_URL}/api/send-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Email sent successfully via backend:', result);
+          return { success: true };
+        } else {
+          console.warn('Backend email service unavailable, falling back to frontend method');
+        }
+      } catch (backendError) {
+        console.warn('Backend email service unavailable:', backendError);
+      }
+
+      // Fallback: Try direct Resend API call (will likely fail due to CORS)
+      if (!hasValidApiKey) {
+        console.warn('Email service: No valid API key provided. Email functionality is disabled.');
+        console.warn('Current API key:', API_KEY);
+        return { success: true };
+      }
+
+      console.log('Attempting direct API call (may fail due to CORS)...');
+      
       // Send notification to admin
+      console.log('Sending admin notification...');
       const adminEmailHtml = this.generateAdminNotificationHtml(formData);
-      await resend.emails.send({
+      const adminResult = await resend.emails.send({
         from: this.FROM_EMAIL,
-        to: this.ADMIN_EMAIL,
+        to: 'equiprime2025@gmail.com',
         subject: `New Contact Form Submission - ${formData.request_type}`,
         html: adminEmailHtml,
       });
+      console.log('Admin email sent successfully:', adminResult);
 
       // Send confirmation to client
+      console.log('Sending client confirmation...');
       const clientEmailHtml = this.generateClientConfirmationHtml(formData);
-      await resend.emails.send({
+      const clientResult = await resend.emails.send({
         from: this.FROM_EMAIL,
         to: formData.email,
         subject: 'Thank you for contacting ChefGear - We\'ve received your message',
         html: clientEmailHtml,
       });
+      console.log('Client email sent successfully:', clientResult);
 
       return { success: true };
     } catch (error) {
       console.error('Error sending email notifications:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // If it's a CORS error, provide helpful information
+      if (error.message && error.message.includes('CORS')) {
+        console.error('CORS Error: Email API calls should be made from backend, not frontend.');
+        console.error('Please deploy the backend API endpoint or use a serverless function.');
+      }
+      
       return { success: false, error };
     }
   }
@@ -184,6 +227,16 @@ export class EmailService {
               <div class="label">Message:</div>
               <div class="value">${formData.message.replace(/\n/g, '<br>')}</div>
             </div>
+            ${formData.attachment_url || formData.file_attachment ? `
+            <div class="field">
+              <div class="label">Attachment:</div>
+              <div class="value">
+                <a href="${formData.attachment_url || formData.file_attachment}" target="_blank" style="color: #dc2626; text-decoration: underline;">
+                  View Attachment
+                </a>
+              </div>
+            </div>
+            ` : ''}
           </div>
         </div>
       </body>

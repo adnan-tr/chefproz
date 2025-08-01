@@ -55,8 +55,8 @@ const translations = [
   { key: 'achievements.leader.description', en: 'Recognized as the leading kitchen consultancy in the region' },
   { key: 'achievements.success.title', en: '99% Success Rate' },
   { key: 'achievements.success.description', en: 'Exceptional project completion and client satisfaction rate' },
-  { key: 'achievements.innovation.title', en: 'Innovation Award' },
-  { key: 'achievements.innovation.description', en: 'Winner of the 2023 Kitchen Innovation Excellence Award' },
+  { key: 'achievements.innovation.title', en: 'Culinary Excellence' },
+    { key: 'achievements.innovation.description', en: 'Crafting dream kitchens where culinary magic comes to life, one masterpiece at a time' },
   { key: 'achievements.global.title', en: 'Global Presence' },
   { key: 'achievements.global.description', en: 'Serving clients across 5 continents with local expertise' },
 

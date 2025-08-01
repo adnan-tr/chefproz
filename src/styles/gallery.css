@@ -68,7 +68,7 @@
 }
 
 .gallery li .img.focus .img__bg {
-  transform: skewX(15deg) scale(1.1);
+  transform: skewX(15deg);
 }
 
 .gallery li .img--single {
@@ -90,7 +90,7 @@
 }
 
 .gallery li .img.focus.img--single .img__bg {
-  transform: scale(1.1);
+  transform: none;
 }
 
 .gallery li .img.focus.img--before {
@@ -164,7 +164,7 @@
   }
   
   .gallery li .img.focus .img__bg {
-    transform: skewX(10deg) scale(1.1);
+    transform: skewX(10deg);
   }
 }
 

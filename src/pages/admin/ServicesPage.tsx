@@ -5,7 +5,7 @@ export default function ServicesPage() {
   return (
     <>
       <Helmet>
-        <title>Services Management | ChefPro Management Portal</title>
+        <title>Services Management | Hublinq Management Portal</title>
       </Helmet>
       <ServiceAdmin />
     </>

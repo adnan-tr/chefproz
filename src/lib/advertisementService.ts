@@ -183,3 +183,7 @@ export class AdvertisementService {
     }
   }
 }
+
+// Create a default instance for easier importing
+export const advertisementService = AdvertisementService;
+export default AdvertisementService;

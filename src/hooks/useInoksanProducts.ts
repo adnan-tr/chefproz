@@ -37,7 +37,19 @@ export const useInoksanProducts = (): UseInoksanProductsReturn => {
     try {
       setLoading(true);
       const products = await dbService.getProducts('inoksan');
-      setAllProducts(products || []);
+      
+      // Sort products: those with images first, those without images at the end
+      const sortedProducts = [...(products || [])].sort((a, b) => {
+        // Check if product has an image
+        const aHasImage = a.image_url && a.image_url.trim() !== '';
+        const bHasImage = b.image_url && b.image_url.trim() !== '';
+        
+        if (aHasImage && !bHasImage) return -1; // a comes first
+        if (!aHasImage && bHasImage) return 1;  // b comes first
+        return 0; // maintain original order if both have or both don't have images
+      });
+      
+      setAllProducts(sortedProducts);
       } catch (error) {
         console.error('Error fetching INOKSAN products:', error);
         setAllProducts([]);

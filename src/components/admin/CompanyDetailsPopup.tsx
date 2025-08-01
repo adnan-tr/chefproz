@@ -9,7 +9,6 @@ import {
   Building2, 
   Upload, 
   Facebook, 
-  Twitter, 
   Instagram, 
   Linkedin,
   MapPin,
@@ -21,6 +20,18 @@ import {
 } from 'lucide-react';
 import { dbService } from '@/lib/supabase';
 import { useCompany } from '@/contexts/CompanyContext';
+
+// Custom X (Twitter) icon component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg 
+    className={className} 
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
 
 interface CompanyDetails {
   name: string;
@@ -364,14 +375,14 @@ const CompanyDetailsPopup: React.FC<CompanyDetailsPopupProps> = ({ trigger }) =>
               </div>
 
               <div>
-                <Label htmlFor="twitter">Twitter</Label>
+                <Label htmlFor="twitter">X (Twitter)</Label>
                 <div className="relative">
-                  <Twitter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <XIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="twitter"
                     value={companyDetails.social_media.twitter}
                     onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
-                    placeholder="https://twitter.com/company"
+                    placeholder="https://x.com/company"
                     className="pl-10"
                   />
                 </div>

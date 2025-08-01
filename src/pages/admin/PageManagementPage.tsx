@@ -78,7 +78,7 @@ export default function PageManagementPage() {
   return (
     <>
       <Helmet>
-        <title>Page Management | ChefPro Management Portal</title>
+        <title>Page Management | Hublinq Management Portal</title>
       </Helmet>
       
       <div className="space-y-6">
