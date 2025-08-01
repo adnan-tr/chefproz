@@ -179,7 +179,7 @@ const InteractiveHero: React.FC = () => {
                   objectFit: 'cover', 
                   objectPosition: 'center center',
                   minHeight: '100vh',
-                  imageRendering: 'high-quality'
+                  imageRendering: 'auto'
                 }}
               />
               <div className="absolute inset-0 bg-black/30"></div>
